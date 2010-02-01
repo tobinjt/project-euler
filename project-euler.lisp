@@ -449,3 +449,79 @@
     (list highest-product highest-digits)
   )
 ); }}}
+
+; A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,
+; a^(2) + b^(2) = c^(2)
+;
+; For example, 3^(2) + 4^(2) = 9 + 16 = 25 = 5^(2).
+;
+; There exists exactly one Pythagorean triplet for which a + b + c = 1000.
+; Find the product abc.
+
+; a + b + c = 1000
+; c = 1000 - a - b
+; a**2 + b**2 = c**2
+; c = sqrt(a**2 + b**2)
+; 1000 - a - b = sqrt(a**2 + b**2)
+; 1000 = sqrt(a**2 + b**2) + a + b
+; a < b < c
+; for (int a = 1; a < 500; a++) {
+;   for (int b = a + 1; b <= 500; b++) {
+;     if (sqrt(a**2 + b**2) + a + b == 1000) {
+;       success!
+;     }
+;   }
+; }
+(defun project-euler-9-1 (); {{{
+  (do
+    (
+      (a 1)
+      (result nil)
+    )
+    (
+      (or
+        (not (null result))
+        (>= a 500)
+      )
+      result
+    )
+
+    (do
+      (
+        (b a)
+      )
+      (
+        (or
+          (not (null result))
+          (> b 500)
+        )
+        result
+      )
+
+      (let
+        (
+          (value
+            (+
+              (sqrt (+ (expt a 2) (expt b 2)))
+              a b
+            )
+          )
+        )
+
+        (when (equal value 1000)
+          (setf result (list a b (- 1000 (+ a b))))
+          (setf result
+            (list
+              (* a b (first (last result)))
+              result
+            )
+          )
+        )
+      )
+
+      (setf b (1+ b))
+    )
+
+    (setf a (1+ a))
+  )
+); }}}
