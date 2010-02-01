@@ -196,3 +196,78 @@
     (setf result (cons palindrome numbers))
   )
 ); }}}
+
+; 2520 is the smallest number that can be divided by each of the numbers from 1
+; to 10 without any remainder.
+;
+; What is the smallest number that is evenly divisible by all of the numbers
+; from 1 to 20?
+
+; Find the prime factors of each number between 1 and 20, including the power,
+; so 9 = 3**2.  The smallest number is the product of the highest prime factors.
+
+(defun project-euler-5-1 (); {{{
+  (setf highest-number 20)
+  ; I don't want to be constantly adding or subtracting 1 to indices.
+  (setf array-size (1+ highest-number))
+  ; This breaks the generalisation, but it could easily be replaced if
+  ; necessary.
+  (setf primes '(2 3 5 7 11 13 17 19))
+  (setf factors-array (make-zeroed-array array-size))
+
+  (do
+    (
+      (current-number 2)
+    )
+    (
+      (> current-number highest-number)
+    )
+
+    (let
+      (
+        (remainder current-number)
+        (current-factors (make-zeroed-array array-size))
+      )
+      (dolist (current-prime primes)
+        (loop
+          (when (not (zerop (mod remainder current-prime)))
+            (return)
+          )
+          (setf remainder (/ remainder current-prime))
+          (setf (aref current-factors current-prime)
+                  (1+ (aref current-factors current-prime)))
+        )
+      )
+      (do
+        (
+          (i 2)
+        )
+        (
+          (> i highest-number)
+        )
+        (when (>
+                (aref current-factors i)
+                (aref factors-array i)
+              )
+          (setf (aref factors-array i)
+                  (aref current-factors i))
+        )
+        (setf i (1+ i))
+      )
+    )
+    (setf current-number (1+ current-number))
+  )
+  (setf result 1)
+  (dotimes (i highest-number result)
+    (setf result (* result
+                    (expt i (aref factors-array i))))
+  )
+); }}}
+
+(defun make-zeroed-array (array-size); {{{
+  (setf an-array (make-array array-size))
+  (dotimes (i array-size t)
+    (setf (aref an-array i) 0)
+  )
+  an-array
+); }}}
