@@ -150,3 +150,49 @@
     )
   )
 ); }}}
+
+
+; A palindromic number reads the same both ways. The largest palindrome made
+; from the product of two 2-digit numbers is 9009 = 91 × 99.
+;
+; Find the largest palindrome made from the product of two 3-digit numbers.
+(defun project-euler-4-1 (); {{{
+  (let
+    (
+      (palindrome 0)
+      (numbers nil)
+    )
+    (do
+      ((outer-number 999))
+      ((or (< outer-number 100)
+            ; Stop when it's not possible to produce a product larger than the
+            ; current palindrome.
+           (< outer-number (/ palindrome outer-number))
+      ))
+
+      (do
+        ((inner-number outer-number))
+        ((< inner-number 100))
+
+        (let*
+          (
+            (product (* outer-number inner-number))
+            (product-string (write-to-string product))
+            (reversed-product-string (reverse product-string))
+          )
+          (when (and
+                  (> product palindrome)
+                  (equal product-string reversed-product-string)
+                )
+            (setf palindrome product)
+            (setf numbers (list outer-number inner-number ))
+          )
+        )
+        (setf inner-number (1- inner-number))
+      )
+
+      (setf outer-number (1- outer-number))
+    )
+    (setf result (cons palindrome numbers))
+  )
+); }}}
