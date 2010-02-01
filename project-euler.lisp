@@ -301,3 +301,62 @@
   )
 
 ); }}}
+
+; By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see
+; that the 6^(th) prime is 13.
+;
+; What is the 10001^(st) prime number?
+
+; How about: an array of primes, initially containing 2; an infinite loop,
+; testing the next number to see if it's a multiple of any of the primes, and if
+; not, appending it to the array.  Keep going until the array is full.
+(defun project-euler-7-1 (); {{{
+  (let*
+    (
+      (number-of-primes 10001)
+      (primes (make-zeroed-array number-of-primes))
+      (first-prime 2)
+      (next-prime-index 1)
+      (current-number first-prime)
+    )
+
+    (setf (aref primes 0) first-prime)
+    (do*
+      (
+      )
+      (
+        (equal number-of-primes next-prime-index)
+      )
+
+      (let*
+        (
+          (current-index 0)
+          (current-prime (aref primes current-index))
+          (max-divisor (sqrt current-number))
+        )
+
+        (loop
+          (when (zerop current-prime)
+            ; shouldn't happen; we ran off the end of the primes array
+            (break "current-prime == 0")
+          )
+          (when (zerop (mod current-number current-prime))
+            ; we found a divisor; current-number is not prime
+            (return nil)
+          )
+          (when (> current-prime max-divisor)
+            ; current-number is prime; save it, and move on to the next number
+            (setf (aref primes next-prime-index) current-number)
+            (setf next-prime-index (1+ next-prime-index))
+            (return t)
+          )
+          (setf current-index (1+ current-index))
+          (setf current-prime (aref primes current-index))
+        )
+
+        (setf current-number (1+ current-number))
+      )
+    )
+    (aref primes (1- number-of-primes))
+  )
+); }}}
