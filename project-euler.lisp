@@ -525,3 +525,130 @@
     (setf a (1+ a))
   )
 ); }}}
+
+; The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
+;
+; Find the sum of all the primes below two million.
+
+; This attempt would have taken roughly 40 minutes, with garbage collection
+; consuming 60-70% of that time.
+(defun project-euler-10-1 (); {{{
+  (do*
+    (
+      (primes '(2))
+      (current-number (1+ (first primes)))
+      (sum-of-primes (first primes))
+    )
+    (
+      (>= current-number 2000000)
+      sum-of-primes
+    )
+
+    (let
+      (
+        (sqrt-current-number (sqrt current-number))
+        (remaining-primes primes)
+      )
+
+      (loop
+        (when (zerop (mod current-number (first remaining-primes)))
+          ; We found a divisor; current-number is not prime
+          (return nil)
+        )
+        (when (> (first remaining-primes) sqrt-current-number)
+          ; We found a prime
+          (setf primes (append primes (list current-number)))
+          (setf sum-of-primes (+ sum-of-primes current-number))
+          (return t)
+        )
+        (setf remaining-primes (rest remaining-primes))
+      )
+    )
+
+    (setf current-number (+ 2 current-number))
+  )
+); }}}
+
+(defun project-euler-10-2 (); {{{
+  (do
+    (
+      (primes (sieve-of-eratosthenes 2000000))
+      (sum-of-primes 0)
+      (i 0)
+    )
+    (
+      (> i 2000000)
+      sum-of-primes
+    )
+
+    (when (aref primes i)
+      (setf sum-of-primes (+ sum-of-primes i))
+    )
+    (setf i (1+ i))
+  )
+); }}}
+
+(defun sieve-of-eratosthenes (upper-bound); {{{
+  (let*
+    (
+      (array-size (1+ upper-bound))
+      (primes (make-array array-size :initial-element t))
+    )
+    (setf (aref primes 0) nil)
+    (setf (aref primes 1) nil)
+
+    (dotimes (i array-size primes)
+      (when (aref primes i)
+        (do
+          (
+            (index-of-multiples (* 2 i))
+          )
+          (
+            (>= index-of-multiples array-size)
+          )
+
+          (setf (aref primes index-of-multiples) nil)
+          (setf index-of-multiples (+ index-of-multiples i))
+        )
+      )
+    )
+  )
+); }}}
+
+; -----------------------
+; Someone else's LISP solution for Project Euler problem 10.
+;(defun seq-list (min max)
+;  (loop for i from min to max collect i)
+;)
+;
+;(defun sieve (lst)
+;  (let
+;    (
+;      (primes '())
+;      (last (car (last lst)))
+;    )
+;    (loop while (and lst (> last (* (car lst) (car lst))))
+;      do
+;        (let
+;          (
+;            (factor (car lst))
+;          )
+;          (setq primes (cons factor primes))
+;          (setq lst
+;            (remove-if
+;              #'(lambda (n) (= (mod n factor) 0))
+;              (cdr lst))
+;            )
+;          )
+;        )
+;      (append (reverse primes) lst)
+;    )
+;  )
+;
+;(defun all-primes (limit)
+;  (sieve (seq-list 2 limit))
+;)
+;
+;(defun euler10 ()
+;  (reduce #'+ (all-primes 1000000))
+;)
