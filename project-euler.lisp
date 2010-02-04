@@ -597,11 +597,11 @@
     (setf (aref primes 0) nil)
     (setf (aref primes 1) nil)
 
-    (dotimes (i array-size primes)
+    (dotimes (i (1+ (ceiling (sqrt array-size))) primes)
       (when (aref primes i)
         (do
           (
-            (index-of-multiples (* 2 i))
+            (index-of-multiples (expt i 2))
           )
           (
             (>= index-of-multiples array-size)
@@ -615,7 +615,7 @@
   )
 ); }}}
 
-; -----------------------
+; ------------------ {{{
 ; Someone else's LISP solution for Project Euler problem 10.
 ;(defun seq-list (min max)
 ;  (loop for i from min to max collect i)
@@ -652,3 +652,23 @@
 ;(defun euler10 ()
 ;  (reduce #'+ (all-primes 1000000))
 ;)
+;------------------- }}}
+
+; 2^(15) = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.
+;
+; What is the sum of the digits of the number 2^(1000)?
+(defun project-euler-16-1 (); {{{
+  (let
+    (
+      (number-string (write-to-string (expt 2 1000)))
+      (sum-of-digits 0)
+    )
+
+    (dotimes (i (length number-string) sum-of-digits)
+      (setf sum-of-digits (+ sum-of-digits
+                             (parse-integer (string (char number-string i)))
+                          )
+      )
+    )
+  )
+); }}}
