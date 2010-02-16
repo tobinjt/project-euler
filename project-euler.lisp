@@ -119,10 +119,13 @@
 ); }}}
 
 (defun project-euler-3-1 (); {{{
-  (setf magic-number 600851475143)
-  (setf factors (get-factors magic-number))
-  (setf sorted-factors (sort factors #'>))
-  (setf highest-prime-factor
+  (let*
+    (
+      (magic-number 600851475143)
+      (factors (get-factors magic-number))
+      (sorted-factors (sort factors #'>))
+    )
+
     (dolist (current-factor sorted-factors)
       (when (primep current-factor)
         (return current-factor)
@@ -193,7 +196,7 @@
 
       (setf outer-number (1- outer-number))
     )
-    (setf result (cons palindrome numbers))
+    (cons palindrome numbers)
   )
 ); }}}
 
@@ -207,69 +210,83 @@
 ; so 9 = 3**2.  The smallest number is the product of the highest prime factors.
 
 (defun project-euler-5-1 (); {{{
-  (setf highest-number 20)
-  ; I don't want to be constantly adding or subtracting 1 to indices.
-  (setf array-size (1+ highest-number))
-  ; This breaks the generalisation, but it could easily be replaced if
-  ; necessary.
-  (setf primes '(2 3 5 7 11 13 17 19))
-  (setf factors-array (make-zeroed-array array-size))
-
-  (do
+  (let*
     (
-      (current-number 2)
-    )
-    (
-      (> current-number highest-number)
+      (highest-number 20)
+      ; I don't want to be constantly adding or subtracting 1 to indices.
+      (array-size (1+ highest-number))
+      ; This breaks the generalisation, but it could easily be replaced if
+      ; necessary.
+      (primes '(2 3 5 7 11 13 17 19))
+      (factors-array (make-zeroed-array array-size))
     )
 
+    (do
+      (
+        (current-number 2)
+      )
+      (
+        (> current-number highest-number)
+      )
+
+      (let
+        (
+          (remainder current-number)
+          (current-factors (make-zeroed-array array-size))
+        )
+        (dolist (current-prime primes)
+          (loop
+            (when (not (zerop (mod remainder current-prime)))
+              (return)
+            )
+            (setf remainder (/ remainder current-prime))
+            (setf (aref current-factors current-prime)
+                    (1+ (aref current-factors current-prime)))
+          )
+        )
+        (do
+          (
+            (i 2)
+          )
+          (
+            (> i highest-number)
+          )
+          (when (>
+                  (aref current-factors i)
+                  (aref factors-array i)
+                )
+            (setf (aref factors-array i)
+                    (aref current-factors i))
+          )
+          (setf i (1+ i))
+        )
+      )
+      (setf current-number (1+ current-number))
+    )
     (let
       (
-        (remainder current-number)
-        (current-factors (make-zeroed-array array-size))
+        (result 1)
       )
-      (dolist (current-prime primes)
-        (loop
-          (when (not (zerop (mod remainder current-prime)))
-            (return)
-          )
-          (setf remainder (/ remainder current-prime))
-          (setf (aref current-factors current-prime)
-                  (1+ (aref current-factors current-prime)))
-        )
-      )
-      (do
-        (
-          (i 2)
-        )
-        (
-          (> i highest-number)
-        )
-        (when (>
-                (aref current-factors i)
-                (aref factors-array i)
-              )
-          (setf (aref factors-array i)
-                  (aref current-factors i))
-        )
-        (setf i (1+ i))
+
+      (dotimes (i highest-number result)
+        (setf result (* result
+                        (expt i (aref factors-array i))))
       )
     )
-    (setf current-number (1+ current-number))
-  )
-  (setf result 1)
-  (dotimes (i highest-number result)
-    (setf result (* result
-                    (expt i (aref factors-array i))))
   )
 ); }}}
 
 (defun make-zeroed-array (array-size); {{{
-  (setf an-array (make-array array-size))
-  (dotimes (i array-size t)
-    (setf (aref an-array i) 0)
+  (let
+    (
+      (an-array (make-array array-size))
+    )
+
+    (dotimes (i array-size t)
+      (setf (aref an-array i) 0)
+    )
+    an-array
   )
-  an-array
 ); }}}
 
 ;The sum of the squares of the first ten natural numbers is, 1^(2) + 2^(2) + ...
@@ -424,7 +441,6 @@
 
       (let
         (
-          (next-digit (get-digit the-number-string i))
           (product 1)
         )
         ; shift the current group of digits left
