@@ -106,24 +106,22 @@
   (do*
     (
       (possible-factors (make-sequence-generator 2 (ceiling (sqrt an-integer))))
-      (current-factor (funcall possible-factors))
+      (current-factor (funcall possible-factors) (funcall possible-factors))
       (factors nil)
     )
     ((null current-factor) factors)
+
     (when (zerop (mod an-integer current-factor))
       (setf factors (cons current-factor factors))
       (setf factors (cons (/ an-integer current-factor) factors))
     )
-    (setf current-factor (funcall possible-factors))
   )
 ); }}}
 
 (defun project-euler-3-1 (); {{{
-  (let*
+  (let
     (
-      (magic-number 600851475143)
-      (factors (get-factors magic-number))
-      (sorted-factors (sort factors #'>))
+      (sorted-factors (sort (get-factors 600851475143) #'>))
     )
 
     (dolist (current-factor sorted-factors)
@@ -137,16 +135,16 @@
 (defun make-sequence-generator (start end); {{{
   (let
     (
-      (last-number start)
+      (previous-number start)
     )
     (lambda ()
-      (if (> last-number end)
+      (if (> previous-number end)
         nil
         (let
           (
-            (result last-number)
+            (result previous-number)
           )
-          (setf last-number (1+ last-number))
+          (setf previous-number (1+ previous-number))
           result
         )
       )
@@ -166,7 +164,7 @@
       (numbers nil)
     )
     (do
-      ((outer-number 999))
+      ((outer-number 999 (1- outer-number)))
       ((or (< outer-number 100)
             ; Stop when it's not possible to produce a product larger than the
             ; current palindrome.
@@ -174,7 +172,7 @@
       ))
 
       (do
-        ((inner-number outer-number))
+        ((inner-number outer-number (1- inner-number)))
         ((< inner-number 100))
 
         (let*
@@ -188,13 +186,11 @@
                   (equal product-string reversed-product-string)
                 )
             (setf palindrome product)
-            (setf numbers (list outer-number inner-number ))
+            (setf numbers (list outer-number inner-number))
           )
         )
-        (setf inner-number (1- inner-number))
       )
 
-      (setf outer-number (1- outer-number))
     )
     (cons palindrome numbers)
   )
@@ -218,12 +214,12 @@
       ; This breaks the generalisation, but it could easily be replaced if
       ; necessary.
       (primes '(2 3 5 7 11 13 17 19))
-      (factors-array (make-zeroed-array array-size))
+      (factors-array (make-array array-size :initial-element 0))
     )
 
     (do
       (
-        (current-number 2)
+        (current-number 2 (1+ current-number))
       )
       (
         (> current-number highest-number)
@@ -232,7 +228,7 @@
       (let
         (
           (remainder current-number)
-          (current-factors (make-zeroed-array array-size))
+          (current-factors (make-array array-size :initial-element 0))
         )
         (dolist (current-prime primes)
           (loop
@@ -244,24 +240,14 @@
                     (1+ (aref current-factors current-prime)))
           )
         )
-        (do
-          (
-            (i 2)
+        (dotimes (i highest-number)
+          (setf (aref factors-array i) (max
+                                            (aref current-factors i)
+                                            (aref factors-array i)
+                                       )
           )
-          (
-            (> i highest-number)
-          )
-          (when (>
-                  (aref current-factors i)
-                  (aref factors-array i)
-                )
-            (setf (aref factors-array i)
-                    (aref current-factors i))
-          )
-          (setf i (1+ i))
         )
       )
-      (setf current-number (1+ current-number))
     )
     (let
       (
@@ -273,19 +259,6 @@
                         (expt i (aref factors-array i))))
       )
     )
-  )
-); }}}
-
-(defun make-zeroed-array (array-size); {{{
-  (let
-    (
-      (an-array (make-array array-size))
-    )
-
-    (dotimes (i array-size t)
-      (setf (aref an-array i) 0)
-    )
-    an-array
   )
 ); }}}
 
@@ -331,7 +304,7 @@
   (let*
     (
       (number-of-primes 10001)
-      (primes (make-zeroed-array number-of-primes))
+      (primes (make-array number-of-primes :initial-element 0))
       (first-prime 2)
       (next-prime-index 1)
       (current-number first-prime)
@@ -433,7 +406,7 @@
     ; loop over the remaining digits in the-number-string
     (do
       (
-        (i number-of-digits)
+        (i number-of-digits (1+ i))
       )
       (
         (equal i (length the-number-string))
@@ -460,7 +433,6 @@
         )
       )
 
-      (setf i (1+ i))
     )
     (list highest-product highest-digits)
   )
@@ -491,7 +463,7 @@
 (defun project-euler-9-1 (); {{{
   (do
     (
-      (a 1)
+      (a 1 (1+ a))
       (result nil)
     )
     (
@@ -504,7 +476,7 @@
 
     (do
       (
-        (b a)
+        (b a (1+ b))
       )
       (
         (or
@@ -534,11 +506,7 @@
           )
         )
       )
-
-      (setf b (1+ b))
     )
-
-    (setf a (1+ a))
   )
 ); }}}
 
@@ -552,55 +520,43 @@
   (do*
     (
       (primes '(2))
-      (current-number (1+ (first primes)))
+      (current-number (1+ (first primes)) (+ 2 current-number))
       (sum-of-primes (first primes))
+      (sqrt-current-number (sqrt current-number) (sqrt current-number))
+      (remaining-primes primes primes)
     )
     (
       (>= current-number 2000000)
       sum-of-primes
     )
 
-    (let
-      (
-        (sqrt-current-number (sqrt current-number))
-        (remaining-primes primes)
+    (loop
+      (when (zerop (mod current-number (first remaining-primes)))
+        ; We found a divisor; current-number is not prime
+        (return nil)
       )
-
-      (loop
-        (when (zerop (mod current-number (first remaining-primes)))
-          ; We found a divisor; current-number is not prime
-          (return nil)
-        )
-        (when (> (first remaining-primes) sqrt-current-number)
-          ; We found a prime
-          (setf primes (append primes (list current-number)))
-          (setf sum-of-primes (+ sum-of-primes current-number))
-          (return t)
-        )
-        (setf remaining-primes (rest remaining-primes))
+      (when (> (first remaining-primes) sqrt-current-number)
+        ; We found a prime
+        (setf primes (append primes (list current-number)))
+        (setf sum-of-primes (+ sum-of-primes current-number))
+        (return t)
       )
+      (setf remaining-primes (rest remaining-primes))
     )
-
-    (setf current-number (+ 2 current-number))
   )
 ); }}}
 
 (defun project-euler-10-2 (); {{{
-  (do
+  (let
     (
       (primes (sieve-of-eratosthenes 2000000))
       (sum-of-primes 0)
-      (i 0)
     )
-    (
-      (> i 2000000)
-      sum-of-primes
+    (dotimes (i (length primes) sum-of-primes)
+      (when (aref primes i)
+        (setf sum-of-primes (+ sum-of-primes i))
+      )
     )
-
-    (when (aref primes i)
-      (setf sum-of-primes (+ sum-of-primes i))
-    )
-    (setf i (1+ i))
   )
 ); }}}
 
@@ -617,14 +573,13 @@
       (when (aref primes i)
         (do
           (
-            (index-of-multiples (expt i 2))
+            (index-of-multiples (expt i 2) (+ index-of-multiples i))
           )
           (
             (>= index-of-multiples array-size)
           )
 
           (setf (aref primes index-of-multiples) nil)
-          (setf index-of-multiples (+ index-of-multiples i))
         )
       )
     )
@@ -640,9 +595,9 @@
 
     (loop
       (when (> current-number upper-bound)
-        (return result)
+        (return (reverse result))
       )
-      (setf result (append result (list current-number)))
+      (push result current-number)
       (setf current-number (1+ current-number))
     )
   )
