@@ -790,3 +790,29 @@
         (incf num-factors 2))))
 ); }}}
 
+; The following iterative sequence is defined for the set of positive integers:
+; 
+; n  n/2 (n is even)
+; n  3n + 1 (n is odd)
+; 
+; Using the rule above and starting with 13, we generate the following sequence:
+; 
+; 13  40  20  10  5  16  8  4  2  1
+; 
+; It can be seen that this sequence (starting at 13 and finishing at 1) contains
+; 10 terms. Although it has not been proved yet (Collatz Problem), it is thought
+; that all starting numbers finish at 1.
+; 
+; Which starting number, under one million, produces the longest chain?
+; 
+; NOTE: Once the chain starts the terms are allowed to go above one million.
+
+; Thoughts: Array of one million elements, each will hold the number of terms in
+; the chain for that number.  Also a queue, to hold numbers whose count we don't
+; know.  Pick any starting number, push it onto the queue, and follow its chain,
+; pushing each subsequent number onto the queue; when the chain ends, start
+; working through the queue, counting the number of steps, and saving that
+; number in the array.  Pick the lowest number whose chain hasn't been
+; calculated, and repeat the pattern, short-circuiting if a number exists in the
+; array.  When there are no remaining numbers in the array, find the number with
+; the longest chain.
