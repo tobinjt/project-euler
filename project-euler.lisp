@@ -808,6 +808,36 @@
         (when (not (= i (/ n i)))
           (push (/ n i) factors)))))); }}}
 
+(defun project-euler-12-2 (); {{{
+  "More efficient solution to Project Euler 12"
+  (let ((primes '(2))
+        (num-factors-of-n-1 0)
+        (num-factors-of-n 2))
+    (do* ((n 2 (1+ n))
+          (n-to-divide))
+        ((> (* num-factors-of-n-1 num-factors-of-n) 500)
+         ; I expect n to be one greater than it should be, but it appears to be
+         ; two greater, and I don't know why.
+         (list (- n 2) (/ (* (- n 2) (1- n)) 2)))
+      (setf num-factors-of-n-1 num-factors-of-n
+            num-factors-of-n 1)
+      (if (evenp n)
+          (setf n-to-divide (/ n 2))
+          (setf n-to-divide n))
+      (dolist (prime primes)
+        (let ((exponent 0))
+          (do ()
+              ((or (> prime n-to-divide)
+                   (not (zerop (mod n-to-divide prime)))))
+            (setf n-to-divide (/ n-to-divide prime)
+                  exponent    (1+ exponent)))
+          (when (not (zerop exponent))
+            (setf num-factors-of-n (* num-factors-of-n (+ exponent 1))))))
+      (when (not (= 1 n-to-divide))
+        ; n-to-divide is a new prime
+        (setf primes (append primes (list n-to-divide))))))
+); }}}
+
 ; The following iterative sequence is defined for the set of positive integers:
 ; 
 ; n  n/2 (n is even)
