@@ -798,6 +798,16 @@
         (incf num-factors 2))))
 ); }}}
 
+(defun factors (n); {{{
+  (let ((factors nil))
+    (do ((i 1 (1+ i))
+        (max-divisor (sqrt n)))
+        ((> i max-divisor) (sort factors '<))
+      (when (zerop (mod n i))
+        (push i factors)
+        (when (not (= i (/ n i)))
+          (push (/ n i) factors)))))); }}}
+
 ; The following iterative sequence is defined for the set of positive integers:
 ; 
 ; n  n/2 (n is even)
