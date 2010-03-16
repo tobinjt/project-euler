@@ -90,13 +90,21 @@
 ; test each one for primeness, starting with the largest
 
 (defun primep (an-integer); {{{
-  (dotimes (current-factor (1+ (ceiling (sqrt an-integer))) t)
-    (cond
-      ((<= current-factor 1)
-        t
-      )
-      ((zerop (mod an-integer current-factor))
-        (return nil)
+  ; The tests don't work for numbers <= 3
+  (case an-integer
+    ((0 1) nil)
+    ((2 3) t)
+    (otherwise 
+      ; This doesn't work for negative numbers.
+      (dotimes (current-factor (1+ (ceiling (sqrt an-integer))) t)
+        (cond
+          ((<= current-factor 1)
+            t
+          )
+          ((zerop (mod an-integer current-factor))
+            (return nil)
+          )
+        )
       )
     )
   )
