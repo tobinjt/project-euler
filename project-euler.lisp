@@ -789,7 +789,7 @@
                          ; XXX why does the loop break if I add 2 above?  It
                          ; looks like num-factors is reset before the loop
                          ; conditional is evaluated.
-       ((> num-factors 500) (list current-number sum num-factors))
+       ((> num-factors 500) (list (1- current-number) (- sum current-number) num-factors))
     ; Inlining this reduces run time by 60ish%.
     (setf num-factors 2)
     (do ((current-factor 2 (1+ current-factor)))
