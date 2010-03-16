@@ -776,8 +776,9 @@
 
 ; Musings: must be at least sum-n(500); must be divisible by 2 and 3 (not being
 ; so rules out too many factors);
-; Possible solutions: could do trial division from 1 to sqrt(x); could calculate
-; the prime factors and see if p**2 is greater than 500.
+; Possible solutions: could do trial division from 1 to sqrt(x).
+; Efficient solution: Find the factors of n/2 and n+1, then multiply them
+; together.
 
 (defun project-euler-12-1 (); {{{
   "Trial division solution to Project Euler 12"
