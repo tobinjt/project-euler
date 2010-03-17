@@ -839,6 +839,32 @@
         (setf primes (append primes (list n-to-divide))))))
 ); }}}
 
+(defun project-euler-12-3 (); {{{
+  "More efficient trial division solution to Project Euler 12"
+  (do ((n 2)
+       (num-factors 0)
+       (num-factors-n 0)
+       ; The initial value is wrong, but the first loop iteration will correct
+       ; it.
+       (num-factors-n-1 0))
+      ((> num-factors 500)
+       (progn (decf n) (list n (/ (* n (1+ n)) 2) num-factors)))
+
+    (setf num-factors-n-1 num-factors-n
+          num-factors-n 0
+          n (1+ n))
+    (do* ((divisor 1)
+          (n-to-divide (if (evenp n) (/ n 2) n))
+          (max-divisor (1+ (ceiling (sqrt n-to-divide)))))
+         ((> divisor max-divisor))
+      (when (zerop (mod n-to-divide divisor))
+        (incf num-factors-n)
+        (when (not (= divisor (/ n-to-divide divisor)))
+          (incf num-factors-n)))
+      (incf divisor))
+    (setf num-factors (* num-factors-n num-factors-n-1)))
+); }}}
+
 ; The following iterative sequence is defined for the set of positive integers:
 ; 
 ; n  n/2 (n is even)
