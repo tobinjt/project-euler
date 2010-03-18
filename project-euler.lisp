@@ -999,3 +999,37 @@
 ; calculated, and repeat the pattern, short-circuiting if a number exists in the
 ; array.  When there are no remaining numbers in the array, find the number with
 ; the longest chain.
+
+(defun project-euler-14-1 (); {{{
+  (let ((array-size 1000000))
+    (let ((cache (make-array array-size))
+          (chain-end 1)
+          (chain-start 1))
+      (setf (aref cache chain-start) 1)
+      (do ((n 2 (1+ n))
+           (queue '() '()))
+          ((>= n array-size) chain-start)
+
+        (unless (aref cache n)
+          ; Fill up the queue.
+          (do ((val n))
+              ((= val chain-end) (push chain-end queue))
+            (push val queue)
+            ; Break out of the loop if we've seen this value before.
+            (if (and (array-in-bounds-p cache val)
+                     (aref cache val))
+                (return))
+            (if (evenp val)
+                (setf val (/ val 2))
+                (setf val (1+ (* val 3)))))
+
+          ; Empty the queue
+          (let ((chain-length (aref cache (pop queue))))
+            (dolist (val queue)
+              (incf chain-length)
+              (when (array-in-bounds-p cache val)
+                (setf (aref cache val) chain-length))
+              (when (and (array-in-bounds-p cache val)
+                         (> chain-length (aref cache chain-start)))
+                (setf chain-start val))))))))
+); }}}
