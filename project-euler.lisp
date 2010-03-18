@@ -1005,7 +1005,7 @@
     (let ((cache (make-array array-size))
           (chain-end 1)
           (chain-start 1))
-      (setf (aref cache chain-start) 1)
+      (setf (aref cache chain-end) 1)
       (do ((n 2 (1+ n))
            (queue '() '()))
           ((>= n array-size) chain-start)
