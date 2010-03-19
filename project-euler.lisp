@@ -1064,3 +1064,12 @@
                  sum-below-10      sum-teens      sum-decades      sum-20-99      sum-below-100      sum-x-hundred-ands      sum-100-999)
       sum-1-1000))
 ); }}}
+
+; n! means n  (n  1)  ...  3  2  1
+;
+; Find the sum of the digits in the number 100!
+
+(defun project-euler-20-1 (); {{{
+  (reduce #'+ (mapcar #'(lambda (x) (parse-integer (string x)))
+                      (coerce (write-to-string (reduce #'* (loop for i from 1 to 100 collect i))) 'list)))
+); }}}
