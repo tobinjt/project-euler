@@ -1045,6 +1045,22 @@
 ; letters. The use of "and" when writing out numbers is in compliance with
 ; British usage.
 
+; Starting in the top left corner of a 2x2 grid, there are 6 routes (without
+; backtracking) to the bottom right corner.
+;
+; How many routes are there through a 20x20 grid?
+
+; http://blog.functionalfun.net/2008/07/project-euler-problem-15-city-grids-and.html
+(defun project-euler-15-1 (&key (x 20) (y 20)); {{{
+  (let ((result 1)
+        (row (* 2 x)))
+    (dotimes (column (1+ y) result)
+      (when (not (zerop column))
+        ; result = (result * (row + 1 - i)) / i;
+        (setf result (/ (* result (- (1+ row) column)) column))
+        )))
+); }}}
+
 (defun project-euler-17-1 (); {{{
   (labels ((count-letters (list-of-words)
                           (reduce #'+ (mapcar #'length list-of-words))))
