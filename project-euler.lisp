@@ -1034,17 +1034,6 @@
                 (setf chain-start val))))))))
 ); }}}
 
-; If the numbers 1 to 5 are written out in words: one, two, three, four, five,
-; then there are 3 + 3 + 5 + 4 + 4 = 19 letters used in total.
-;
-; If all the numbers from 1 to 1000 (one thousand) inclusive were written out in
-; words, how many letters would be used?
-;
-; NOTE: Do not count spaces or hyphens. For example, 342 (three hundred and
-; forty-two) contains 23 letters and 115 (one hundred and fifteen) contains 20
-; letters. The use of "and" when writing out numbers is in compliance with
-; British usage.
-
 ; Starting in the top left corner of a 2x2 grid, there are 6 routes (without
 ; backtracking) to the bottom right corner.
 ;
@@ -1060,6 +1049,17 @@
         (setf result (/ (* result (- (1+ row) column)) column))
         )))
 ); }}}
+
+; If the numbers 1 to 5 are written out in words: one, two, three, four, five,
+; then there are 3 + 3 + 5 + 4 + 4 = 19 letters used in total.
+;
+; If all the numbers from 1 to 1000 (one thousand) inclusive were written out in
+; words, how many letters would be used?
+;
+; NOTE: Do not count spaces or hyphens. For example, 342 (three hundred and
+; forty-two) contains 23 letters and 115 (one hundred and fifteen) contains 20
+; letters. The use of "and" when writing out numbers is in compliance with
+; British usage.
 
 (defun project-euler-17-1 (); {{{
   (labels ((count-letters (list-of-words)
