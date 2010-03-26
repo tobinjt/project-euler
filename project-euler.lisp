@@ -1320,7 +1320,8 @@
                  a-string)))); }}}
 
 (defun project-euler-22-1 (); {{{
-  (let ((names-string (with-open-file (names #p"names.txt") (read-line names))))
+  (let ((names-string (with-open-file (names #p"names.txt")
+                        (read-line names))))
     (loop for i from 0 to (1- (length names-string)) do
       (when (equal #\, (char names-string i))
         (setf (char names-string i) #\ )))
