@@ -1397,7 +1397,7 @@
 ;
 ; What is the first term in the Fibonacci sequence to contain 1000 digits?
 
-(defun project-euler-25-1 ()
+(defun project-euler-25-1 (); {{{
   (let ((fib-2 1)
         (fib-1 1)
         (fib 0)
@@ -1405,9 +1405,8 @@
         (num-terms 2)
         (greater-than (expt 10 999)))
     (loop while (< fib greater-than) do
-      (setf fib (+ fib-1 fib-2)
-            fib-2 fib-1
-            fib-1 fib
+      (setf fib       (+ fib-1 fib-2)
+            fib-2     fib-1
+            fib-1     fib
             num-terms (1+ num-terms)))
-    num-terms)
-)
+    num-terms)); }}}
