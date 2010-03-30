@@ -1410,3 +1410,68 @@
             fib-1     fib
             num-terms (1+ num-terms)))
     num-terms)); }}}
+
+; A permutation is an ordered arrangement of objects. For example, 3124 is one
+; possible permutation of the digits 1, 2, 3 and 4. If all of the permutations
+; are listed numerically or alphabetically, we call it lexicographic order. The
+; lexicographic permutations of 0, 1 and 2 are:
+;
+; 012   021   102   120   201   210
+;
+; What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4,
+; 5, 6, 7, 8 and 9?
+
+(defun permute (a-list); {{{
+  (if (not (second a-list))
+      ; Terminating condition; return the list, wrapped in a new list, so that
+      ; (cons) will do the right thing with the result.
+      ; (cons 'x 'y) gives '(X . Y), whereas (cons 'x '(y)) gives '(X Y).
+      (list a-list)
+      (let ((used '())
+            (unused (copy-list a-list))
+            (current-item)
+            (permutations '()))
+        (loop while (first unused) do
+          (setf current-item (pop unused))
+          (mapcar #'(lambda (x) (setf permutations
+                                      (cons (cons current-item x)
+                                            permutations)))
+                  (permute (append used unused)))
+          (push current-item used))
+        permutations))); }}}
+
+(defun compare-permutations (x y); {{{
+  (if (not (listp x))
+      (< x y)
+      (if (equal (first x) (first y))
+          (compare-permutations (rest x) (rest y))
+          (< (first x) (first y))))); }}}
+
+(defun sort-permutations (permutations); {{{
+  (sort permutations #'compare-permutations)); }}}
+
+; This approach brute forces the permutations.
+; (2 7 8 3 9 1 5 4 6 0)
+(defun project-euler-24-1 (); {{{
+  (nth 999999 (sort-permutations (permute '(0 1 2 3 4 5 6 7 8 9))))); }}}
+
+(defun find-permutation (wanted-index items); {{{
+  "Find permutation number wanted-index of the *sorted* list items"
+  (if (= 1 (length items))
+      items
+      (let* ((num-items (length items))
+             (factorial (reduce #'* (loop for i from 1 to (1- num-items) collect i)))
+             (item-index (floor (/ wanted-index factorial)))
+             (new-wanted-index (- wanted-index (* item-index factorial)))
+             (i 0)
+             (shorter-list '()))
+        (dolist (item items)
+          (unless (= i item-index)
+            (push item shorter-list))
+          (incf i))
+        (append (list (nth item-index items))
+                (find-permutation new-wanted-index (reverse shorter-list)))))); }}}
+
+; This approach figures the answer out cleverly.
+(defun project-euler-24-2 (); {{{
+  (find-permutation 999999 '(0 1 2 3 4 5 6 7 8 9))); }}}
