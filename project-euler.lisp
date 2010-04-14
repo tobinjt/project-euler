@@ -1475,3 +1475,104 @@
 ; This approach figures the answer out cleverly.
 (defun project-euler-24-2 (); {{{
   (find-permutation 999999 '(0 1 2 3 4 5 6 7 8 9))); }}}
+
+; A unit fraction contains 1 in the numerator. The decimal representation of the
+; unit fractions with denominators 2 to 10 are given:
+;
+; 1/2 =   0.5
+; 1/3 =   0.(3)
+; 1/4 =   0.25
+; 1/5 =   0.2
+; 1/6 =   0.1(6)
+; 1/7 =   0.(142857)
+; 1/8 =   0.125
+; 1/9 =   0.(1)
+; 1/10  =   0.1
+; Where 0.1(6) means 0.166666..., and has a 1-digit recurring cycle. It can be
+; seen that 1/7 has a 6-digit recurring cycle.
+;
+; Find the value of d  1000 for which 1/d contains the longest recurring cycle
+; in its decimal fraction part.
+
+; Maybe: push 1/n onto a queue, then process each one; if the sequence repeats
+; internally, push the repeated subsequences onto the queue and discard the
+; current sequence; if there are no internally repeated subsequences, push the
+; sequence onto a list to check later; when all sequences on the queue have been
+; processed, take the longest sequence off the list.
+
+(defstruct trie; {{{
+  (num 0)
+  (children (make-array 10))); }}}
+
+(defun project-euler-26-1 (); {{{
+  (let ((longest-sequence '())
+        (length-longest-sequence 0)
+        (longest-sequence-divisor 0)
+        (longest-sequence-count))
+    (loop for num from 2 to 999 do ; XXX
+      (let ((reversed-digit-list (rational-to-reversed-list-of-digits (/ 1 num))))
+        ; Strip repeated digits from the end of the list.
+        (do ()
+            ((not (and (second reversed-digit-list)
+                       (= (first reversed-digit-list) (second reversed-digit-list)))))
+          (pop reversed-digit-list))
+        (let ((root (populate-trie (reverse reversed-digit-list))))
+          ; Traverse the trie, searching for the longest repeated sequence.
+          (multiple-value-bind (local-best-sequence local-sequence-count) (find-longest-repeated-sequence root)
+            (when (> (length local-best-sequence) length-longest-sequence)
+              (setf length-longest-sequence (length local-best-sequence)
+                    longest-sequence local-best-sequence
+                    longest-sequence-divisor num
+                    longest-sequence-count local-sequence-count)))
+          )))
+    (list longest-sequence-divisor length-longest-sequence longest-sequence-count longest-sequence))); }}}
+
+(defun populate-trie (digit-list); {{{
+  (let (; Note that we because we're looking for a repeated substring,
+        ; the max length is half the length of digit-list.
+        (max-substring-length (/ (length digit-list) 2))
+        (root (make-trie)))
+
+    ; Populate the trie.
+    (do ((node root root))        ; We start at the root with each substring,
+        ((null digit-list) root)  ; and return it when we run out of substrings.
+      (do ((remaining-digits digit-list (rest remaining-digits))
+           (num-processed-digits 0 (1+ num-processed-digits)))
+          ((or (null remaining-digits)
+               (>= num-processed-digits max-substring-length)))
+        (let ((current-digit (first remaining-digits)))
+          (when (not (aref (trie-children node) current-digit))
+            (setf (aref (trie-children node) current-digit) (make-trie)))
+          (setf node (aref (trie-children node) current-digit))
+          (incf (trie-num node))))
+      ; We're finished with this digit.
+      (pop digit-list)))); }}}
+
+(defun find-longest-repeated-sequence (root &optional (sequence-count 0)); {{{
+  (let ((longest-sequence nil)
+        (length-longest-sequence 0)
+        (longest-sequence-count sequence-count))
+    (loop for i from 0 to (1- (length (trie-children root))) do
+      (let ((current-child (aref (trie-children root) i)))
+        (when (and current-child
+                   (>= (trie-num current-child) (1- longest-sequence-count))
+                   (>= (trie-num current-child) 2))
+          (multiple-value-bind (current-sequence current-sequence-count) (find-longest-repeated-sequence current-child (trie-num current-child))
+            (let ((length-current-sequence (length current-sequence)))
+              (when (> (1+ length-current-sequence) length-longest-sequence)
+                (setf length-longest-sequence (1+ length-current-sequence)
+                      longest-sequence (append (list i) current-sequence)
+                      longest-sequence-count current-sequence-count)))))))
+    (values longest-sequence longest-sequence-count))
+); }}}
+
+(defun rational-to-reversed-list-of-digits (the-rational &optional (max-num-digits 200)); {{{
+  (do ((num-digits 0)
+       (digits '())
+       (remainder the-rational))
+      ((or (> num-digits max-num-digits)
+           (zerop remainder))
+       digits)
+    (push (floor (* remainder 10)) digits)
+    (incf num-digits)
+    (setf remainder (mod (* remainder 10) 1)))); }}}
