@@ -32,11 +32,11 @@
 
 
 
-; Create a closure that will return the next Fibonacci number each time it's
+; Create a closure that will return the next Fibonacci number each time it's; {{{
 ; called.  I guessed how to write a closure in LISP; I'd prefer to create an
 ; anonymous closure at the start of project-euler-2-1, but I haven't figured
-; that out yet - I think it's several chapters away in my LISP book.
-(let
+; that out yet - I think it's several chapters away in my LISP book.; }}}
+(let; {{{
   (
     (fib-2 0)
     (fib-1 1)
@@ -54,7 +54,7 @@
       fib-current
     )
   ); }}}
-)
+); }}}
 
 ; I think I could use optional parameters instead of defining an auxilary
 ; function - I'll try that next time.
@@ -82,12 +82,12 @@
   )
 ); }}}
 
-; The prime factors of 13195 are 5, 7, 13 and 29.
+; The prime factors of 13195 are 5, 7, 13 and 29.; {{{
 ;
 ; What is the largest prime factor of the number 600851475143 ?
 
 ; get the factors of 600851475143
-; test each one for primeness, starting with the largest
+; test each one for primeness, starting with the largest; }}}
 
 (defun primep (an-integer); {{{
   ; The tests don't work for numbers <= 3
@@ -161,10 +161,10 @@
 ); }}}
 
 
-; A palindromic number reads the same both ways. The largest palindrome made
+; A palindromic number reads the same both ways. The largest palindrome made; {{{
 ; from the product of two 2-digit numbers is 9009 = 91 × 99.
 ;
-; Find the largest palindrome made from the product of two 3-digit numbers.
+; Find the largest palindrome made from the product of two 3-digit numbers.; }}}
 (defun project-euler-4-1 (); {{{
   (let
     (
@@ -204,14 +204,14 @@
   )
 ); }}}
 
-; 2520 is the smallest number that can be divided by each of the numbers from 1
+; 2520 is the smallest number that can be divided by each of the numbers from 1; {{{
 ; to 10 without any remainder.
 ;
 ; What is the smallest number that is evenly divisible by all of the numbers
 ; from 1 to 20?
 
 ; Find the prime factors of each number between 1 and 20, including the power,
-; so 9 = 3**2.  The smallest number is the product of the highest prime factors.
+; so 9 = 3**2.  The smallest number is the product of the highest prime factors.; }}}
 
 (defun project-euler-5-1 (); {{{
   (let*
@@ -270,7 +270,7 @@
   )
 ); }}}
 
-;The sum of the squares of the first ten natural numbers is, 1^(2) + 2^(2) + ...
+;The sum of the squares of the first ten natural numbers is, 1^(2) + 2^(2) + ...; {{{
 ;+ 10^(2) = 385
 ;
 ;The square of the sum of the first ten natural numbers is, (1 + 2 + ... +
@@ -280,7 +280,7 @@
 ;numbers and the square of the sum is 3025 − 385 = 2640.
 ;
 ;Find the difference between the sum of the squares of the first one hundred
-;natural numbers and the square of the sum.
+;natural numbers and the square of the sum.; }}}
 
 (defun project-euler-6-1 (); {{{
   (let*
@@ -300,14 +300,14 @@
 
 ); }}}
 
-; By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see
+; By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see; {{{
 ; that the 6^(th) prime is 13.
 ;
 ; What is the 10001^(st) prime number?
 
 ; How about: an array of primes, initially containing 2; an infinite loop,
 ; testing the next number to see if it's a multiple of any of the primes, and if
-; not, appending it to the array.  Keep going until the array is full.
+; not, appending it to the array.  Keep going until the array is full.; }}}
 (defun project-euler-7-1 (); {{{
   (let*
     (
@@ -359,8 +359,7 @@
   )
 ); }}}
 
-
-; Find the greatest product of five consecutive digits in the 1000-digit number.
+; Find the greatest product of five consecutive digits in the 1000-digit number.; {{{
 ;
 ; 73167176531330624919225119674426574742355349194934
 ; 96983520312774506326239578318016984801869478851843
@@ -381,11 +380,11 @@
 ; 07198403850962455444362981230987879927244284909188
 ; 84580156166097919133875499200524063689912560717606
 ; 05886116467109405077541002256983155200055935729725
-; 71636269561882670428252483600823257530420752963450
+; 71636269561882670428252483600823257530420752963450; }}}
 
-(defun get-digit (a-string index)
+(defun get-digit (a-string index); {{{
   (parse-integer (string (char a-string index)))
-)
+); }}}
 
 (defun project-euler-8-1 (); {{{
   (let*
@@ -446,7 +445,7 @@
   )
 ); }}}
 
-; A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,
+; A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,; {{{
 ; a^(2) + b^(2) = c^(2)
 ;
 ; For example, 3^(2) + 4^(2) = 9 + 16 = 25 = 5^(2).
@@ -467,7 +466,7 @@
 ;       success!
 ;     }
 ;   }
-; }
+; }; }}}
 (defun project-euler-9-1 (); {{{
   (do
     (
@@ -518,12 +517,12 @@
   )
 ); }}}
 
-; The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
+; The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.; {{{
 ;
 ; Find the sum of all the primes below two million.
 
 ; This attempt would have taken roughly 40 minutes, with garbage collection
-; consuming 60-70% of that time.
+; consuming 60-70% of that time.; }}}
 (defun project-euler-10-1 (); {{{
   (do*
     (
@@ -611,9 +610,9 @@
   )
 ); }}}
 
-(defun seq-list2 (min max)
+(defun seq-list2 (min max); {{{
   (loop for i from min to max collect i)
-)
+); }}}
 
 ; ------------------ {{{
 ; Someone else's LISP solution for Project Euler problem 10.
@@ -654,9 +653,9 @@
 ;)
 ;------------------- }}}
 
-; 2^(15) = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.
+; 2^(15) = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.; {{{
 ;
-; What is the sum of the digits of the number 2^(1000)?
+; What is the sum of the digits of the number 2^(1000)?; }}}
 (defun project-euler-16-1 (); {{{
   (let
     (
@@ -673,7 +672,7 @@
   )
 ); }}}
 
-; In the 20×20 grid below, four numbers along a diagonal line have been marked in red.
+; In the 20×20 grid below, four numbers along a diagonal line have been marked in red.; {{{
 ; 
 ; 08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
 ; 49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00
@@ -699,7 +698,7 @@
 ; The product of these numbers is 26 × 63 × 78 × 14 = 1788696.
 ; 
 ; What is the greatest product of four adjacent numbers in any direction (up,
-; down, left, right, or diagonally) in the 20×20 grid?
+; down, left, right, or diagonally) in the 20×20 grid?; }}}
 
 (defun project-euler-11-1 (); {{{
   (labels ((calculate-product (matrix i j offset)
@@ -753,7 +752,7 @@
                       max_coords  (list i j)
                       max_offset  offset))))))))); }}}
 
-; The sequence of triangle numbers is generated by adding the natural numbers.
+; The sequence of triangle numbers is generated by adding the natural numbers.; {{{
 ; So the 7^(th) triangle number would be 1 + 2 + 3 + 4 + 5 + 6 + 7 = 28. The
 ; first ten terms would be:
 ;
@@ -778,7 +777,7 @@
 ; so rules out too many factors);
 ; Possible solutions: could do trial division from 1 to sqrt(x).
 ; Efficient solution: Find the factors of n/2 and n+1, then multiply them
-; together.
+; together.; }}}
 
 (defun project-euler-12-1 (); {{{
   "Trial division solution to Project Euler 12"
@@ -865,8 +864,8 @@
     (setf num-factors (* num-factors-n num-factors-n-1)))
 ); }}}
 
-; Work out the first ten digits of the sum of the following one-hundred 50-digit
-; numbers.
+; Work out the first ten digits of the sum of the following one-hundred 50-digit; {{{
+; numbers.; }}}
 
 (defun project-euler-13-1 (); {{{
   (subseq (write-to-string (reduce #'+ '(
@@ -973,7 +972,7 @@
           ))) 0 10)
 ); }}}
 
-; The following iterative sequence is defined for the set of positive integers:
+; The following iterative sequence is defined for the set of positive integers:; {{{
 ; 
 ; n  n/2 (n is even)
 ; n  3n + 1 (n is odd)
@@ -998,7 +997,7 @@
 ; number in the array.  Pick the lowest number whose chain hasn't been
 ; calculated, and repeat the pattern, short-circuiting if a number exists in the
 ; array.  When there are no remaining numbers in the array, find the number with
-; the longest chain.
+; the longest chain.; }}}
 
 (defun project-euler-14-1 (); {{{
   (let ((array-size 1000000))
@@ -1034,12 +1033,12 @@
                 (setf chain-start val))))))))
 ); }}}
 
-; Starting in the top left corner of a 2x2 grid, there are 6 routes (without
+; Starting in the top left corner of a 2x2 grid, there are 6 routes (without; {{{
 ; backtracking) to the bottom right corner.
 ;
 ; How many routes are there through a 20x20 grid?
 
-; http://blog.functionalfun.net/2008/07/project-euler-problem-15-city-grids-and.html
+; http://blog.functionalfun.net/2008/07/project-euler-problem-15-city-grids-and.html; }}}
 (defun project-euler-15-1 (&key (x 20) (y 20)); {{{
   (let ((result 1)
         (row (* 2 x)))
@@ -1050,7 +1049,7 @@
         )))
 ); }}}
 
-; If the numbers 1 to 5 are written out in words: one, two, three, four, five,
+; If the numbers 1 to 5 are written out in words: one, two, three, four, five,; {{{
 ; then there are 3 + 3 + 5 + 4 + 4 = 19 letters used in total.
 ;
 ; If all the numbers from 1 to 1000 (one thousand) inclusive were written out in
@@ -1059,7 +1058,7 @@
 ; NOTE: Do not count spaces or hyphens. For example, 342 (three hundred and
 ; forty-two) contains 23 letters and 115 (one hundred and fifteen) contains 20
 ; letters. The use of "and" when writing out numbers is in compliance with
-; British usage.
+; British usage.; }}}
 
 (defun project-euler-17-1 (); {{{
   (labels ((count-letters (list-of-words)
@@ -1081,16 +1080,16 @@
       sum-1-1000))
 ); }}}
 
-; n! means n  (n  1)  ...  3  2  1
+; n! means n  (n  1)  ...  3  2  1; {{{
 ;
-; Find the sum of the digits in the number 100!
+; Find the sum of the digits in the number 100!; }}}
 
 (defun project-euler-20-1 (); {{{
   (reduce #'+ (mapcar #'(lambda (x) (parse-integer (string x)))
                       (coerce (write-to-string (reduce #'* (loop for i from 1 to 100 collect i))) 'list)))
 ); }}}
 
-; By starting at the top of the triangle below and moving to adjacent numbers on
+; By starting at the top of the triangle below and moving to adjacent numbers on; {{{
 ; the row below, the maximum total from top to bottom is 23.
 ;
 ; 3
@@ -1121,7 +1120,7 @@
 ; NOTE: As there are only 16384 routes, it is possible to solve this problem by
 ; trying every route. However, Problem 67, is the same challenge with a triangle
 ; containing one-hundred rows; it cannot be solved by brute force, and requires
-; a clever method! ;o)
+; a clever method! ;o); }}}
 
 (defstruct a-path path total)
 (defun project-euler-18-1 (); {{{
@@ -1193,7 +1192,7 @@
           (setf result (aref triangle-summed i j)))))
     )); }}}
 
-; You are given the following information, but you may prefer to do some
+; You are given the following information, but you may prefer to do some; {{{
 ; research for yourself.
 ;
 ; 1 Jan 1900 was a Monday.
@@ -1206,7 +1205,7 @@
 ; A leap year occurs on any year evenly divisible by 4, but not on a century
 ; unless it is divisible by 400.
 ; How many Sundays fell on the first of the month during the twentieth century
-; (1 Jan 1901 to 31 Dec 2000)?
+; (1 Jan 1901 to 31 Dec 2000)?; }}}
 
 (defun is-leap-year (year); {{{
   (or (zerop (mod year 400))
@@ -1258,7 +1257,7 @@
         (incf sunday 7))))
 ); }}}
 
-;Let d(n) be defined as the sum of proper divisors of n (numbers less than n
+;Let d(n) be defined as the sum of proper divisors of n (numbers less than n; {{{
 ;which divide evenly into n).  If d(a) = b and d(b) = a, where a != b, then a
 ;and b are an amicable pair and each of a and b are called amicable numbers.
 ;
@@ -1266,7 +1265,7 @@
 ;and 110; therefore d(220) = 284. The proper divisors of 284 are 1, 2, 4, 71 and
 ;142; so d(284) = 220.
 ;
-;Evaluate the sum of all the amicable numbers under 10000.
+;Evaluate the sum of all the amicable numbers under 10000.; }}}
 
 (defun project-euler-21-1 (); {{{
   (let ((sum-of-factors (make-array 10000 :initial-element 0)))
@@ -1297,7 +1296,7 @@
                    (= current-number (aref sum-of-factors sum-for-current-number)))
           (incf sum-of-amicable-pairs (+ current-number sum-for-current-number))))))); }}}
 
-; Using names.txt (right click and 'Save Link/Target As...'), a 46K text file
+; Using names.txt (right click and 'Save Link/Target As...'), a 46K text file; {{{
 ; containing over five-thousand first names, begin by sorting it into
 ; alphabetical order. Then working out the alphabetical value for each name,
 ; multiply this value by its alphabetical position in the list to obtain a name
@@ -1307,7 +1306,7 @@
 ; worth 3 + 15 + 12 + 9 + 14 = 53, is the 938th name in the list. So, COLIN
 ; would obtain a score of 938  53 = 49714.
 ;
-; What is the total of all the name scores in the file?
+; What is the total of all the name scores in the file?; }}}
 
 (let ((char-values (make-hash-table)); {{{
       (value 0))
@@ -1331,7 +1330,7 @@
       (dolist (name names-list total)
         (incf total (* (count-string name) (incf current-position))))))); }}}
 
-; A perfect number is a number for which the sum of its proper divisors is
+; A perfect number is a number for which the sum of its proper divisors is; {{{
 ; exactly equal to the number. For example, the sum of the proper divisors of 28
 ; would be 1 + 2 + 4 + 7 + 14 = 28, which means that 28 is a perfect number.
 ;
@@ -1347,7 +1346,7 @@
 ; less than this limit.
 ;
 ; Find the sum of all the positive integers which cannot be written as the sum
-; of two abundant numbers.
+; of two abundant numbers.; }}}
 
 (defun factorise (a-number); {{{
   (let ((factors '()))
@@ -1377,7 +1376,7 @@
           (incf sum a-number))))
     sum)); }}}
 
-; The Fibonacci sequence is defined by the recurrence relation:
+; The Fibonacci sequence is defined by the recurrence relation:; {{{
 ;     Fn = Fn-1 + Fn-2, where F1 = 1 and F2 = 1.
 ; Hence the first 12 terms will be:
 ;
@@ -1395,7 +1394,7 @@
 ; F12 = 144
 ; The 12th term, F12, is the first term to contain three digits.
 ;
-; What is the first term in the Fibonacci sequence to contain 1000 digits?
+; What is the first term in the Fibonacci sequence to contain 1000 digits?; }}}
 
 (defun project-euler-25-1 (); {{{
   (let ((fib-2 1)
@@ -1411,7 +1410,7 @@
             num-terms (1+ num-terms)))
     num-terms)); }}}
 
-; A permutation is an ordered arrangement of objects. For example, 3124 is one
+; A permutation is an ordered arrangement of objects. For example, 3124 is one; {{{
 ; possible permutation of the digits 1, 2, 3 and 4. If all of the permutations
 ; are listed numerically or alphabetically, we call it lexicographic order. The
 ; lexicographic permutations of 0, 1 and 2 are:
@@ -1419,7 +1418,7 @@
 ; 012   021   102   120   201   210
 ;
 ; What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4,
-; 5, 6, 7, 8 and 9?
+; 5, 6, 7, 8 and 9?; }}}
 
 (defun permute (a-list); {{{
   (if (not (second a-list))
@@ -1476,7 +1475,7 @@
 (defun project-euler-24-2 (); {{{
   (find-permutation 999999 '(0 1 2 3 4 5 6 7 8 9))); }}}
 
-; A unit fraction contains 1 in the numerator. The decimal representation of the
+; A unit fraction contains 1 in the numerator. The decimal representation of the; {{{
 ; unit fractions with denominators 2 to 10 are given:
 ;
 ; 1/2 =   0.5
@@ -1498,7 +1497,7 @@
 ; internally, push the repeated subsequences onto the queue and discard the
 ; current sequence; if there are no internally repeated subsequences, push the
 ; sequence onto a list to check later; when all sequences on the queue have been
-; processed, take the longest sequence off the list.
+; processed, take the longest sequence off the list.; }}}
 
 (defstruct trie; {{{
   (num 0)
@@ -1577,7 +1576,7 @@
     (incf num-digits)
     (setf remainder (mod (* remainder 10) 1)))); }}}
 
-; Euler published the remarkable quadratic formula:
+; Euler published the remarkable quadratic formula:; {{{
 ;
 ; n² + n + 41
 ;
@@ -1602,15 +1601,15 @@
 
 ; First thought: starting with n = 0 means that (n^2 + an + b) simplifies to
 ; just (b), so any b that isn't prime can be skipped.  Start with
-; sieve-of-eratosthenes(1000), and only use primes for b.
+; sieve-of-eratosthenes(1000), and only use primes for b.; }}}
 
 (defparameter primep-cache (make-hash-table))
-(defun caching-primep (an-integer)
+(defun caching-primep (an-integer); {{{
   (multiple-value-bind (value present)
                        (gethash an-integer primep-cache)
     (if present
       value
-      (setf (gethash an-integer primep-cache) (primep an-integer)))))
+      (setf (gethash an-integer primep-cache) (primep an-integer))))); }}}
 
 (defun project-euler-27-1 (); {{{
   (let* ((upper-bound 1000)
@@ -1633,7 +1632,7 @@
                     best-length num-primes))))))
     (list best-a best-b best-length (* best-a best-b)))); }}}
 
-; Starting with the number 1 and moving to the right in a clockwise direction a
+; Starting with the number 1 and moving to the right in a clockwise direction a; {{{
 ; 5 by 5 spiral is formed as follows:
 ;
 ; 21 22 23 24 25
@@ -1653,7 +1652,7 @@
 ; 40 19  6  1  2 11 28
 ; 39 18  5  4  3 12 29
 ; 38 17 16 15 14 13 30
-; 37 36 35 34 33 32 31
+; 37 36 35 34 33 32 31; }}}
 
 (defun project-euler-28-1 (); {{{
   ;current = current + 10 * increment
@@ -1672,7 +1671,7 @@
     (incf total   (+ (* 4 current) (* 10 increment)))
     (incf current (* 4 increment)))); }}}
 
-; Consider all integer combinations of ab for 2  a  5 and 2  b  5:
+; Consider all integer combinations of ab for 2  a  5 and 2  b  5:; {{{
 ;
 ; 22=4, 23=8, 24=16, 25=32
 ; 32=9, 33=27, 34=81, 35=243
@@ -1684,11 +1683,11 @@
 ; 4, 8, 9, 16, 25, 27, 32, 64, 81, 125, 243, 256, 625, 1024, 3125
 ;
 ; How many distinct terms are in the sequence generated by ab for 2  a  100 and
-; 2  b  100?
+; 2  b  100?; }}}
 
-(defun project-euler-29-1 ()
+(defun project-euler-29-1 (); {{{
   (let ((the-hash (make-hash-table)))
     (loop for a from 2 to 100 do
       (loop for b from 2 to 100 do
         (setf (gethash (expt a b) the-hash) t)))
-    (hash-table-count the-hash)))
+    (hash-table-count the-hash))); }}}
