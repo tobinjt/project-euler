@@ -1777,7 +1777,7 @@
 (defun project-euler-31-1 (); {{{
   (count-possible-coin-combinations 200 '(200 100 50 20 10 5 2 1))); }}}
 
-; We shall say that an n-digit number is pandigital if it makes use of all the
+; We shall say that an n-digit number is pandigital if it makes use of all the; {{{
 ; digits 1 to n exactly once; for example, the 5-digit number, 15234, is 1
 ; through 5 pandigital.
 ;
@@ -1788,7 +1788,7 @@
 ; can be written as a 1 through 9 pandigital.
 ;
 ; HINT: Some products can be obtained in more than one way so be sure to only
-; include it once in your sum.
+; include it once in your sum.; }}}
 
 (defun project-euler-32-1 (); {{{
   (let ((results (make-hash-table)))
@@ -1816,7 +1816,7 @@
         (setf result (= 1 (aref digits-found i))))
       result))); }}}
 
-; The fraction 49/98 is a curious fraction, as an inexperienced mathematician in
+; The fraction 49/98 is a curious fraction, as an inexperienced mathematician in; {{{
 ; attempting to simplify it may incorrectly believe that 49/98 = 4/8, which is
 ; correct, is obtained by cancelling the 9s.
 ;
@@ -1826,9 +1826,9 @@
 ; than one in value, and containing two digits in the numerator and denominator.
 ;
 ; If the product of these four fractions is given in its lowest common terms,
-; find the value of the denominator.
+; find the value of the denominator.; }}}
 
-(defun project-euler-33-1 ()
+(defun project-euler-33-1 (); {{{
   (let ((fractions '()))
     (loop for d1 from 1 to 9 do
       (loop for d2 from 1 to 9 do
@@ -1847,5 +1847,4 @@
                             (/ (+ (* n1 10) n2)
                                (+ (* d1 10) d2))))
                 (push (/ n d) fractions)))))))
-    (reduce #'* fractions))
-)
+    (reduce #'* fractions))); }}}
