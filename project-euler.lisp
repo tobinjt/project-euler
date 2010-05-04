@@ -1919,3 +1919,24 @@
                  (is-circular-prime primes i))
         (incf num-circular-primes)))
     num-circular-primes)); }}}
+
+; The decimal number, 585 = 1001001001 (binary), is palindromic in both bases.; {{{
+;
+; Find the sum of all numbers, less than one million, which are palindromic in
+; base 10 and base 2.
+;
+; (Please note that the palindromic number, in either base, may not include
+; leading zeros.); }}}
+
+(defun project-euler-36-1 (); {{{
+  (let ((palindromes '()))
+    (loop for a-number from 1 to 999999 do
+      (when (not (zerop (mod a-number 10)))
+        (let ((digits (number-to-digits a-number)))
+          (when (equal digits (reverse digits))
+            (let ((binary-ish (read-from-string (format nil "~B" a-number))))
+              (when (not (zerop (mod binary-ish 10)))
+                (let ((binary-digits (number-to-digits binary-ish)))
+                  (when (equal binary-digits (reverse binary-digits))
+                    (push a-number palindromes)))))))))
+    (reduce #'+ palindromes))); }}}
