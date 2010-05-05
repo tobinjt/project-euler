@@ -1795,7 +1795,7 @@
     (loop for i from 2 to 9999 do
       (loop for j from 2 to i while (<= (* j i) 99999) do
         (let ((product (* i j)))
-          (when (is-pandigital i j product)
+          (when (is-pandigital (list i j product))
             (setf (gethash product results) t)))))
     (let ((sum 0))
       (maphash #'(lambda (key value)
@@ -1804,9 +1804,9 @@
                results)
       sum))); }}}
 
-(defun is-pandigital (i j product); {{{
+(defun is-pandigital (args); {{{
   (let ((digits-found (make-array 10 :initial-element 0)))
-    (dolist (a-number (list i j product))
+    (dolist (a-number args)
       (do ((digit (mod a-number 10) (mod a-number 10)))
           ((< a-number 1))
         (incf (aref digits-found digit))
@@ -1981,3 +1981,38 @@
         (push a-number truncatable-primes)
         (incf num-truncatable-primes)))
     (reduce #'+ truncatable-primes))); }}}
+
+; Take the number 192 and multiply it by each of 1, 2, and 3:; {{{
+;
+; 192 * 1 = 192
+; 192 * 2 = 384
+; 192 * 3 = 576
+; By concatenating each product we get the 1 to 9 pandigital, 192384576. We will
+; call 192384576 the concatenated product of 192 and (1,2,3)
+;
+; The same can be achieved by starting with 9 and multiplying by 1, 2, 3, 4, and
+; 5, giving the pandigital, 918273645, which is the concatenated product of 9
+; and (1,2,3,4,5).
+;
+; What is the largest 1 to 9 pandigital 9-digit number that can be formed as the
+; concatenated product of an integer with (1,2, ... , n) where n > 1?; }}}
+
+(defun project-euler-38-1 (); {{{
+  (let ((largest-pandigital 0))
+    (loop for a-number from 1 to 10000 do
+      (let ((digits '())
+            (num-digits 0))
+        ; Generate a number containing at least 9 digits
+        (loop for multiplier from 1 to 9 
+              while (< num-digits 9) do
+          (let* ((new-digits (number-to-digits (* a-number multiplier)))
+                 (num-new-digits (length new-digits)))
+            (setf digits (append digits new-digits)
+                  num-digits (+ num-digits num-new-digits))))
+        ; Save it if it's pandigital and larger than the current largest number.
+        (when (and (= 9 num-digits)
+                   (is-pandigital digits))
+          (let ((pandigital (digits-to-number digits)))
+            (when (< largest-pandigital pandigital)
+              (setf largest-pandigital pandigital))))))
+    largest-pandigital)); }}}
