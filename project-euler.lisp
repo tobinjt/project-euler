@@ -2036,7 +2036,7 @@
 
     (dotimes (a a-and-b-upper-bound)
       (unless (zerop a)
-        (dotimes (b a-and-b-upper-bound)
+        (dotimes (b a)
           (unless (zerop b)
             (let ((c (sqrt (+ (* a a) (* b b)))))
               (when (integerp c)
