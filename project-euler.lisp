@@ -2066,8 +2066,7 @@
 (defun project-euler-40-1 (); {{{
   (let ((product 1))
     (dotimes (index 7 product)
-      (setf product (* product (get-nth-digit (expt 10 index))))))
-); }}}
+      (setf product (* product (get-nth-digit (expt 10 index))))))); }}}
 
 (defun num-digits-in-n-digit-numbers (n); {{{
   "In the group of n-digit numbers, there are (n * (10^n - 10^(n-1))) digits."
