@@ -1893,11 +1893,17 @@
       (setf a-number (floor a-number 10)))
     digits)); }}}
 
-(defun digits-to-number (digits); {{{
+(defmethod digits-to-number ((digits list)); {{{
   "Convert a list of digits to a number"
   (let ((a-number 0))
     (dolist (digit digits a-number)
       (setf a-number (+ (* a-number 10) digit))))); }}}
+
+(defmethod digits-to-number ((digits array)); {{{
+  "Convert an array of digits to a number"
+  (let ((a-number 0))
+    (dotimes (index (array-dimension digits 0) a-number)
+      (setf a-number (+ (* a-number 10) (aref digits index)))))); }}}
 
 (defun is-circular-prime (primes a-number); {{{
   "Check if a-number is a circular prime"
