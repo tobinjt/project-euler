@@ -2113,16 +2113,22 @@
   (block pe41
     (do ((n 9 (1- n)))
         ((= n 0))
-      (let ((elements (make-array n)))
+      (let ((elements (make-array n))
+            (sum-of-elements 0))
         (do ((i 0 (1+ i)))
             ((= i n))
-          (setf (aref elements i) (- n i)))
-        (do ()
-            ((not elements))
-          (let ((current-number (digits-to-number elements)))
-            (when (primep current-number)
-              (return-from pe41 current-number)))
-          (setf elements (inplace-permute elements #'<))))))); }}}
+          (setf (aref elements i) (- n i))
+          (incf sum-of-elements (aref elements i)))
+        ; If a number is divisible by 3, the sum of its digits will be divisible
+        ; by 3.  The digits don't change between permutations, so if their sum
+        ; is divisible by 3, we can skip this group of digits entirely.
+        (when (not (zerop (mod sum-of-elements 3)))
+          (do ()
+              ((not elements))
+            (let ((current-number (digits-to-number elements)))
+              (when (primep current-number)
+                (return-from pe41 current-number)))
+            (setf elements (inplace-permute elements #'<)))))))); }}}
 
 (defun factorial (n); {{{
   (reduce #'*
