@@ -2203,7 +2203,7 @@
         (num-triangle-words 0))
     (dolist (word (read-comma-delimited-file #p"words.txt") num-triangle-words)
       (let ((sum (sum-alphabetic-positions word)))
-        ; Calculate triangle numbers until exceed sum.
+        ; Calculate triangle numbers until one exceeds sum.
         (do ()
             ((>= largest-triangle-number sum))
           (incf largest-triangle-number-n)
