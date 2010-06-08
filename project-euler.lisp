@@ -2057,7 +2057,7 @@
           (setf perimiter-seen-most-often perimeter
                 max-perimiter-count (aref perimeter-count perimeter))))))); }}}
 
-; An irrational decimal fraction is created by concatenating the positive
+; An irrational decimal fraction is created by concatenating the positive; {{{
 ; integers:
 ;
 ; 0.12345678910 1 112131415161718192021...
@@ -2067,7 +2067,7 @@
 ; If dn represents the nth digit of the fractional part, find the value of the
 ; following expression.
 ;
-; d1 * d10 * d100 * d1000 * d10000 * d100000 * d1000000
+; d1 * d10 * d100 * d1000 * d10000 * d100000 * d1000000; }}}
 
 (defun project-euler-40-1 (); {{{
   (let ((product 1))
@@ -2104,11 +2104,12 @@
 ;
 ; What is the largest n-digit pandigital prime that exists?; }}}
 
-; The largest pandigital number is 987,654,321.  There are 409,113 permutations
+; The largest pandigital number is 987,654,321.  There are 409,113 permutations; {{{
 ; of 1 thing, 2 things, . . ., 9 things.  I could use Sieve of Eratosthenes to
 ; find all primes up to 987,654,321, but that's a lot of memory and calculation;
 ; instead, I'll generate perumtations in descending order, and test each for
-; primeness using trial division.
+; primeness using trial division.; }}}
+
 (defun project-euler-41-1 (); {{{
   (block pe41
     (do ((n 9 (1- n)))
@@ -2181,7 +2182,7 @@
           (rotatef (aref elements upper) (aref elements lower))))
       elements))); }}}
 
-; The nth term of the sequence of triangle numbers is given by, tn = ½n(n+1); so
+; The nth term of the sequence of triangle numbers is given by, tn = ½n(n+1); so; {{{
 ; the first ten triangle numbers are:
 ;
 ; 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, ...
@@ -2193,7 +2194,7 @@
 ;
 ; Using words.txt (right click and 'Save Link/Target As...'), a 16K text file
 ; containing nearly two-thousand common English words, how many are triangle
-; words?
+; words?; }}}
 
 (defun project-euler-42-1 (); {{{
   "Calculate each word's value and check if it's a triangle number."
