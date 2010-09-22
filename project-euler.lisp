@@ -1490,14 +1490,86 @@
 ; Where 0.1(6) means 0.166666..., and has a 1-digit recurring cycle. It can be
 ; seen that 1/7 has a 6-digit recurring cycle.
 ;
-; Find the value of d  1000 for which 1/d contains the longest recurring cycle
+; Find the value of d < 1000 for which 1/d contains the longest recurring cycle
 ; in its decimal fraction part.
 
-; Maybe: push 1/n onto a queue, then process each one; if the sequence repeats
-; internally, push the repeated subsequences onto the queue and discard the
-; current sequence; if there are no internally repeated subsequences, push the
-; sequence onto a list to check later; when all sequences on the queue have been
-; processed, take the longest sequence off the list.; }}}
+(defstruct repeated-sequence; {{{
+  (divisor)
+  (offset)
+  (length)
+  (sequence)); }}}
+
+(defun cmp-repeated-sequence (a b); {{{
+  "Return true if a should sort before b."
+  ; Sort by length (greater is better), falling back to offset (smaller is
+  ; better).
+  (if (= (repeated-sequence-length a)
+          (repeated-sequence-length b))
+    (< (repeated-sequence-offset a)
+        (repeated-sequence-offset b))
+    (> (repeated-sequence-length a)
+        (repeated-sequence-length b)))); }}}
+
+(defun project-euler-26-2 (&key (max-n 1000) (max-offset 10) (num-digits 2000)); {{{
+  (let ((all-sequences '()))
+    (do* ((n 2 (1+ n))
+          (new-sequences (find-sequences n :max-offset max-offset :num-digits num-digits)
+                         (find-sequences n :max-offset max-offset :num-digits num-digits)))
+         ((>= n max-n))
+      (sort new-sequences #'cmp-repeated-sequence)
+      (when new-sequences
+        (setf all-sequences (cons (first new-sequences) all-sequences))))
+    (sort all-sequences #'cmp-repeated-sequence)
+    (first all-sequences)))
+
+(defun find-sequences (n &key (max-offset 10) (num-digits 2000)); {{{
+  "Find repeated sequences in 1/n.  We find the smallest repeated sequence at
+   each offset, and return a list of them."
+  (let ((sequences '()))
+    (let ((reverse-1/n (rational-to-reversed-list-of-digits (/ 1 n) num-digits)))
+
+      ; Strip trailing repeated digits; this greatly speeds up processing
+      ; 0.333333... and similar numbers.
+      (do ()
+          ((or (not (second reverse-1/n))
+               (not (= (first reverse-1/n) (second reverse-1/n)))))
+        (pop reverse-1/n))
+
+      (let* ((1/n (coerce (reverse reverse-1/n) 'array))
+             (half-1/n-length (/ (length 1/n) 2)))
+        (do ((offset 0 (1+ offset)))
+            ((or (>= offset half-1/n-length)
+                 (>= offset max-offset)))
+          (block each-sequence
+            (do ((sequence-length 1 (1+ sequence-length)))
+                ((>= sequence-length half-1/n-length))
+              (let ((digits-in-sequence (sequences-are-equal 1/n sequence-length offset)))
+                (when digits-in-sequence
+                  (push (make-repeated-sequence :divisor n
+                                                :offset offset
+                                                :length sequence-length
+                                                :sequence digits-in-sequence)
+                        sequences)
+                  (return-from each-sequence)))))))
+    sequences))); }}}
+
+(defun sequences-are-equal (the-array sequence-length offset); {{{
+  "Checks if two adjacent sequences in the-array, of length sequence-length,
+   starting at index offset, are equal.  Returns the repeated sequence if one
+   exists, nil otherwise."
+  (do ((repeated-sequence (make-array sequence-length))
+       (sequence-1-index offset (1+ sequence-1-index))
+       (sequence-2-index (+ offset sequence-length) (1+ sequence-2-index))
+       (repeated-sequence-index 0 (1+ repeated-sequence-index))
+       (sequence-1-end (1- (+ offset sequence-length))))
+      ((> sequence-1-index sequence-1-end) repeated-sequence)
+    (when (not (array-in-bounds-p the-array sequence-2-index))
+      (return nil))
+    (when (not (= (aref the-array sequence-1-index)
+                  (aref the-array sequence-2-index)))
+      (return nil))
+    (setf (aref repeated-sequence repeated-sequence-index)
+          (aref the-array sequence-1-index)))); }}}
 
 (defstruct trie; {{{
   (num 0)
@@ -1886,7 +1958,8 @@
 ; How many circular primes are there below one million?; }}}
 
 (defun number-to-digits (a-number); {{{
-  "Convert a number to a list of its digits, in order"
+  "Convert a number to a list of its digits, in order.  Only works for
+   positive integers."
   (let ((digits '()))
     (loop while (> a-number 0) do
       (push (mod a-number 10) digits)
