@@ -1491,7 +1491,7 @@
 ; seen that 1/7 has a 6-digit recurring cycle.
 ;
 ; Find the value of d < 1000 for which 1/d contains the longest recurring cycle
-; in its decimal fraction part.
+; in its decimal fraction part. ; }}}
 
 (defstruct repeated-sequence; {{{
   (divisor)
@@ -1520,7 +1520,7 @@
       (when new-sequences
         (setf all-sequences (cons (first new-sequences) all-sequences))))
     (sort all-sequences #'cmp-repeated-sequence)
-    (first all-sequences)))
+    (first all-sequences))); }}}
 
 (defun find-sequences (n &key (max-offset 10) (num-digits 2000)); {{{
   "Find repeated sequences in 1/n.  We find the smallest repeated sequence at
