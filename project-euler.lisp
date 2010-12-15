@@ -568,30 +568,16 @@
 ); }}}
 
 (defun sieve-of-eratosthenes (upper-bound); {{{
-  (let*
-    (
-      (array-size (1+ upper-bound))
-      (primes (make-array array-size :initial-element t))
-    )
+  (let* ((array-size (1+ upper-bound))
+         (primes (make-array array-size :initial-element t)))
     (setf (aref primes 0) nil)
     (setf (aref primes 1) nil)
 
     (dotimes (i (1+ (ceiling (sqrt array-size))) primes)
       (when (aref primes i)
-        (do
-          (
-            (index-of-multiples (expt i 2) (+ index-of-multiples i))
-          )
-          (
-            (>= index-of-multiples array-size)
-          )
-
-          (setf (aref primes index-of-multiples) nil)
-        )
-      )
-    )
-  )
-); }}}
+        (do ((index-of-multiples (expt i 2) (+ index-of-multiples i)))
+            ((>= index-of-multiples array-size))
+          (setf (aref primes index-of-multiples) nil)))))); }}}
 
 (defun seq-list (lower-bound upper-bound); {{{
   (let
