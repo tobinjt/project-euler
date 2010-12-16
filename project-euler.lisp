@@ -2328,3 +2328,13 @@
       (when (> i (- sieve-size 10))
         (setf sieve-size (* sieve-size 2))
         (setf sieve (sieve-of-eratosthenes sieve-size)))))); }}}
+
+; The series, 1^1 + 2^2 + 3^3 + ... + 10^10 = 10405071317.
+;
+; Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000.
+
+(defun project-euler-48-1 (); {{{
+  (let ((sum 0))
+    (do ((i 1 (1+ i)))
+        ((> i 1000) (mod sum 10000000000))
+      (setf sum (+ sum (expt i i)))))); }}}
