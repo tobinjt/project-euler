@@ -2405,6 +2405,7 @@
     ; of every bucket with more than three primes.
     (let ((list-of-lists-of-possible-answers '()))
       (maphash #'(lambda (_ bucket)
+                   (declare (ignore _))
                    (if (< 3 (length bucket))
                      (push (powerset bucket) list-of-lists-of-possible-answers)
                      (push (list bucket) list-of-lists-of-possible-answers)))
