@@ -95,11 +95,11 @@
           (setf previous-number (1+ previous-number))
           result))))); }}}
 
-
 ; A palindromic number reads the same both ways. The largest palindrome made; {{{
 ; from the product of two 2-digit numbers is 9009 = 91 × 99.
 ;
 ; Find the largest palindrome made from the product of two 3-digit numbers.; }}}
+
 (defun project-euler-4-1 (); {{{
   (let ((palindrome 0)
         (numbers nil))
@@ -187,6 +187,7 @@
 ; How about: an array of primes, initially containing 2; an infinite loop,
 ; testing the next number to see if it's a multiple of any of the primes, and if
 ; not, appending it to the array.  Keep going until the array is full.; }}}
+
 (defun project-euler-7-1 (); {{{
   (let* ((number-of-primes 10001)
          (primes (make-array number-of-primes :initial-element 0))
@@ -302,6 +303,7 @@
 ;     }
 ;   }
 ; }; }}}
+
 (defun project-euler-9-1 (); {{{
   (do ((a 1 (1+ a))
        (result nil))
@@ -329,6 +331,7 @@
 
 ; This attempt would have taken roughly 40 minutes, with garbage collection
 ; consuming 60-70% of that time.; }}}
+
 (defun project-euler-10-1 (); {{{
   (do* ((primes '(2))
         (current-number (1+ (first primes)) (+ 2 current-number))
@@ -422,6 +425,7 @@
 ; 2^(15) = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.; {{{
 ;
 ; What is the sum of the digits of the number 2^(1000)?; }}}
+
 (defun project-euler-16-1 (); {{{
   (let ((number-string (write-to-string (expt 2 1000)))
         (sum-of-digits 0))
@@ -792,6 +796,7 @@
 ; How many routes are there through a 20x20 grid?
 
 ; http://blog.functionalfun.net/2008/07/project-euler-problem-15-city-grids-and.html; }}}
+
 (defun project-euler-15-1 (&key (x 20) (y 20)); {{{
   (let ((result 1)
         (row (* 2 x)))
@@ -2236,9 +2241,10 @@
 ; What is the smallest odd composite that cannot be written as the sum of a
 ; prime and twice a square?; }}}
 
-; primes is an array returned by sieve-of-eratosthenes
+; primes is an array returned by sieve-of-eratosthenes; {{{
 ; doubled-squares is a hash table containing doubled squares
-; returns t or nil
+; returns t or nil; }}}
+
 (defun is-goldback-number (primes doubled-squares the-number); {{{
   (do ((i 1 (+ 2 i)))
       ((>= i the-number) nil)
@@ -2247,11 +2253,12 @@
         (when (gethash remainder doubled-squares)
           (return t)))))); }}}
 
-; 1 Generate a large number of primes
+; 1 Generate a large number of primes; {{{
 ; 2 Generate a large number of (2 * n^2)
 ; 3 Iterate over non-prime odd numbers, checking if (odd-number - prime) is one
 ; of the doubled squares; the first one that isn't is the first non-Goldbach
-; number.
+; number.; }}}
+
 (defun project-euler-46-1 (); {{{
   (let ((primes (sieve-of-eratosthenes 100))
         (found-primes-less-than 100)
@@ -2273,7 +2280,7 @@
         (format t "~A~%" n)
         (return))))); }}}
 
-; The first two consecutive numbers to have two distinct prime factors are:
+; The first two consecutive numbers to have two distinct prime factors are:; {{{
 ;
 ; 14 = 2 * 7
 ; 15 = 3 * 5
@@ -2285,13 +2292,12 @@
 ; 646 = 2 * 17 * 19.
 ;
 ; Find the first four consecutive integers to have four distinct primes factors.
-; What is the first of these numbers?
+; What is the first of these numbers?; }}}
 
-; Count how many good numbers I find, remembering the first
-
-; Returns a list of prime factors of the-number; this list can contain
+; Returns a list of prime factors of the-number; this list can contain; {{{
 ; duplicates.  sieve should be an array returned by sieve-of-eratosthenes, and
-; must contain at least the-number elements to factor primes correctly.
+; must contain at least the-number elements to factor primes correctly.; }}}
+
 (defun prime-factors (sieve the-number); {{{
   (when (> the-number (1- (array-dimension sieve 0)))
     (error "prime-factors: sieve too small: ~A > ~A"
@@ -2329,9 +2335,9 @@
         (setf sieve-size (* sieve-size 2))
         (setf sieve (sieve-of-eratosthenes sieve-size)))))); }}}
 
-; The series, 1^1 + 2^2 + 3^3 + ... + 10^10 = 10405071317.
+; The series, 1^1 + 2^2 + 3^3 + ... + 10^10 = 10405071317.; {{{
 ;
-; Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000.
+; Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000.; }}}
 
 (defun project-euler-48-1 (); {{{
   (let ((sum 0))
@@ -2339,7 +2345,7 @@
         ((> i 1000) (mod sum 10000000000))
       (setf sum (+ sum (expt i i)))))); }}}
 
-; The arithmetic sequence, 1487, 4817, 8147, in which each of the terms
+; The arithmetic sequence, 1487, 4817, 8147, in which each of the terms; {{{
 ; increases by 3330, is unusual in two ways: (i) each of the three terms are
 ; prime, and, (ii) each of the 4-digit numbers are permutations of one another.
 ;
@@ -2347,10 +2353,11 @@
 ; exhibiting this property, but there is one other 4-digit increasing sequence.
 ;
 ; What 12-digit number do you form by concatenating the three terms in this
-; sequence?
+; sequence?; }}}
 
-; doarrayi and doarray taken from
-; http://unbox.org/wisp/var/bryan/lib/tricks/array.lisp
+; doarrayi and doarray taken from; {{{
+; http://unbox.org/wisp/var/bryan/lib/tricks/array.lisp; }}}
+
 (defmacro doarrayi ((one n array &optional out) &body body); {{{
   (let ((i (gensym)))
     `(let ((,i (length ,array)))
@@ -2375,8 +2382,8 @@
 (defun powerset (the-set); {{{
   (if the-set
     (let ((powersubset (powerset (rest the-set))))
-      (append powersubset (mapcar #'(lambda (a-set)
-                                      (cons (first the-set) a-set))
+      (append powersubset (mapcar #'(lambda (subset)
+                                      (cons (first the-set) subset))
                                   powersubset)))
     (list '()) )); }}}
 
@@ -2395,7 +2402,7 @@
 
     ; Some buckets will have more than three primes, and any three of those
     ; primes could be the trio we're searching for, so we construct the powerset
-    ; of every bucket with more than three elements.
+    ; of every bucket with more than three primes.
     (let ((list-of-lists-of-possible-answers '()))
       (maphash #'(lambda (_ bucket)
                    (if (< 3 (length bucket))
