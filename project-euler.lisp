@@ -2434,4 +2434,54 @@
 ; consecutive primes?; }}}
 
 (defun project-euler-50-1 (); {{{
-  ); }}}
+  (let* ((upper-limit 1000000)
+         (prime-array (sieve-of-eratosthenes upper-limit))
+         (prime-list '())
+         (max-primes-to-sum 0))
+    ; Create a list of all primes less than upper-limit/2.
+    (doarrayi (value i prime-array)
+      (when value
+        (push i prime-list)
+        ; Discard anything > upper-limit/2; adding two of anything >
+        ; upper-limit/2 is guaranteed to be > upper-limit.
+        (when (> i (/ upper-limit 2))
+          (return))))
+    (nreverse prime-list)
+
+    ; Figure out the maximum number of primes to sum.
+    (do* ((pointer-to-prime prime-list (rest pointer-to-prime))
+          (sum 0 (incf sum (first pointer-to-prime))))
+         ((or (not pointer-to-prime)
+             (> sum upper-limit)))
+      (incf max-primes-to-sum))
+
+    ; Sum every sequence of N primes, max-primes-to-sum >= N >= 2, skipping
+    ; sequences that come after a sequence whose sum is >= upper-limit.
+    (do ((num-primes-in-sum max-primes-to-sum (decf num-primes-in-sum))
+         (pointer-to-prime-to-subtract prime-list prime-list)
+         (pointer-to-prime-to-add prime-list prime-list)
+         (sum-of-primes 0 0)
+         (answer nil))
+        ((or answer
+             (< num-primes-in-sum 2)) answer)
+
+      ; Create the sliding window.
+      (dotimes (i num-primes-in-sum)
+        (incf sum-of-primes (first pointer-to-prime-to-add))
+        (setf pointer-to-prime-to-add (rest pointer-to-prime-to-add)))
+
+      ; Check the first possible answer.
+      (when (and (< sum-of-primes upper-limit)
+                 (aref prime-array sum-of-primes))
+        (setf answer sum-of-primes))
+
+      ; Slide the window.
+      (do ()
+          ((or (not pointer-to-prime-to-add)
+               (> sum-of-primes upper-limit)))
+        (when (aref prime-array sum-of-primes)
+          (setf answer sum-of-primes))
+        (incf sum-of-primes (first pointer-to-prime-to-add))
+        (decf sum-of-primes (first pointer-to-prime-to-subtract))
+        (setf pointer-to-prime-to-add (rest pointer-to-prime-to-add)
+              pointer-to-prime-to-subtract (rest pointer-to-prime-to-subtract)))))); }}}
