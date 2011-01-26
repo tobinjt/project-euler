@@ -2486,7 +2486,7 @@
         (setf pointer-to-prime-to-add (rest pointer-to-prime-to-add)
               pointer-to-prime-to-subtract (rest pointer-to-prime-to-subtract)))))); }}}
 
-; By replacing the 1st digit of *3, it turns out that six of the nine possible
+; By replacing the 1st digit of *3, it turns out that six of the nine possible; {{{
 ; values: 13, 23, 43, 53, 73, and 83, are all prime.
 ;
 ; By replacing the 3rd and 4th digits of 56**3 with the same digit, this 5-digit
@@ -2497,7 +2497,7 @@
 ;
 ; Find the smallest prime which, by replacing part of the number (not
 ; necessarily adjacent digits) with the same digit, is part of an eight prime
-; value family.
+; value family.; }}}
 
 (defun get-digit-positions (a-number); {{{
   "Returns an array of 10 lists, each list containing the indices where digit X
