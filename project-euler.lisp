@@ -2513,11 +2513,11 @@
       (setf (aref result i) (nreverse a-list))))); }}}
 
 (defun return-prime-family-candidates (prime); {{{
-  "Substitute all repeated digits in prime with '.', returning a list of
+  "Substitute all repeated digits in prime with '*', returning a list of
    generated strings, e.g
       (return-prime-family-candidates 56113)
    returns
-      (\"5.113\" \".6113\" \"5611.\" \"56..3\" \"56.13\" \"561.3\")"
+      (\"5*113\" \"*6113\" \"5611*\" \"56**3\" \"56*13\" \"561*3\")"
   (let* ((positions (get-digit-positions prime))
          (position-powersets (map 'list
                                   #'powerset
