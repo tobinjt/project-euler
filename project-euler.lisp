@@ -2554,11 +2554,11 @@
               (return-from check-each-prime
                            (gethash string-pattern first-primes))))))))); }}}
 
-; It can be seen that the number, 125874, and its double, 251748, contain
+; It can be seen that the number, 125874, and its double, 251748, contain; {{{
 ; exactly the same digits, but in a different order.
 ;
 ; Find the smallest positive integer, x, such that 2x, 3x, 4x, 5x, and 6x,
-; contain the same digits.
+; contain the same digits.; }}}
 
 (defun project-euler-52-1 (); {{{
   (block found-answer
