@@ -2590,3 +2590,41 @@
        (do ((,counter ,_start (1+ ,counter)))
            ((> ,counter ,_end) ,result)
          ,@body)))); }}}
+
+; There are exactly ten ways of selecting three from five, 12345:; {{{
+;
+; 123, 124, 125, 134, 135, 145, 234, 235, 245, and 345
+;
+; In combinatorics, we use the notation, 5C3 = 10.
+;
+; In general,
+;
+; nCr = n!/(r!(n-r)!)
+;
+; where r <= n, n! = n*(n-1)...*3*2*1, and 0! = 1.
+;
+; It is not until n = 23, that a value exceeds one-million: 23C10 = 1144066.
+;
+; How many, not necessarily distinct, values of nCr, for 1 <= n <= 100, are
+; greater than one-million?; }}}
+
+; Thought 2: use Pascal's triangle instead.
+
+(defun project-euler-53-1 (); {{{
+  (let* ((max-num-values 100)
+         (threshold 1000000)
+         (num-combinations '((1))))
+    ; First generate the number of combinations, using Pascal's Triangle.
+    (dotimes (unused max-num-values)
+      (setf num-combinations
+            (append num-combinations
+                    (list (mapcar #'+
+                                  (cons 0 (first (last num-combinations)))
+                                  (append (first (last num-combinations)) '(0)))))))
+    ; Now count the numbers greater than 1000000.
+    (reduce #'+
+            (mapcar #'(lambda (a-list)
+                        (count-if #'(lambda (num)
+                                           (> num threshold))
+                                       a-list))
+                    num-combinations)))); }}}
