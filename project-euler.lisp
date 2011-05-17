@@ -2578,3 +2578,15 @@
                               (sort (number-to-digits (* x multiplier)) #'<)))
               (return-from list-of-multipliers nil)))
           (return-from found-answer x)))))); }}}
+
+; Loop from start to end *inclusive*.
+(defmacro dofromto ((start end counter &optional result) &body body); {{{
+  (let ((_start (gensym))
+        (_end (gensym)))
+    `(let ((,_start ,start)
+           (,_end ,end))
+       (when (> ,_start ,_end)
+         (error "~A is greater than ~A" ,_start ,_end))
+       (do ((,counter ,_start (1+ ,counter)))
+           ((> ,counter ,_end) ,result)
+         ,@body)))); }}}
