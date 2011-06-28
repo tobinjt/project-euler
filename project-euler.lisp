@@ -2507,7 +2507,7 @@
       #(NIL (0 1) (2) (3) NIL NIL NIL NIL NIL NIL)"
   (let ((result (make-array 10)))
     (doarrayi (digit i (format nil "~A" a-number))
-      (let ((index (char-to-number digit)))
+      (let ((index (parse-integer (string digit))))
         (setf (aref result index) (cons i (aref result index)))))
     (doarrayi (a-list i result result)
       (setf (aref result i) (nreverse a-list))))); }}}
@@ -2586,7 +2586,7 @@
     `(let ((,_start ,start)
            (,_end ,end))
        (when (> ,_start ,_end)
-         (error "~A is greater than ~A" ,_start ,_end))
+         (error "dofromto: start ~A is greater than end ~A" ,_start ,_end))
        (do ((,counter ,_start (1+ ,counter)))
            ((> ,counter ,_end) ,result)
          ,@body)))); }}}
@@ -2628,3 +2628,352 @@
                                            (> num threshold))
                                        a-list))
                     num-combinations)))); }}}
+
+; In the card game poker, a hand consists of five cards and are ranked, ; {{{
+; from lowest to highest, in the following way:
+;
+; High Card: Highest value card.
+; One Pair: Two cards of the same value.
+; Two Pairs: Two different pairs.
+; Three of a Kind: Three cards of the same value.
+; Straight: All cards are consecutive values.
+; Flush: All cards of the same suit.
+; Full House: Three of a kind and a pair.
+; Four of a Kind: Four cards of the same value.
+; Straight Flush: All cards are consecutive values of same suit.
+; Royal Flush: Ten, Jack, Queen, King, Ace, in same suit.
+; The cards are valued in the order:
+; 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, King, Ace.
+;
+; If two players have the same ranked hands then the rank made up of the highest
+; value wins; for example, a pair of eights beats a pair of fives (see example 1
+; below). But if two ranks tie, for example, both players have a pair of queens,
+; then highest cards in each hand are compared (see example 4 below); if the
+; highest cards tie then the next highest cards are compared, and so on.
+;
+; Consider the following five hands dealt to two players:
+; <snipped>
+; The file, poker.txt, contains one-thousand random hands dealt to two players.
+; Each line of the file contains ten cards (separated by a single space): the
+; first five are Player 1's cards and the last five are Player 2's cards. You
+; can assume that all hands are valid (no invalid characters or repeated cards),
+; each player's hand is in no specific order, and in each hand there is a clear
+; winner.
+;
+; How many hands does Player 1 win?; }}}
+
+(defstruct card; {{{
+  (value)
+  (suit)); }}}
+
+(defstruct hand; {{{
+  "All cards attributes are either nil or an array of cards, sorted in
+   descending order by value (suit is ignored)."
+  (string-form)
+  (cards)
+  (scoring-cards)
+  (non-scoring-cards)
+  (rank)); }}}
+
+(defun parse-card-value (value); {{{
+  "Convert face cards to a numeric value; return other values unchanged."
+  (case value
+    (#\T 10)
+    (#\J 11)
+    (#\Q 12)
+    (#\K 13)
+    (#\A 14)
+    (otherwise (parse-integer (string value))))); }}}
+
+(defun un-parse-card-value (value); {{{
+  "Convert a numeric card value to a string."
+  (case value
+    (10 "T")
+    (11 "J")
+    (12 "Q")
+    (13 "K")
+    (14 "A")
+    (otherwise (format nil "~A" value)))); }}}
+
+(defun sort-cards (cards); {{{
+  "Sort cards in-place in descending order by value (suit is ignored)."
+  (sort cards #'> :key #'card-value)); }}}
+
+(defun parse-hand (line); {{{
+  " Parse '8C TS KC 9H 4S', returning a hand."
+  (let ((cards (make-array 5))
+        (hand))
+    (dofromto (0 4 card-number)
+      (let* ((offset (* card-number 3))
+             (value (aref line offset))
+             (suit (aref line (1+ offset))))
+          (setf (aref cards card-number)
+                (make-card :value (parse-card-value value)
+                           :suit suit))))
+    (sort-cards cards)
+    (setf hand (make-hand :cards cards))
+    (setf (hand-string-form hand) (make-hand-string-form hand))
+    hand)); }}}
+
+(defun read-hands-file (hands-fh); {{{
+  "Read a file (typically poker.txt), returning a list of lists of hands."
+  (let ((hands '()))
+    (do ((line (read-line hands-fh nil) (read-line hands-fh nil)))
+        ((null line) hands)
+      (push (list (parse-hand (subseq line 0 14))
+                  (parse-hand (subseq line 15)))
+            hands))
+    (nreverse hands))); }}}
+
+(defun make-hand-string-form (hand); {{{
+  "Returns a human-readable representation of the hand."
+  (let ((components '()))
+    (loop-over-hand hand
+                    #'(lambda (ignored-card card)
+                        (declare (ignore ignored-card))
+                        (push (un-parse-card-value (card-value card))
+                              components)
+                        (push (string (card-suit card)) components)
+                        (push " " components)))
+    (pop components)
+    (nreverse components)
+    (format nil "~{~A~}" components))); }}}
+
+(defun loop-over-hand (hand func); {{{
+  "Iterate over the cards in hand, calling (func first_card current_card) for
+   each one.  Returns true if func returns true for all five cards."
+  (let* ((result t)
+         (cards (hand-cards hand))
+         (first-card (aref cards 0)))
+    (dofromto (0 4 i result)
+      (setf result (and (funcall func first-card (aref cards i))
+                        result))))); }}}
+
+(defun hand-same-suit (hand); {{{
+  "Return true if all cards in the hand have the same suit, false otherside."
+  (loop-over-hand hand #'(lambda (card-1 card-2)
+                           (char-equal (card-suit card-1)
+                                       (card-suit card-2))))); }}}
+
+(defun hand-descending-values (hand); {{{
+  "Return true if the cards in the hand are in descending order, false
+   otherside."
+  (let ((comparison-value (hand-card-value hand 0)))
+    (loop-over-hand hand #'(lambda (card-1 card-2)
+                             (declare (ignore card-1))
+                             (when (= (card-value card-2)
+                                      comparison-value)
+                               (setf comparison-value
+                                     (1- comparison-value))))))); }}}
+
+(defun hand-card-value (hand i); {{{
+  "Return the value of the card at index i of the hand."
+  (card-value (aref (hand-cards hand) i))); }}}
+
+(defun group-cards-by-value (hand); {{{
+  "Return a hash table mapping card-value -> list-of-cards."
+  (let ((value-map (make-hash-table)))
+    (loop-over-hand hand
+                    #'(lambda (ignored-card card)
+                        (declare (ignore ignored-card))
+                        (let ((value (card-value card)))
+                          (setf (gethash value value-map)
+                                (push card (gethash value value-map '()))))))
+    value-map)); }}}
+
+(defun count-items-in-hash (a-hash); {{{
+  "Returns a hash containing (key => (length value)) for every
+   (key => value) pair in a-hash."
+  (let ((result (make-hash-table)))
+    (maphash #'(lambda (key value)
+                 (setf (gethash key result) (length value)))
+             a-hash)
+    result)); }}}
+
+(defun set-scoring-cards-from-hash (hand cards-by-value
+                                    num-cards-by-value scoring-count); {{{
+  "Set scoring-cards and non-scoring-cards.  When n is 2 and
+   there are two pairs in the hand, scoring-cards will contain all 4 cards."
+  (let ((scoring-cards '())
+        (non-scoring-cards '()))
+
+    (maphash #'(lambda (key value)
+                 ; I feel like I should be able to write this more concisely,
+                 ; but my attempts with push, nconc, and append were either
+                 ; non-functional or just as long.
+                 (if (equal value scoring-count)
+                   (setf scoring-cards
+                         (concatenate 'list scoring-cards
+                                            (gethash key cards-by-value)))
+                   (setf non-scoring-cards
+                         (concatenate 'list non-scoring-cards
+                                            (gethash key cards-by-value)))))
+             num-cards-by-value)
+
+    (setf (hand-scoring-cards hand)
+          (sort-cards (coerce scoring-cards 'array)))
+    (setf (hand-non-scoring-cards hand)
+          (sort-cards (coerce non-scoring-cards 'array))))); }}}
+
+(defun has-n-cards-with-same-value (hand n &optional (set-scoring-cards t)); {{{
+  "Returns true if there are n cards with the same value.  Also modifies cards,
+   setting scoring-cards and non-scoring-cards appropriately."
+  (let* ((cards-by-value (group-cards-by-value hand))
+         (num-cards-by-value (count-items-in-hash cards-by-value))
+         (result nil))
+    (maphash #'(lambda (key value)
+                 (declare (ignore key))
+                 (when (= value n)
+                   (setf result t)
+                   (when set-scoring-cards
+                     (set-scoring-cards-from-hash hand cards-by-value
+                                                  num-cards-by-value value))))
+             num-cards-by-value)
+    result)); }}}
+
+(defun test-one-function (func good-hands bad-hands); {{{
+  (format t "Testing ~A" func)
+  (let ((result t)
+        (tests (list (list func good-hands)
+                     (list #'(lambda (hand)
+                               (not (funcall func hand)))
+                           bad-hands))))
+
+    (dolist (test-pair tests)
+      (dolist (hand-string (second test-pair))
+        (if (funcall (first test-pair) (parse-hand hand-string))
+          (format t " t")
+          (progn
+            (format t " NIL")
+            (setf result nil)))))
+
+    (format t "~%")
+    result)); }}}
+
+(defun test-is-foo-functions (); {{{
+  (and
+    (test-one-function #'is-royal-flush     '("AS TS KS JS QS" "TC JC QC KC AC")
+                                            '("TC JC QC KC AS" "TC JC QC KC 4C"))
+    (test-one-function #'is-straight-flush  '("5S 8S 6S 7S 9S" "TC JC QC KC AC")
+                                            '("TC JC QC KC AS" "2S 4D TC 6S 8H"))
+    (test-one-function #'is-four-of-a-kind  '("2S 2C 2D 4D 2H" "3D TD TC TS TH")
+                                            '("2S 2C 3D 4D 2H" "3D TD 6C TS TH"))
+    (test-one-function #'is-full-house      '("2S 2C AD AH AS" "7C 6S 6D 7C 7D")
+                                            '("2S 2C 4D AH AS" "7C 6S 4D 7C 7D"))
+    (test-one-function #'is-flush           '("3D 4D 7D 9D JD" "4H 5H 6H 7H 8H")
+                                            '("3D 4D 7D 9S JD" "4H 5H 6H 7H 8D"))
+    (test-one-function #'is-straight        '("AS TS KS JS QS" "3D 4H 5S 6C 7H")
+                                            '("AS TS KS 3S QS" "3D 4H 5S AC 7H"))
+    (test-one-function #'is-three-of-a-kind '("2S 7C AD AH AS" "7C 6S 2D 7C 7D")
+                                            '("2S 2C 4D AH AS" "7C 6S 4D 3C 7D"))
+    (test-one-function #'is-two-pairs       '("2S 4D 3C 2C 4S" "7S 7D JH JD 6C")
+                                            '("2S 4D 2C 2C 4S" "7S 7D JH 3D 6C"))
+    (test-one-function #'is-one-pair        '("2S 4D 3C 2C AS" "7S 7D 3H JD 6C")
+                                            '("5S 4D 2C KC 7S" "3S 7D JH 5D 6C")))); }}}
+
+; All the is-foo functions modify the hand they're given, setting scoring-cards
+; and non-scoring-cards appropriately if they return true.
+
+(defun is-royal-flush (hand); {{{
+  (and (= (parse-card-value #\A)
+          (hand-card-value hand 0))
+       (is-straight-flush hand))); }}}
+
+(defun is-straight-flush (hand); {{{
+  (when (and (hand-same-suit hand)
+             (hand-descending-values hand))
+    (setf (hand-scoring-cards hand) (hand-cards hand)))); }}}
+
+(defun is-four-of-a-kind (hand); {{{
+  (has-n-cards-with-same-value hand 4)); }}}
+
+(defun is-full-house (hand); {{{
+  (when (and (has-n-cards-with-same-value hand 3 nil)
+             (has-n-cards-with-same-value hand 2 nil))
+    (setf (hand-scoring-cards hand) (hand-cards hand)))); }}}
+
+(defun is-flush (hand); {{{
+  (when (hand-same-suit hand)
+    (setf (hand-scoring-cards hand) (hand-cards hand)))); }}}
+
+(defun is-straight (hand); {{{
+  (when (hand-descending-values hand)
+    (setf (hand-scoring-cards hand) (hand-cards hand)))); }}}
+
+(defun is-three-of-a-kind (hand); {{{
+  (has-n-cards-with-same-value hand 3)); }}}
+
+(defun is-two-pairs (hand); {{{
+  (when (has-n-cards-with-same-value hand 2)
+    (if (= 4 (length (hand-scoring-cards hand)))
+      t
+      (setf (hand-scoring-cards hand) nil)))); }}}
+
+(defun is-one-pair (hand); {{{
+  (has-n-cards-with-same-value hand 2)); }}}
+
+(defun is-highest-card (hand); {{{
+  "This will always succeed.  I wrote it so that I don't have to handle this
+   case specially elsewhere."
+  (setf (hand-scoring-cards hand) (hand-cards hand))); }}}
+
+(defun rank-hand (hand); {{{
+  "Determine the rank for a hand."
+  (setf (hand-rank hand)
+        (cond ((is-royal-flush hand)     10)
+              ((is-straight-flush hand)  9)
+              ((is-four-of-a-kind hand)  8)
+              ((is-full-house hand)      7)
+              ((is-flush hand)           6)
+              ((is-straight hand)        5)
+              ((is-three-of-a-kind hand) 4)
+              ((is-two-pairs hand)       3)
+              ((is-one-pair hand)        2)
+              ((is-highest-card hand)    1)))); }}}
+
+(defun rank-top-cards-helper (cards-type cards-1 cards-2); {{{
+  "Return t if cards-1 is better than cards-2."
+  (block compare
+    (dofromto (0 (1- (length cards-1)) i)
+      (let ((value-1 (card-value (aref cards-1 i)))
+            (value-2 (card-value (aref cards-2 i))))
+        (when (not (= value-1 value-2))
+          (format t " then ~A card ~A: ~A vs ~A"
+                  cards-type i value-1 value-2)
+          (return-from compare (> value-1 value-2)))))
+    -1)); }}}
+
+(defun rank-top-cards (hand-1 hand-2); {{{
+  "Return t if hand-1 is better than hand-2."
+  (let ((result (rank-top-cards-helper "scoring"
+                                       (hand-scoring-cards hand-1)
+                                       (hand-scoring-cards hand-2))))
+    (when (and (numberp result)
+               (= result -1))
+      ; Fall back to non-scoring cards.
+      (setf result (rank-top-cards-helper "non-scoring"
+                                          (hand-non-scoring-cards hand-1)
+                                          (hand-non-scoring-cards hand-2))))
+    (format t "~%")
+    result)); }}}
+
+(defun compare-hands (hand-1 hand-2); {{{
+  "Return t if hand-1 is better than hand-2."
+  (rank-hand hand-1)
+  (rank-hand hand-2)
+  (format t "~A vs ~A: rank ~A vs rank ~A"
+          (hand-string-form hand-1) (hand-string-form hand-2)
+          (hand-rank hand-1) (hand-rank hand-2))
+  (if (= (hand-rank hand-1)
+         (hand-rank hand-2))
+    (rank-top-cards hand-1 hand-2)
+    (progn
+      (format t "~%")
+      (> (hand-rank hand-1)
+          (hand-rank hand-2))))); }}}
+
+(defun project-euler-54-1 (); {{{
+  (with-open-file (hands-fh #p"poker.txt")
+    (count-if #'(lambda (pair)
+                  (apply #'compare-hands pair))
+              (read-hands-file hands-fh)))); }}}
