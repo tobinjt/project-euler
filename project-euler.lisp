@@ -3030,5 +3030,4 @@
   (let ((num-lychrel-numbers 0))
     (dofromto (1 9999 current-number num-lychrel-numbers)
       (when (is-lychrel-number current-number)
-        (incf num-lychrel-numbers))))
-); }}}
+        (incf num-lychrel-numbers))))); }}}
