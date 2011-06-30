@@ -3047,3 +3047,91 @@
           (setf a^b (* a^b a))
           (setf highest-sum (max highest-sum
                                  (apply #'+ (number-to-digits a^b))))))))); }}}
+
+; It is possible to show that the square root of two can be expressed as an; {{{
+; infinite continued fraction.
+;
+;  sqrt(2) = 1 + 1/(2 + 1/(2 + 1/(2 + ... ))) = 1.414213...
+;
+;  By expanding this for the first four iterations, we get:
+;
+;  1 + 1/2 = 3/2 = 1.5
+;  1 + 1/(2 + 1/2) = 7/5 = 1.4
+;  1 + 1/(2 + 1/(2 + 1/2)) = 17/12 = 1.41666...
+;  1 + 1/(2 + 1/(2 + 1/(2 + 1/2))) = 41/29 = 1.41379...
+;
+;  The next three expansions are 99/70, 239/169, and 577/408, but the eighth
+;  expansion, 1393/985, is the first example where the number of digits in the
+;  numerator exceeds the number of digits in the denominator.
+;
+;  In the first one-thousand expansions, how many fractions contain a numerator
+;  with more digits than denominator?; }}}
+
+; Reformatting the description gives:; {{{
+;  1 +                      1/2    = 3/2 = 1.5          = 1 + 1/2
+;  1 +               1/(2 + 1/2)   = 7/5 = 1.4          = 1 + 2/5
+;  1 +        1/(2 + 1/(2 + 1/2))  = 17/12 = 1.41666... = 1 + 5/12
+;  1 + 1/(2 + 1/(2 + 1/(2 + 1/2))) = 41/29 = 1.41379... = 1 + 12/29
+; Calculating the portion after the + is easy:
+;   numerator(n) = denominator(n-1)
+;   denominator(n) = numerator(n-1) + 2 * denominator(n-1)
+; (1 + numerator/denominator) = (numerator + denominator)/denominator, so we
+; just compare (num-digits (+ numerator denominator)) against
+; (num-digits denominator); }}}
+
+(defun project-euler-57-1 (); {{{
+  ; numerator and denominator are functions, but they're also the best names for
+  ; the variables, so I'm using them.
+  (let ((numerator 1)
+        (denominator 2)
+        (result 0))
+    (dofromto (2 1000 i result)
+      (psetf numerator denominator
+             denominator (+ numerator (* 2 denominator)))
+      (when (> (length (write-to-string (+ numerator denominator)))
+               (length (write-to-string denominator)))
+        (incf result))))); }}}
+
+; Starting with 1 and spiralling anticlockwise in the following way, a square
+; spiral with side length 7 is formed.
+;
+; 37 36 35 34 33 32 31
+; 38 17 16 15 14 13 30
+; 39 18  5  4  3 12 29
+; 40 19  6  1  2 11 28
+; 41 20  7  8  9 10 27
+; 42 21 22 23 24 25 26
+; 43 44 45 46 47 48 49
+;
+; It is interesting to note that the odd squares lie along the bottom right
+; diagonal, but what is more interesting is that 8 out of the 13 numbers lying
+; along both diagonals are prime; that is, a ratio of 8/13  62%.
+;
+; If one complete new layer is wrapped around the spiral above, a square spiral
+; with side length 9 will be formed. If this process is continued, what is the
+; side length of the square spiral for which the ratio of primes along both
+; diagonals first falls below 10%?
+
+; Diagonals are given by:
+; 1 + 2 + 2 + 2 + 2
+;   + 4 + 4 + 4 + 4
+;   + 6 + 6 + 6 + 6
+;   + 8 + 8 + 8 + 8
+;   . . .
+; So, (sieve-of-eratosthenes a-large-number), then iterate along the result
+; counting prime and non-prime numbers.
+
+(defun project-euler-58-1 (&optional (size 1000))
+  (do ((sieve (sieve-of-eratosthenes size))
+       (num-primes 0)
+       (num-diagonals 1)
+       (index 1)
+       (increment 2 (+ 2 increment)))
+      ((and (not (zerop num-primes))
+            (< (/ num-primes num-diagonals) 0.1))
+       (1+ increment))
+    (dofromto (1 4 i)
+      (incf index increment)
+      (incf num-diagonals)
+      (when (aref sieve index)
+        (incf num-primes)))))
