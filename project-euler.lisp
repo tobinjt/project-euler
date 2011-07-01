@@ -61,7 +61,7 @@
   (case an-integer
     ((0 1) nil)
     ((2 3) t)
-    (otherwise 
+    (otherwise
       ; This doesn't work for negative numbers.
       (dotimes (current-factor (1+ (ceiling (sqrt an-integer))) t)
         (cond
@@ -1832,7 +1832,7 @@
       (let ((digits '())
             (num-digits 0))
         ; Generate a number containing at least 9 digits
-        (loop for multiplier from 1 to 9 
+        (loop for multiplier from 1 to 9
               while (< num-digits 9) do
           (let* ((new-digits (number-to-digits (* a-number multiplier)))
                  (num-new-digits (length new-digits)))
