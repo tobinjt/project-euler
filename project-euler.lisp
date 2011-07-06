@@ -2585,11 +2585,13 @@
         (_end (gensym)))
     `(let ((,_start ,start)
            (,_end ,end))
-       (when (> ,_start ,_end)
-         (error "dofromto: start ~A is greater than end ~A" ,_start ,_end))
-       (do ((,counter ,_start (1+ ,counter)))
-           ((> ,counter ,_end) ,result)
-         ,@body)))); }}}
+       (if (> ,_start ,_end)
+        (do ((,counter ,_start (1- ,counter)))
+            ((< ,counter ,_end) ,result)
+          ,@body)
+        (do ((,counter ,_start (1+ ,counter)))
+            ((> ,counter ,_end) ,result)
+          ,@body))))); }}}
 
 ; There are exactly ten ways of selecting three from five, 12345:; {{{
 ;
@@ -3134,3 +3136,105 @@
       (when (and (not (= 4 i))
                  (primep index))
         (incf num-primes))))); }}}
+
+(defun sort-hash-keys-by-value (hash); {{{
+  "Sort the keys of a hash by their associated value."
+  (let ((keys '()))
+    (maphash #'(lambda (key value)
+                 (push key keys))
+             hash)
+    (sort keys #'> :key #'(lambda (key) (gethash key hash))))); }}}
+
+; Each character on a computer is assigned a unique code and the preferred; {{{
+; standard is ASCII (American Standard Code for Information Interchange). For
+; example, uppercase A = 65, asterisk (*) = 42, and lowercase k = 107.
+;
+; A modern encryption method is to take a text file, convert the bytes to ASCII,
+; then XOR each byte with a given value, taken from a secret key. The advantage
+; with the XOR function is that using the same encryption key on the cipher
+; text, restores the plain text; for example, 65 XOR 42 = 107, then 107 XOR 42 =
+; 65.
+;
+; For unbreakable encryption, the key is the same length as the plain text
+; message, and the key is made up of random bytes. The user would keep the
+; encrypted message and the encryption key in different locations, and without
+; both "halves", it is impossible to decrypt the message.
+;
+; Unfortunately, this method is impractical for most users, so the modified
+; method is to use a password as a key. If the password is shorter than the
+; message, which is likely, the key is repeated cyclically throughout the
+; message. The balance for this method is using a sufficiently long password key
+; for security, but short enough to be memorable.
+;
+; Your task has been made easy, as the encryption key consists of three lower
+; case characters. Using cipher1.txt (right click and 'Save Link/Target As...'),
+; a file containing the encrypted ASCII codes, and the knowledge that the plain
+; text must contain common English words, decrypt the message and find the sum
+; of the ASCII values in the original text.; }}}
+
+(defun 8-bit-int-to-bit-array (int); {{{
+  "Convert an 8-bit integer into an array of bits."
+  (let ((bit-array (make-array 8 :element-type 'bit))
+        (remainder int))
+    (dofromto (0 7 i bit-array)
+      (setf (bit bit-array i) (mod remainder 2))
+      (setf remainder (floor remainder 2))))); }}}
+
+(defun bit-array-to-8-bit-int (bit-array); {{{
+  "Convert an array of bits into an 8-bit integer."
+  (let ((int 0))
+    (dofromto (7 0 i int)
+      (setf int (+ (* int 2) (bit bit-array i)))))); }}}
+
+(defun xor-ints (int1 int2); {{{
+  "xor two ints, returning an int."
+  (bit-array-to-8-bit-int (bit-xor (8-bit-int-to-bit-array int1)
+                                   (8-bit-int-to-bit-array int2)))); }}}
+
+(defun search-for-string (encrypted-letters key-length a-string); {{{
+  "Search the list encrypted-letters for the characters in a-string."
+  ; The key found by this function when a-string is " the " is correct, but
+  ; that's good luck.  This should return a list of keys, then let the calling
+  ; function work out which one is correct.
+  (let ((haystack (coerce encrypted-letters 'array))
+        (needle (map 'array #'(lambda (x) (char-code x)) a-string))
+        (lowercase-letters '())
+        (key (make-array key-length)))
+    (dofromto ((char-code #\z) (char-code #\a) letter)
+      (push letter lowercase-letters))
+    (block find-key
+      (dofromto (0 (1- (- (length haystack) (length needle))) index)
+        (block try-at-position-n
+          ; We don't need to brute-force the first key-length keys:
+          ;   encrypted-letter xor expected-letter == key-letter
+          ; Each key-letter must be a lowercase letter; if not, we don't have a
+          ; match here, move to the next position.
+          (dofromto (0 (1- key-length) offset)
+            (setf (aref key offset) (xor-ints (aref haystack (+ index offset))
+                                              (aref needle offset)))
+            (when (not (member (aref key offset) lowercase-letters))
+              (return-from try-at-position-n)))
+          ; Now, check if the remaining characters are successfully decrypted
+          ; using the key we've just built.  We need at least key-length more
+          ; characters in the search string to verify the key, but we don't
+          ; enforce that.
+          (dofromto (key-length (1- (length needle)) offset)
+            (when (not (equal (aref needle offset)
+                              (xor-ints (aref haystack (+ index offset))
+                                        (aref key (mod offset key-length)))))
+              (return-from try-at-position-n)))
+          ; We've found the key!
+          (return-from find-key key)))))); }}}
+
+(defun project-euler-59-1 (); {{{
+  (let* ((encrypted-letters (read-comma-delimited-file #p"cipher1.txt"))
+         (key-length 3)
+         (key (search-for-string encrypted-letters key-length " the "))
+         (message '()))
+    (let ((index 0))
+      (dolist (encrypted-letter encrypted-letters)
+        (push (xor-ints (aref key index) encrypted-letter) message)
+        (setf index (mod (1+ index) 3))))
+    (nreverse message)
+    (format t "~{~A~}~%" (mapcar #'(lambda (int) (code-char int)) message))
+    (apply #'+ message))); }}}
