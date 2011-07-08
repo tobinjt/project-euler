@@ -355,20 +355,23 @@
   (let ((primes (sieve-of-eratosthenes 2000000))
         (sum-of-primes 0))
     (dotimes (i (length primes) sum-of-primes)
-      (when (aref primes i)
+      (when (is-prime primes i)
         (setf sum-of-primes (+ sum-of-primes i)))))); }}}
+
+(defun is-prime (sieve index); {{{
+  (= 1 (aref sieve index))); }}}
 
 (defun sieve-of-eratosthenes (upper-bound); {{{
   (let* ((array-size (1+ upper-bound))
-         (primes (make-array array-size :initial-element t)))
-    (setf (aref primes 0) nil)
-    (setf (aref primes 1) nil)
+         (primes (make-array array-size :initial-element 1 :element-type 'bit)))
+    (setf (aref primes 0) 0)
+    (setf (aref primes 1) 0)
 
     (dotimes (i (1+ (ceiling (sqrt array-size))) primes)
-      (when (aref primes i)
+      (when (is-prime primes i)
         (do ((index-of-multiples (expt i 2) (+ index-of-multiples i)))
             ((>= index-of-multiples array-size))
-          (setf (aref primes index-of-multiples) nil)))))); }}}
+          (setf (aref primes index-of-multiples) 0)))))); }}}
 
 (defun seq-list (lower-bound upper-bound); {{{
   (let ((current-number lower-bound)
@@ -1440,7 +1443,7 @@
          (best-b)
          (best-length 0))
     (loop for b from (- upper-bound) to upper-bound do
-      (when (aref b-primes (abs b))
+      (when (is-prime b-primes (abs b))
         (loop for a from (- upper-bound) to upper-bound do
           (let ((num-primes 0))
             (do* ((n 0 (1+ n))
@@ -1744,7 +1747,7 @@
   (let ((primes (sieve-of-eratosthenes 1000000))
         (num-circular-primes 0))
     (loop for i from 2 to (1- (array-dimension primes 0)) do
-      (when (and (aref primes i)
+      (when (and (is-prime primes i)
                  (is-circular-prime primes i))
         (incf num-circular-primes)))
     num-circular-primes)); }}}
@@ -1786,7 +1789,7 @@
            (null digits))
        is-truncatable)
     (let ((a-number (digits-to-number digits)))
-      (setf is-truncatable (aref primes a-number)
+      (setf is-truncatable (is-prime primes a-number)
             digits (funcall func digits))))); }}}
 
 (defun is-truncatable-prime (primes a-number); {{{
@@ -1805,7 +1808,7 @@
         (primes (sieve-of-eratosthenes 1000000)))
     (loop for a-number from 9 to (1- (array-dimension primes 0)) by 2
           while (< num-truncatable-primes 11) do
-      (when (and (aref primes a-number)
+      (when (and (is-prime primes a-number)
                  (is-truncatable-prime primes a-number))
         (push a-number truncatable-primes)
         (incf num-truncatable-primes)))
@@ -2248,7 +2251,7 @@
 (defun is-goldback-number (primes doubled-squares the-number); {{{
   (do ((i 1 (+ 2 i)))
       ((>= i the-number) nil)
-    (when (aref primes i)
+    (when (is-prime primes i)
       (let ((remainder (- the-number i)))
         (when (gethash remainder doubled-squares)
           (return t)))))); }}}
@@ -2275,7 +2278,7 @@
       (when (> n found-primes-less-than)
         (setf found-primes-less-than (* 2 found-primes-less-than))
         (setf primes (sieve-of-eratosthenes found-primes-less-than)))
-      (when (and (not (aref primes n))
+      (when (and (not (is-prime primes n))
                  (not (is-goldback-number primes doubled-squares n)))
         (format t "~A~%" n)
         (return))))); }}}
@@ -2308,7 +2311,7 @@
     (dotimes (i (array-dimension sieve 0))
       (when (= remainder 1)
         (return))
-      (when (aref sieve i)
+      (when (is-prime sieve i)
         (do ()
             ((not (zerop (mod remainder i))))
           (push i factors)
@@ -2393,8 +2396,9 @@
 
     ; Place primes into buckets where every number in a bucket is composed from
     ; the same digits.
-    (doarrayi (is-prime i primes permutations)
-      (when (and is-prime
+    (doarrayi (ignored i primes permutations)
+      (declare (ignore ignored))
+      (when (and (is-prime primes i)
                  (>= i 1000))
         (let ((sorted-digits (write-to-string (sort (number-to-digits i) #'<))))
           (setf (gethash sorted-digits permutations)
@@ -2439,8 +2443,9 @@
          (prime-list '())
          (max-primes-to-sum 0))
     ; Create a list of all primes less than upper-limit/2.
-    (doarrayi (value i prime-array)
-      (when value
+    (doarrayi (ignored i prime-array)
+      (declare (ignore ignored))
+      (when (is-prime prime-array i)
         (push i prime-list)
         ; Discard anything > upper-limit/2; adding two of anything >
         ; upper-limit/2 is guaranteed to be > upper-limit.
@@ -2472,14 +2477,14 @@
 
       ; Check the first possible answer.
       (when (and (< sum-of-primes upper-limit)
-                 (aref prime-array sum-of-primes))
+                 (is-prime prime-array sum-of-primes))
         (setf answer sum-of-primes))
 
       ; Slide the window.
       (do ()
           ((or (not pointer-to-prime-to-add)
                (> sum-of-primes upper-limit)))
-        (when (aref prime-array sum-of-primes)
+        (when (is-prime prime-array sum-of-primes)
           (setf answer sum-of-primes))
         (incf sum-of-primes (first pointer-to-prime-to-add))
         (decf sum-of-primes (first pointer-to-prime-to-subtract))
@@ -2543,8 +2548,9 @@
         (first-primes (make-hash-table :test 'equal)))
 
     (block check-each-prime
-      (doarrayi (is-prime prime primes)
-        (when is-prime
+      (doarrayi (ignored prime primes)
+        (declare (ignore ignored))
+        (when (is-prime primes prime)
           (dolist (string-pattern (return-prime-family-candidates prime))
             (incf (gethash string-pattern counters 0))
             (when (not (gethash string-pattern first-primes))
@@ -3141,6 +3147,7 @@
   "Sort the keys of a hash by their associated value."
   (let ((keys '()))
     (maphash #'(lambda (key value)
+                 (declare (ignore value))
                  (push key keys))
              hash)
     (sort keys #'> :key #'(lambda (key) (gethash key hash))))); }}}
