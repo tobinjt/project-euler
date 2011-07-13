@@ -2588,18 +2588,40 @@
           (return-from found-answer x)))))); }}}
 
 ; Loop from start to end *inclusive*.
+; This is far more complex than it needs to be, and the reason is SBCL whining
+; about deleting unused code.  Without the extra logic, if the start and end
+; arguments are known at compile time, SBCL will whine that it's deleting unused
+; code - in fact, it whines so much about this usage that it drowns out
+; legitimate warnings.  So, we specially handle the case where start and end
+; pass numberp at compile time.  We still get warnings about unreachable code,
+; but but I think that's in cases like:
+;   (dofromto (0 (length an-array) i)
+; where SBCL's type inference tells it that (length an-array) can't be negative.
+; I;m not going to worry about that now.
 (defmacro dofromto ((start end counter &optional result) &body body); {{{
   (let ((_start (gensym))
-        (_end (gensym)))
+        (_end (gensym))
+        (_increment (gensym))
+        (_comparitor (gensym)))
     `(let ((,_start ,start)
-           (,_end ,end))
-       (if (> ,_start ,_end)
-        (do ((,counter ,_start (1- ,counter)))
-            ((< ,counter ,_end) ,result)
-          ,@body)
-        (do ((,counter ,_start (1+ ,counter)))
-            ((> ,counter ,_end) ,result)
-          ,@body))))); }}}
+           (,_end ,end)
+           (,_increment)
+           (,_comparitor))
+       ,(if (and (numberp start)
+                 (numberp end))
+          (if (< start end)
+            `(setf ,_increment #'1+
+                   ,_comparitor #'>)
+            `(setf ,_increment #'1-
+                   ,_comparitor #'<))
+          `(if (< ,_start ,_end)
+             (setf ,_increment #'1+
+                   ,_comparitor #'>)
+             (setf ,_increment #'1-
+                   ,_comparitor #'<)))
+        (do ((,counter ,_start (funcall ,_increment ,counter)))
+            ((funcall ,_comparitor ,counter ,_end) ,result)
+          ,@body)))); }}}
 
 ; There are exactly ten ways of selecting three from five, 12345:; {{{
 ;
