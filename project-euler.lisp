@@ -375,16 +375,6 @@
             ((>= index-of-multiples array-size))
           (setf (aref primes index-of-multiples) 0)))))); }}}
 
-(defun seq-list (lower-bound upper-bound); {{{
-  (let ((current-number lower-bound)
-        (result '()))
-
-    (loop
-      (when (> current-number upper-bound)
-        (return (reverse result)))
-      (push result current-number)
-      (setf current-number (1+ current-number))))); }}}
-
 (defun seq-list2 (min max); {{{
   (loop for i from min to max collect i)); }}}
 
@@ -1800,9 +1790,7 @@
     (and (is-truncatable-prime-aux primes digits #'(lambda (digits)
                                                      (rest digits)))
          (is-truncatable-prime-aux primes digits #'(lambda (digits)
-                                                     (nreverse digits)
-                                                     (pop digits)
-                                                     (nreverse digits)))))); }}}
+                                                     (butlast digits)))))); }}}
 
 (defun project-euler-37-1 (); {{{
   (let ((truncatable-primes '())
@@ -2453,7 +2441,7 @@
         ; upper-limit/2 is guaranteed to be > upper-limit.
         (when (> i (/ upper-limit 2))
           (return))))
-    (nreverse prime-list)
+    (setf prime-list (nreverse prime-list))
 
     ; Figure out the maximum number of primes to sum.
     (do* ((pointer-to-prime prime-list (rest pointer-to-prime))
@@ -2587,7 +2575,7 @@
               (return-from list-of-multipliers nil)))
           (return-from found-answer x)))))); }}}
 
-; Loop from start to end *inclusive*.
+; Loop from start to end *inclusive*.; {{{
 ; This is far more complex than it needs to be, and the reason is SBCL whining
 ; about deleting unused code.  Without the extra logic, if the start and end
 ; arguments are known at compile time, SBCL will whine that it's deleting unused
@@ -2597,7 +2585,8 @@
 ; but but I think that's in cases like:
 ;   (dofromto (0 (length an-array) i)
 ; where SBCL's type inference tells it that (length an-array) can't be negative.
-; I;m not going to worry about that now.
+; I;m not going to worry about that now.; }}}
+
 (defmacro dofromto ((start end counter &optional result) &body body); {{{
   (let ((_start (gensym))
         (_end (gensym))
@@ -2768,8 +2757,7 @@
                         (push (string (card-suit card)) components)
                         (push " " components)))
     (pop components)
-    (nreverse components)
-    (format nil "~{~A~}" components))); }}}
+    (format nil "~{~A~}" (nreverse components)))); }}}
 
 (defun loop-over-hand (hand func); {{{
   "Iterate over the cards in hand, calling (func first_card current_card) for
@@ -3266,7 +3254,7 @@
       (dolist (encrypted-letter encrypted-letters)
         (push (xor-ints (aref key index) encrypted-letter) message)
         (setf index (mod (1+ index) 3))))
-    (nreverse message)
+    (setf message (nreverse message))
     (format t "~{~A~}~%" (mapcar #'(lambda (int) (code-char int)) message))
     (apply #'+ message))); }}}
 
