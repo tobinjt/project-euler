@@ -1711,6 +1711,9 @@
       (setf a-number (floor a-number 10)))
     digits)); }}}
 
+; Declare that digits-to-number is a generic function.
+(defgeneric digits-to-number (digits))
+
 (defmethod digits-to-number ((digits list)); {{{
   "Convert a list of digits to a number"
   (let ((a-number 0))
@@ -3330,3 +3333,32 @@
                              (apply #'+ graph))
                          graphs)
                  #'<)))); }}}
+
+(defun hash-keys (hash); {{{
+  "Return an unsorted list of hash keys."
+  (let ((keys '()))
+    (maphash #'(lambda (key value)
+                 (declare (ignore value))
+                 (push key keys))
+             hash)
+    keys)); }}}
+
+(defun hash-values (hash); {{{
+  "Return an unsorted, non-deduplicated list of hash values."
+  (let ((results '()))
+    (maphash #'(lambda (key value)
+                 (declare (ignore key))
+                 (push value results))
+             hash)
+    results)); }}}
+
+(defun remove-reversed-sequences (sequences); {{{
+  "Given a list of sequences, remove any sequence X where we've already
+   seen (reverse X).  Returns a new list, preserving order."
+  (let ((seen (make-hash-table :test #'equal))
+        (results '()))
+    (dolist (seq sequences)
+      (unless (gethash (reverse seq) seen nil)
+        (push seq results)
+        (setf (gethash seq seen) t)))
+    (nreverse results))); }}}
