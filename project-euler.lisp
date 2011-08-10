@@ -3507,3 +3507,59 @@
       (progn
         (format t "expecting one chain, found ~A~%" (length chains))
         chains)))); }}}
+
+; The cube, 41063625 (345^3), can be permuted to produce two other cubes:; {{{
+; 56623104 (384^3) and 66430125 (405^3). In fact, 41063625 is the smallest cube
+; which has exactly three permutations of its digits which are also cube.
+;
+; Find the smallest cube for which exactly five permutations of its digits are
+; cube.; }}}
+
+; Observations:; {{{
+; * There are 40320 permutations of an 8 digit number, so checking all
+;   permutations of each cube is infeasable.
+; * All permutations have the same length.
+;
+; First idea:
+; 1 Use a hash table to store permutations
+; 2 Write an infinite loop, calculating (cube n).  Split (cube n) into digits,
+;   sort the digits, and (push (cube n) (gethash sorted-digits permutations)).
+; 3 When the number of digits in (cube n) increases, we've found all cubes of
+;   length x, so for any n, we have all permutations of (cube n) that are
+;   themselves cubes.  Iterate over the hash table, looking for an entry with
+;   exactly 5 permutations.  The smallest number in that entry is the result.
+;}}}
+
+(defun find-keys-with-n-values (hash n); {{{
+  "Find all keys in hash whose value contains n items.  Items can be stored in
+   lists, hashes, or anything else #'length works on."
+  (let ((results '()))
+    (maphash #'(lambda (key value)
+                 (when (= n (length value))
+                   (push key results)))
+             hash)
+    results)); }}}
+
+(defun pick-smallest-cube (cube-permutations n); {{{
+  "Pick the smallest cube with n permutations."
+  (let ((keys (find-keys-with-n-values cube-permutations n))
+        (permutations '()))
+    (mapcar #'(lambda (key)
+                 (push (sort (gethash key cube-permutations) #'<) permutations))
+             keys)
+    (sort permutations #'< :key #'first)
+    (first permutations))); }}}
+
+(defun project-euler-62-1 (); {{{
+  (do* ((cube-permutations (make-hash-table :test #'equal))
+        (n 1 (1+ n))
+        (n-cubed (* n n n) (* n n n))
+        (n-cubed-hash-key (sort (number-to-digits n-cubed) #'<)
+                          (sort (number-to-digits n-cubed) #'<))
+        (key-length 0)
+        (result nil))
+      (result result)
+    (push n-cubed (gethash n-cubed-hash-key cube-permutations '()))
+    (when (> (length n-cubed-hash-key) key-length)
+      (setf key-length (length n-cubed-hash-key))
+      (setf result (pick-smallest-cube cube-permutations 5))))); }}}
