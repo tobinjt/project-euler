@@ -3548,7 +3548,7 @@
                  (push (sort (gethash key cube-permutations) #'<) permutations))
              keys)
     (sort permutations #'< :key #'first)
-    (first permutations))); }}}
+    (first (first permutations)))); }}}
 
 (defun project-euler-62-1 (); {{{
   (do* ((cube-permutations (make-hash-table :test #'equal))
