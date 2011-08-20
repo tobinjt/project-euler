@@ -3589,3 +3589,85 @@
                                (length (number-to-digits x^n))))
            ((< num-digits-in-x^n n))
         (incf result))))); }}}
+
+; Problem 64 is really hard to translate to ascii, so please see the original.; {{{
+; To calculate a continued fraction, see:
+; http://en.wikipedia.org/wiki/Continued_fractions#Calculating_continued_fraction_representations; }}}
+
+(defun rational-sqrt (x); {{{
+  "Return the square root of x, calculated using rationals rather than floating
+   point numbers.  The answer won't be exact, but it should be as accurate as
+   the native sqrt."
+  ; We have (sqrt), so we use it to get a good guess to start with.
+  ; The threshold is really, really high, but it's necessary to get sufficiently
+  ; accurate results for numbers with long periods when represented as continued
+  ; fractions.
+  (let ((sqrt-x (floor (sqrt x)))
+        (threshold (/ (expt 10 350))))
+    (do ((difference 1 (- sqrt-x (/ x sqrt-x))))
+        ((> threshold (abs difference)) sqrt-x)
+      (setf sqrt-x (/ (+ sqrt-x (/ x sqrt-x)) 2))))); }}}
+
+(defun continued-fraction (x); {{{
+  "Calculate a continued fraction.  x *must* be a rational: this function may
+   not terminate when given a floating point number."
+  (do* ((result '())
+        (next-x x)
+        (next-term (floor next-x) (floor next-x))
+        (remainder (- next-x next-term) (- next-x next-term)))
+      ((zerop next-x) (nreverse result))
+    (push next-term result)
+    (if (zerop remainder)
+      (setf next-x 0)
+      (setf next-x (/ remainder))))); }}}
+
+(defun find-repeated-subsequence (seq); {{{
+  "Returns the length of the shortest subsequence that can be repeated to
+   produce the whole sequence."
+  ; If the subsequence length is X, then seq[:len(seq) - X] will equal seq[X:].
+  ; Starting with an offset of 1, compare the two subsequences, incrementing the
+  ; offset until we find a match or run out of large subsequences to compare.
+  ; The offset that gives a match is the length of the repeating subsequence.
+  (let ((seq-length (length seq)))
+    (block found-subsequence
+      (dofromto (1 (floor (* (/ seq-length 3) 2)) sub-seq-length)
+        (when (equal (subseq seq 0 (- seq-length sub-seq-length))
+                     (subseq seq sub-seq-length))
+          (return-from found-subsequence sub-seq-length)))))); }}}
+
+(defun find-repeated-subsequence-for-project-euler-64 (fraction); {{{
+  "A wrapper around find-repeated-subsequence for project-euler-64-1, that
+   tries various subsequences to work around the difficulties with different
+   numbers."
+  (let ((period nil))
+    ; The strategy we use depends on the continued fraction being examined, e.g:
+    ; * (sqrt 7): gets inaccurate around half way through, but has a small
+    ;   period, so we use one third of the digits.
+    ; * (sqrt 844): has a 48 digit period, but it's accurate most of the way
+    ;   through, so we can use two thirds of the digits.
+    ; * (sqrt 3247): gets inaccurate less than one third of the way through, so
+    ;   use 100 digits (or the length of the fraction, if that's shorter).
+    ; * (sqrt 3331): has a period of 110 digits, but gets inaccurate at digit
+    ;   310 out of 494, so use half the digits.
+    ; * (sqrt 8719): has a period of 196, but gets inaccurate at digit 353 out
+    ;   of 563.  The inaccuracy is tiny: the difference between sqrt-x and
+    ;   (- x sqrt-x) is less than (expt 10 300).  The solution is to increase
+    ;   the accuracy to (expt 10 350).
+    (dolist (end-point
+             (list (min 100 (length fraction))
+                   (floor      (/ (length fraction) 3))
+                   (floor      (/ (length fraction) 2))
+                   (floor (* 2 (/ (length fraction) 3))))
+             period)
+      (when (not period)
+        (setf period (find-repeated-subsequence
+                       (subseq fraction 1 end-point))))))); }}}
+
+(defun project-euler-64-1 (); {{{
+  (let ((num-odd-periods 0))
+    (dofromto (2 10000 num num-odd-periods)
+      (let ((fraction (continued-fraction (rational-sqrt num))))
+        (when (> (length fraction) 1)
+          (let ((period (find-repeated-subsequence-for-project-euler-64 fraction)))
+            (when (oddp period)
+              (incf num-odd-periods)))))))); }}}
