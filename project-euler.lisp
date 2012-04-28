@@ -3672,7 +3672,7 @@
             (when (oddp period)
               (incf num-odd-periods)))))))); }}}
 
-; See https://projecteuler.net/problem=65 - it's too hard to reproduce the formatting here.
+; See https://projecteuler.net/problem=65 - it's too hard to reproduce the formatting here.; {{{
 ; The square root of 2 can be written as an infinite continued fraction.
 ;
 ; The infinite continued fraction can be written, 2 = [1;(2)], (2) indicates that 2 repeats ad infinitum. In a similar way, 23 = [4;(1,3,1,8)].
@@ -3690,16 +3690,16 @@
 ; 2, 3, 8/3, 11/4, 19/7, 87/32, 106/39, 193/71, 1264/465, 1457/536, ...
 ; The sum of digits in the numerator of the 10th convergent is 1+4+5+7=17.
 ;
-; Find the sum of digits in the numerator of the 100th convergent of the continued fraction for e.
+; Find the sum of digits in the numerator of the 100th convergent of the continued fraction for e.; }}}
 
-(defun sum-of-digits (a-number)
-  (reduce #'+ (number-to-digits a-number)))
+(defun sum-of-digits (a-number); {{{
+  (reduce #'+ (number-to-digits a-number))); }}}
 
-(defun multiple-p (num divisor)
+(defun multiple-p (num divisor); {{{
   " Return true if num is a multiple of divisor."
-  (zerop (mod num divisor)))
+  (zerop (mod num divisor))); }}}
 
-(defun e-to-depth (depth)
+(defun e-to-depth (depth); {{{
   "Calculate e to depth, starting from 1."
   ; depth 1 == 2 == 2
   ; depth 2 == 3 ==    (+ 2 (/ 1 1))
@@ -3725,7 +3725,7 @@
              (let ((result (next-in-seq depth)))
                (dofromto ((1- depth) 2 n)
                  (setf result (+ (/ result) (next-in-seq n))))
-               (+ 2 (/ result)))))))
+               (+ 2 (/ result))))))); }}}
 
-(defun project-euler-65-1 ()
-  (sum-of-digits (numerator (e-to-depth 100))))
+(defun project-euler-65-1 (); {{{
+  (sum-of-digits (numerator (e-to-depth 100)))); }}}
