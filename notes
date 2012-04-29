@@ -1,0 +1,13 @@
+Project Euler 66:
+x^2 - Dy^2 = 1
+x^2 - 1 = Dy^2
+(x^2 - 1)/D = y^2
+sqrt((x^2 - 1)/D) = y
+
+Project Euler 67:
+See solution to Project Euler 18.
+
+Project Euler 71:
+The result must be between 2/5 and 3/7, so I can probably figure out bounds for
+n.  Iterate over d, saving any n/d in the right range, and sort the results.
+Or, iterate over d and save the best value as I go.
