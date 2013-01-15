@@ -3729,3 +3729,58 @@
 
 (defun project-euler-65-1 (); {{{
   (sum-of-digits (numerator (e-to-depth 100)))); }}}
+
+; Consider quadratic Diophantine equations of the form:
+;
+; x^2 – Dy^2 = 1
+;
+; For example, when D=13, the minimal solution in x is 649^2 – 13*180^2 = 1.
+;
+; It can be assumed that there are no solutions in positive integers when D is
+; square.
+;
+; By finding minimal solutions in x for D = {2, 3, 5, 6, 7}, we obtain the
+; following:
+;
+; 3^2 – 2*2^2 = 1
+; 2^2 – 3*1^2 = 1
+; 9^2 – 5*4^2 = 1
+; 5^2 – 6*2^2 = 1
+; 8^2 – 7*3^2 = 1
+;
+; Hence, by considering minimal solutions in x for D <= 7, the largest x is
+; obtained when D=5.
+;
+; Find the value of D <= 1000 in minimal solutions of x for which the largest
+; value of x is obtained.
+
+; x^2 - Dy^2 = 1
+; x^2 - 1 = Dy^2
+; (x^2 - 1)/D = y^2
+; sqrt((x^2 - 1)/D) = y
+
+(defun is-integer (a-number); {{{
+  (multiple-value-bind (q r) (floor a-number)
+    (< r 0.0000000001)))
+  ; (= a-number (floor a-number))); }}}
+
+(defun project-euler-66-1 (&optional (limit 1000))
+  (let ((best-D)
+        (x-for-best-D 0))
+    (dofromto (2 limit D best-D)
+      (when (not (is-integer (sqrt D)))
+        (do ((x 2 (1+ x))
+             (y .1))
+            ((is-integer y))
+          (setf y (sqrt (/ (1- (* x x)) D)))
+            (when (and (is-integer y)
+                       (= D 661))
+(format t "~A^2 - ~Ax~A^2 = 1~%" x D y)
+)
+            (when (and (is-integer y)
+                       (> x x-for-best-D))
+(format t "~A^2 - ~Ax~A^2 = 1~%" x D y)
+(format t "old x-for-best-D ~A best-D ~A~%" x-for-best-D best-D)
+              (setf x-for-best-D x
+                    best-D D))
+            )))))
