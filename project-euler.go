@@ -148,9 +148,9 @@ func (inner NGonInner) String() string {
 
 func (gon *NGon) String() string {
 	results := make([]string, 0)
-	first, value := 0, 0
+	first, value := 0, gon.inners[0].outer.value
 	for i := range gon.inners {
-		if gon.inners[i].outer.value > value {
+		if gon.inners[i].outer.value < value {
 			first = i
 			value = gon.inners[i].outer.value
 		}
@@ -178,7 +178,7 @@ func NewNGon(n int) *NGon {
 
 func main() {
 	gon := NewNGon(3)
-	gon.inners[1].outer.value = 1
+	gon.inners[0].outer.value = 1
 	gon.inners[2].outer.value = 2
 	fmt.Printf("%+v\n", gon)
 }
