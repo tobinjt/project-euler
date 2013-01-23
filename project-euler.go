@@ -127,7 +127,19 @@ func projectEuler67() {
 *    O          F
 * It's read as: A,B,C; D,C,E; F,E,B - you start with the lowest external node.
 */
-
+/*
+* Thoughts:
+* - The 10 must be in the outer ring; we want a 16 digit number, and if the 10
+*   is in the inner ring it will appear twice in the output, forcing a 17 digit
+*   solution.
+* - The first number cannot be 10, because they output would never sort 10
+*   first.
+* - There are 9*8*7 (504) permutations for the first triple (10 is excluded from
+*   the inner ring and from being the first number).  Generate them all, bucket
+*   them by sum, then sort each bucket by the first number in the triple.  In
+*   each bucket, discard any triples that don't start with the lowest number:
+*   those are rotations of another solution.
+*/
 type NGonOuter struct {
 	value int
 	inner *NGonInner
