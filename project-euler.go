@@ -203,30 +203,33 @@ type Permutable interface {
 	SetSize() int
 }
 
-type PermutableInt struct {
+/*
+* Impement Permutable for ints.
+*/
+type IntPermutation struct {
 	src []int
 	dest [][]int
 	permutation_size int
 }
-func (self PermutableInt) Copy(src_i, dest_i, dest_j int) {
+func (self *IntPermutation) Copy(src_i, dest_i, dest_j int) {
 	self.dest[dest_i][dest_j] = self.src[src_i]
 }
-func (self PermutableInt) NumPermutations() int {
+func (self *IntPermutation) NumPermutations() int {
 	return len(self.dest)
 }
-func (self PermutableInt) PermutationSize() int {
+func (self *IntPermutation) PermutationSize() int {
 	return self.permutation_size
 }
-func (self PermutableInt) SetSize() int {
+func (self *IntPermutation) SetSize() int {
 	return len(self.src)
 }
-func NewPermutableInt(set []int, permutation_size int) PermutableInt {
+func NewIntPermutation(set []int, permutation_size int) PermutableInt {
 	set_size := len(set)
-	num_permutations, err := numPermutations(set_size, permutation_size)
+	num_permutations, err := NumPermutations(set_size, permutation_size)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	result := PermutableInt{
+	result := IntPermutation{
 		permutation_size: permutation_size,
 		src: make([]int, set_size),
 		dest: make([][]int, num_permutations),
@@ -235,12 +238,18 @@ func NewPermutableInt(set []int, permutation_size int) PermutableInt {
 		result.src[i] = value
 	}
 	for i := range result.dest {
-		result.dest[i] = make([]int, len(set))
+		result.dest[i] = make([]int, permutation_size)
 	}
 	return result
 }
 
-func numPermutations(set_size, permutation_size int) (int, error) {
+/*
+* Calculates the number of permutations that would be generated.
+* Args:
+*  set_size: the number of elements in the set.
+*  permutation_size: the number of elements in each permutation.
+*/
+func NumPermutations(set_size, permutation_size int) (int, error) {
 	if set_size < permutation_size {
 		return 0, errors.New(fmt.Sprintf(
 			"set_size (%v) < permutation_size (%v)", set_size,
@@ -253,27 +262,46 @@ func numPermutations(set_size, permutation_size int) (int, error) {
 	return result, nil
 }
 
+/*
+* Generate all the permutations.
+*/
 func Permute(set Permutable) {
-	fmt.Printf("%+v", set)
+	used := make([]bool, set.SetSize())
+	permute(set, used, 0, 0, set.NumPermutations(), set.SetSize())
+}
+
+/*
+* permute: does the real work of generating permutations.
+* Args:
+*  set: the set to operate on.
+*  used: whether each element has already been used.
+*  col: the column in the dest array to operate on.
+*  start: the first index to operate on.
+*  end: the first index NOT to operate on.
+*  num_unused: how many elements are unused.
+*/
+func permute(set Permutable, used []bool, col, start, end, num_unused int) {
+	reps := (end - start) / num_unused
+	permutation_size := set.PermutationSize()
+	for i := range used {
+		if used[i] {
+			continue
+		}
+		for j := 0; j < reps; j++ {
+			set.Copy(i, start + j, col)
+		}
+		if col + 1 < permutation_size {
+			used[i] = true
+			permute(set, used, col + 1, start, start + reps,
+				num_unused - 1)
+			used[i] = false
+		}
+		start += reps
+	}
 }
 
 func main() {
-	pairs := [][]int {
-		{10, 3},
-		{10, 0},
-		{4, 3},
-		{4, 2},
-		{3, 2},
-		{5, 3},
-	}
-	for _, pair := range pairs {
-		result, err := numPermutations(pair[0], pair[1])
-		if err != nil {
-			log.Fatalln(err)
-		}
-		fmt.Printf("%d/%d: %d\n", pair[0], pair[1], result)
-	}
-	set := NewPermutableInt([]int{1, 2, 3, 4}, 3)
-	fmt.Printf("%v\n", set)
-	Permute(set)
+	set := NewIntPermutation([]int{1, 2, 3, 4}, 3)
+	Permute(&set)
+	fmt.Printf("%+v\n", set)
 }
