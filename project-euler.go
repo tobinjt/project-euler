@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -176,9 +177,91 @@ func NewNGon(n int) *NGon {
 	return gon
 }
 
+/*
+* An interface for permutable arrays.
+*/
+type Permutable interface {
+	// self.dest[dest_i][dest_j] = self.src[src_i].
+	Copy(src_i, dest_i, dest_j int)
+	// len(self.dest)
+	NumPermutations() int
+	// self,permutation_size
+	PermutationSize() int
+	// len(self.dest)
+	SetSize() int
+}
+
+type PermutableInt struct {
+	src []int
+	dest [][]int
+	permutation_size int
+}
+func (self PermutableInt) Copy(src_i, dest_i, dest_j int) {
+	self.dest[dest_i][dest_j] = self.src[src_i]
+}
+func (self PermutableInt) NumPermutations() int {
+	return len(self.dest)
+}
+func (self PermutableInt) PermutationSize() int {
+	return self.permutation_size
+}
+func (self PermutableInt) SetSize() int {
+	return len(self.src)
+}
+func NewPermutableInt(set []int, permutation_size int) PermutableInt {
+	set_size := len(set)
+	num_permutations, err := numPermutations(set_size, permutation_size)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	result := PermutableInt{
+		permutation_size: permutation_size,
+		src: make([]int, set_size),
+		dest: make([][]int, num_permutations),
+	}
+	for i, value := range set {
+		result.src[i] = value
+	}
+	for i := range result.dest {
+		result.dest[i] = make([]int, len(set))
+	}
+	return result
+}
+
+func numPermutations(set_size, permutation_size int) (int, error) {
+	if set_size < permutation_size {
+		return 0, errors.New(fmt.Sprintf(
+			"set_size (%v) < permutation_size (%v)", set_size,
+			permutation_size))
+	}
+	result := 1
+	for i := set_size; i > set_size - permutation_size; i-- {
+		result *= i
+	}
+	return result, nil
+}
+
+func Permute(set Permutable) {
+	fmt.Printf("%+v", set)
+}
+
 func main() {
-	gon := NewNGon(3)
-	gon.inners[0].outer.value = 1
-	gon.inners[2].outer.value = 2
-	fmt.Printf("%+v\n", gon)
+	pairs := [][]int {
+		{10, 3},
+		{10, 0},
+		{4, 3},
+		{4, 2},
+		{3, 2},
+		{5, 3},
+	}
+	for _, pair := range pairs {
+		result, err := numPermutations(pair[0], pair[1])
+		if err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Printf("%d/%d: %d\n", pair[0], pair[1], result)
+	}
+	set := NewPermutableInt([]int{1, 2, 3, 4}, 3)
+	fmt.Printf("%v\n", set)
+	Permute(set)
 }
