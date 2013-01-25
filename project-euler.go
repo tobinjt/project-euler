@@ -190,7 +190,7 @@ func NewNGon(n int) *NGon {
 	return gon
 }
 
-func (gon *NGon) NGonContainsTriple(triple [3]int) bool {
+func (gon *NGon) ContainsTriple(triple []int) bool {
 	for _, outer := range gon.outers {
 		if triple[0] == outer.value &&
 			triple[1] == outer.inner.value &&
@@ -201,7 +201,7 @@ func (gon *NGon) NGonContainsTriple(triple [3]int) bool {
 	return false
 }
 
-func (gon * NGon) Set(index int, triple [3]int) {
+func (gon * NGon) Set(index int, triple []int) {
 	if index >= len(gon.outers) {
 		log.Fatalf("index out of range: %d >= %d\n", index,
 			len(gon.outers))
@@ -323,13 +323,31 @@ func permute(set Permutable, used []bool, col, start, end, num_unused int) {
 }
 
 func projectEuler68() {
-	set := NewIntPermutation([]int{1, 2, 3, 4, 5, 6, 7, 8, 9}, 3)
+	ngon_size := 3
+	numbers := []int{1, 2, 3, 4, 5, 6}
+	set := NewIntPermutation(numbers, 3)
 	Permute(&set)
-	// ngons := make([]NGon, 0)
+	ngons := make([]NGon, 0)
+
+	TRIPLE:
 	for i := set.NumPermutations() - 1; i >= 0; i-- {
 		triple := set.dest[i]
 		if triple[0] > 6 {
 			continue
+		}
+		for _, ngon := range ngons {
+			if ngon.ContainsTriple(triple) {
+				continue TRIPLE
+			}
+		}
+
+		gon := NewNGon(ngon_size)
+		gon.Set(0, triple)
+		sum := 0
+		used := make([]bool, len(set.src) + 1)
+		for _, num := range triple {
+			sum += num
+			used[num] = true
 		}
 		fmt.Print(triple)
 	}
