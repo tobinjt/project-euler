@@ -132,13 +132,14 @@ func projectEuler67() {
 * - The 10 must be in the outer ring; we want a 16 digit number, and if the 10
 *   is in the inner ring it will appear twice in the output, forcing a 17 digit
 *   solution.
-* - The first number cannot be 10, because they output would never sort 10
+* - The first number cannot be 10, because the output would never sort 10
 *   first.
 * - There are 9*8*7 (504) permutations for the first triple (10 is excluded from
-*   the inner ring and from being the first number).  Generate them all, bucket
-*   them by sum, then sort each bucket by the first number in the triple.  In
-*   each bucket, discard any triples that don't start with the lowest number:
-*   those are rotations of another solution.
+*   the inner ring and from being the first number).
+* - The answer will not begin with 9, 8, or 7, because there will always be a
+*   smaller starting digit in the 5-gon.
+* - Starting with the higher valued triples, check if the triple is present in
+*   an existing 5-gon; if not try to generate a 5-gon.
 */
 type NGonOuter struct {
 	value int
@@ -189,6 +190,27 @@ func NewNGon(n int) *NGon {
 	return gon
 }
 
+func (gon *NGon) NGonContainsTriple(triple [3]int) bool {
+	for _, outer := range gon.outers {
+		if triple[0] == outer.value &&
+			triple[1] == outer.inner.value &&
+			triple[2] == outer.inner.inner.value {
+			return true
+		}
+	}
+	return false
+}
+
+func (gon * NGon) Set(index int, triple [3]int) {
+	if index >= len(gon.outers) {
+		log.Fatalf("index out of range: %d >= %d\n", index,
+			len(gon.outers))
+	}
+	gon.outers[index].value = triple[0]
+	gon.outers[index].inner.value = triple[1]
+	gon.outers[index].inner.inner.value = triple[2]
+}
+
 /*
 * An interface for permutable arrays.
 */
@@ -223,7 +245,7 @@ func (self *IntPermutation) PermutationSize() int {
 func (self *IntPermutation) SetSize() int {
 	return len(self.src)
 }
-func NewIntPermutation(set []int, permutation_size int) PermutableInt {
+func NewIntPermutation(set []int, permutation_size int) IntPermutation {
 	set_size := len(set)
 	num_permutations, err := NumPermutations(set_size, permutation_size)
 	if err != nil {
@@ -300,8 +322,22 @@ func permute(set Permutable, used []bool, col, start, end, num_unused int) {
 	}
 }
 
-func main() {
-	set := NewIntPermutation([]int{1, 2, 3, 4}, 3)
+func projectEuler68() {
+	set := NewIntPermutation([]int{1, 2, 3, 4, 5, 6, 7, 8, 9}, 3)
 	Permute(&set)
-	fmt.Printf("%+v\n", set)
+	// ngons := make([]NGon, 0)
+	for i := set.NumPermutations() - 1; i >= 0; i-- {
+		triple := set.dest[i]
+		if triple[0] > 6 {
+			continue
+		}
+		fmt.Print(triple)
+	}
+}
+
+func main() {
+	projectEuler68()
+	// gon := NewNGon(3)
+	// gon.Set(
+
 }
