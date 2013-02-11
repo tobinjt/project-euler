@@ -211,6 +211,22 @@ func (gon * NGon) Set(index int, triple []int) {
 	gon.outers[index].inner.inner.value = triple[2]
 }
 
+func (gon * NGon) Get(index int) []int {
+	return []int{
+		gon.outers[index].value,
+		gon.outers[index].inner.value,
+		gon.outers[index].inner.inner.value,
+	}
+}
+
+func (gon * NGon) Copy() *NGon {
+	newgon := NewNGon(len(gon.inners))
+	for i := range gon.inners {
+		newgon.Set(i, gon.Get(i))
+	}
+	return newgon
+}
+
 /*
 * An interface for permutable arrays.
 */
@@ -322,6 +338,10 @@ func permute(set Permutable, used []bool, col, start, end, num_unused int) {
 	}
 }
 
+// func fillNGon(gon NGon, sum, next int, used []bool) []NGon {
+// 	results := make([]NGon, 0)
+// }
+
 func projectEuler68() {
 	ngon_size := 3
 	numbers := []int{1, 2, 3, 4, 5, 6}
@@ -333,6 +353,7 @@ func projectEuler68() {
 	for i := set.NumPermutations() - 1; i >= 0; i-- {
 		triple := set.dest[i]
 		if triple[0] > 6 {
+			// The NGon would start with a lower number.
 			continue
 		}
 		for _, ngon := range ngons {
@@ -354,7 +375,13 @@ func projectEuler68() {
 }
 
 func main() {
-	projectEuler68()
+	foo := NewNGon(3)
+	bar := foo.Copy()
+	fmt.Println(foo)
+	foo.Set(0, []int{1, 2, 3})
+	fmt.Println(foo)
+	fmt.Println(bar)
+	//projectEuler68()
 	// gon := NewNGon(3)
 	// gon.Set(
 
