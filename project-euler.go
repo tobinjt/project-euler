@@ -139,7 +139,8 @@ func projectEuler67() {
 * - The answer will not begin with 9, 8, or 7, because there will always be a
 *   smaller starting digit in the 5-gon.
 * - Starting with the higher valued triples, check if the triple is present in
-*   an existing 5-gon; if not try to generate a 5-gon.
+*   an existing 5-gon; if not try to generate a 5-gon.  This doesn't happen much
+*   in practice, at least when testing with 3-gons.
 * - If the outer value in a starting triple is lower than the outer value of the
 *   first triple (as it would be printed) in a valid NGon, we can discard that
 *   triple.  An NGon starting with that triple would not be the answer we want,
@@ -352,28 +353,41 @@ func permute(set Permutable, used []bool, col, start, end, num_unused int) {
 // Recursively fill an NGon, returning an array of filled NGons.
 func fillNGon(gon *NGon, sum, next_index_to_fill int, used []bool) []NGon {
 	if next_index_to_fill == len(gon.outers) {
-		fmt.Println(gon)
 		return []NGon{*gon}
 	}
 	// We're constructing a triple [X, Y, Z].  Y is already set from the
 	// previous triple.  X + Y + Z == sum.
 	results := make([]NGon, 0)
-	y := gon.Get(next_index_to_fill - 1)[2]
+	triple := gon.Get(next_index_to_fill)
+	y := triple[1]
 NUMBER:
 	for x := range used {
 		z := sum - (x + y)
-		// fmt.Println(next_index_to_fill, len(used), x, y, z)
 		if x == y || x == z || y == z {
 			continue NUMBER
 		}
-		if used[x] || z >= len(used) || z <= 0 || used[z] {
+		if z >= len(used) || z <= 0 {
 			continue NUMBER
 		}
+		if used[x] {
+			continue NUMBER
+		}
+		// When filling the last triple, z will already have been used.
+		if triple[2] != 0 && triple[2] != z {
+			continue NUMBER
+		}
+		if used[z] && triple[2] == 0 {
+			continue NUMBER
+		}
+
+		// x and z have passed the checks, recurse and see if we can
+		// fill the rest of the NGon.
 		used[x] = true
 		used[z] = true
-		for _, triple := range [][]int{[]int{x, y, z}, []int{z, y, x}} {
+		new_triples := [][]int{[]int{x, y, z}, []int{z, y, x}}
+		for _, new_triple := range new_triples {
 			newgon := gon.Copy()
-			newgon.Set(next_index_to_fill, triple)
+			newgon.Set(next_index_to_fill, new_triple)
 			results = append(results, fillNGon(newgon, sum,
 				next_index_to_fill+1, used)...)
 		}
