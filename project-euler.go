@@ -140,6 +140,11 @@ func projectEuler67() {
 *   smaller starting digit in the 5-gon.
 * - Starting with the higher valued triples, check if the triple is present in
 *   an existing 5-gon; if not try to generate a 5-gon.
+* - If the outer value in a starting triple is lower than the outer value of the
+*   first triple (as it would be printed) in a valid NGon, we can discard that
+*   triple.  An NGon starting with that triple would not be the answer we want,
+*   and if the NGon is better it must start with a different triple and so we
+*   would find it anyway.
 */
 type NGonOuter struct {
 	value int
@@ -156,12 +161,22 @@ type NGon struct {
 }
 
 func (inner NGonInner) String() string {
-	return fmt.Sprintf("%v, %v, %v", inner.outer.value, inner.value,
+	return fmt.Sprintf("%v,%v,%v", inner.outer.value, inner.value,
 		inner.inner.value)
 }
 
 func (gon *NGon) String() string {
 	results := make([]string, 0)
+	first := gon.StartIndex()
+	for i := range gon.inners {
+		inner := gon.inners[(first + i) % len(gon.inners)]
+		results = append(results, fmt.Sprint(inner))
+	}
+	return fmt.Sprintf("%v: ", len(gon.inners)) +
+		strings.Join(results, "; ")
+}
+
+func (gon *NGon) StartIndex() int {
 	first, value := 0, gon.inners[0].outer.value
 	for i := range gon.inners {
 		if gon.inners[i].outer.value < value {
@@ -169,12 +184,7 @@ func (gon *NGon) String() string {
 			value = gon.inners[i].outer.value
 		}
 	}
-	for i := range gon.inners {
-		inner := gon.inners[(first + i) % len(gon.inners)]
-		results = append(results, fmt.Sprint(inner))
-	}
-	return fmt.Sprintf("%v: ", len(gon.inners)) +
-		strings.Join(results, "; ")
+	return first
 }
 
 func NewNGon(n int) *NGon {
@@ -338,23 +348,61 @@ func permute(set Permutable, used []bool, col, start, end, num_unused int) {
 	}
 }
 
-// func fillNGon(gon NGon, sum, next int, used []bool) []NGon {
-// 	results := make([]NGon, 0)
-// }
+// Recursively fill an NGon, returning an array of filled NGons.
+func fillNGon(gon *NGon, sum, next_index_to_fill int, used []bool) []NGon {
+	if next_index_to_fill == len(gon.outers) {
+		fmt.Println(gon)
+		return []NGon{*gon}
+	}
+	// We're constructing a triple [X, Y, Z].  Y is already set from the
+	// previous triple.  X + Y + Z == sum.
+	results := make([]NGon, 0)
+	y := gon.Get(next_index_to_fill - 1)[2]
+	NUMBER:
+	for x := range used {
+		z := sum - (x + y)
+		// fmt.Println(next_index_to_fill, len(used), x, y, z)
+		if x == y || x == z || y == z {
+			continue NUMBER
+		}
+		if used[x] || z >= len(used) || z <= 0 || used[z] {
+			continue NUMBER
+		}
+		used[x] = true
+		used[z] = true
+		for _, triple := range [][]int{[]int{x, y, z}, []int{z, y, x}} {
+			newgon := gon.Copy()
+			newgon.Set(next_index_to_fill, triple)
+			results = append(results, fillNGon(newgon, sum,
+				next_index_to_fill + 1, used)...)
+		}
+		used[x] = false
+		used[z] = false
+	}
+	return results
+}
 
 func projectEuler68() {
-	ngon_size := 3
 	numbers := []int{1, 2, 3, 4, 5, 6}
 	set := NewIntPermutation(numbers, 3)
 	Permute(&set)
 	ngons := make([]NGon, 0)
+	ngon_size := 3
+	// We won't consider triples whose first value is lower than this;
+	// either the NGon would not be the answer or we would find it from
+	// another starting triple.
+	best_start_digit := 0
 
 	TRIPLE:
 	for i := set.NumPermutations() - 1; i >= 0; i-- {
 		triple := set.dest[i]
 		if triple[0] > 6 {
 			// The NGon would start with a lower number.
-			continue
+			continue TRIPLE
+		}
+		if triple[0] < best_start_digit {
+			// We have a better answer already.
+			continue TRIPLE
 		}
 		for _, ngon := range ngons {
 			if ngon.ContainsTriple(triple) {
@@ -362,27 +410,28 @@ func projectEuler68() {
 			}
 		}
 
-		gon := NewNGon(ngon_size)
-		gon.Set(0, triple)
+		newgon := NewNGon(ngon_size)
+		newgon.Set(0, triple)
 		sum := 0
 		used := make([]bool, len(set.src) + 1)
+		// We'll never use 0, but marking it used here simplifies the
+		// logic later.
+		used[0] = true
 		for _, num := range triple {
 			sum += num
 			used[num] = true
 		}
-		fmt.Print(triple)
+		gons := fillNGon(newgon, sum, 1, used)
+		ngons = append(ngons, gons...)
+		for _, gon := range gons {
+			i := gon.StartIndex()
+			if gon.outers[i].value > best_start_digit {
+				best_start_digit = gon.outers[i].value
+			}
+		}
 	}
 }
 
 func main() {
-	foo := NewNGon(3)
-	bar := foo.Copy()
-	fmt.Println(foo)
-	foo.Set(0, []int{1, 2, 3})
-	fmt.Println(foo)
-	fmt.Println(bar)
-	//projectEuler68()
-	// gon := NewNGon(3)
-	// gon.Set(
-
+	projectEuler68()
 }
