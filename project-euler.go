@@ -116,7 +116,7 @@ func projectEuler67() {
 * Using the numbers 1 to 10, and depending on arrangements, it is possible to
 * form 16- and 17-digit strings. What is the maximum 16-digit string for a
 * "magic" 5-gon ring?
-*/
+ */
 /*
 * The images are missing, so here's a description: an X-gon ring has X/2 nodes
 * in a ring, and X/2 nodes hanging off the ring.  E.g. a 3-gon looks like:
@@ -126,7 +126,7 @@ func projectEuler67() {
 *   \          \
 *    O          F
 * It's read as: A,B,C; D,C,E; F,E,B - you start with the lowest external node.
-*/
+ */
 /*
 * Thoughts:
 * - The 10 must be in the outer ring; we want a 16 digit number, and if the 10
@@ -145,7 +145,7 @@ func projectEuler67() {
 *   triple.  An NGon starting with that triple would not be the answer we want,
 *   and if the NGon is better it must start with a different triple and so we
 *   would find it anyway.
-*/
+ */
 type NGonOuter struct {
 	value int
 	inner *NGonInner
@@ -169,7 +169,7 @@ func (gon *NGon) String() string {
 	results := make([]string, 0)
 	first := gon.StartIndex()
 	for i := range gon.inners {
-		inner := gon.inners[(first + i) % len(gon.inners)]
+		inner := gon.inners[(first+i)%len(gon.inners)]
 		results = append(results, fmt.Sprint(inner))
 	}
 	return fmt.Sprintf("%v: ", len(gon.inners)) +
@@ -194,7 +194,7 @@ func NewNGon(n int) *NGon {
 	}
 	for i := range gon.inners {
 		gon.inners[i].outer = &gon.outers[i]
-		gon.inners[i].inner = &gon.inners[(i + 1) % n]
+		gon.inners[i].inner = &gon.inners[(i+1)%n]
 		gon.outers[i].inner = &gon.inners[i]
 	}
 	return gon
@@ -211,7 +211,7 @@ func (gon *NGon) ContainsTriple(triple []int) bool {
 	return false
 }
 
-func (gon * NGon) Set(index int, triple []int) {
+func (gon *NGon) Set(index int, triple []int) {
 	if index >= len(gon.outers) {
 		log.Fatalf("index out of range: %d >= %d\n", index,
 			len(gon.outers))
@@ -221,7 +221,7 @@ func (gon * NGon) Set(index int, triple []int) {
 	gon.outers[index].inner.inner.value = triple[2]
 }
 
-func (gon * NGon) Get(index int) []int {
+func (gon *NGon) Get(index int) []int {
 	return []int{
 		gon.outers[index].value,
 		gon.outers[index].inner.value,
@@ -229,7 +229,7 @@ func (gon * NGon) Get(index int) []int {
 	}
 }
 
-func (gon * NGon) Copy() *NGon {
+func (gon *NGon) Copy() *NGon {
 	newgon := NewNGon(len(gon.inners))
 	for i := range gon.inners {
 		newgon.Set(i, gon.Get(i))
@@ -239,7 +239,7 @@ func (gon * NGon) Copy() *NGon {
 
 /*
 * An interface for permutable arrays.
-*/
+ */
 type Permutable interface {
 	// self.dest[dest_i][dest_j] = self.src[src_i].
 	Copy(src_i, dest_i, dest_j int)
@@ -253,12 +253,13 @@ type Permutable interface {
 
 /*
 * Impement Permutable for ints.
-*/
+ */
 type IntPermutation struct {
-	src []int
-	dest [][]int
+	src              []int
+	dest             [][]int
 	permutation_size int
 }
+
 func (self *IntPermutation) Copy(src_i, dest_i, dest_j int) {
 	self.dest[dest_i][dest_j] = self.src[src_i]
 }
@@ -279,8 +280,8 @@ func NewIntPermutation(set []int, permutation_size int) IntPermutation {
 	}
 	result := IntPermutation{
 		permutation_size: permutation_size,
-		src: make([]int, set_size),
-		dest: make([][]int, num_permutations),
+		src:              make([]int, set_size),
+		dest:             make([][]int, num_permutations),
 	}
 	for i, value := range set {
 		result.src[i] = value
@@ -296,7 +297,7 @@ func NewIntPermutation(set []int, permutation_size int) IntPermutation {
 * Args:
 *  set_size: the number of elements in the set.
 *  permutation_size: the number of elements in each permutation.
-*/
+ */
 func NumPermutations(set_size, permutation_size int) (int, error) {
 	if set_size < permutation_size {
 		return 0, errors.New(fmt.Sprintf(
@@ -304,7 +305,7 @@ func NumPermutations(set_size, permutation_size int) (int, error) {
 			permutation_size))
 	}
 	result := 1
-	for i := set_size; i > set_size - permutation_size; i-- {
+	for i := set_size; i > set_size-permutation_size; i-- {
 		result *= i
 	}
 	return result, nil
@@ -312,7 +313,7 @@ func NumPermutations(set_size, permutation_size int) (int, error) {
 
 /*
 * Generate all the permutations.
-*/
+ */
 func Permute(set Permutable) {
 	used := make([]bool, set.SetSize())
 	permute(set, used, 0, 0, set.NumPermutations(), set.SetSize())
@@ -327,7 +328,7 @@ func Permute(set Permutable) {
 *  start: the first index to operate on.
 *  end: the first index NOT to operate on.
 *  num_unused: how many elements are unused.
-*/
+ */
 func permute(set Permutable, used []bool, col, start, end, num_unused int) {
 	reps := (end - start) / num_unused
 	permutation_size := set.PermutationSize()
@@ -336,12 +337,12 @@ func permute(set Permutable, used []bool, col, start, end, num_unused int) {
 			continue
 		}
 		for j := 0; j < reps; j++ {
-			set.Copy(i, start + j, col)
+			set.Copy(i, start+j, col)
 		}
-		if col + 1 < permutation_size {
+		if col+1 < permutation_size {
 			used[i] = true
-			permute(set, used, col + 1, start, start + reps,
-				num_unused - 1)
+			permute(set, used, col+1, start, start+reps,
+				num_unused-1)
 			used[i] = false
 		}
 		start += reps
@@ -358,7 +359,7 @@ func fillNGon(gon *NGon, sum, next_index_to_fill int, used []bool) []NGon {
 	// previous triple.  X + Y + Z == sum.
 	results := make([]NGon, 0)
 	y := gon.Get(next_index_to_fill - 1)[2]
-	NUMBER:
+NUMBER:
 	for x := range used {
 		z := sum - (x + y)
 		// fmt.Println(next_index_to_fill, len(used), x, y, z)
@@ -374,7 +375,7 @@ func fillNGon(gon *NGon, sum, next_index_to_fill int, used []bool) []NGon {
 			newgon := gon.Copy()
 			newgon.Set(next_index_to_fill, triple)
 			results = append(results, fillNGon(newgon, sum,
-				next_index_to_fill + 1, used)...)
+				next_index_to_fill+1, used)...)
 		}
 		used[x] = false
 		used[z] = false
@@ -393,7 +394,7 @@ func projectEuler68() {
 	// another starting triple.
 	best_start_digit := 0
 
-	TRIPLE:
+TRIPLE:
 	for i := set.NumPermutations() - 1; i >= 0; i-- {
 		triple := set.dest[i]
 		if triple[0] > 6 {
@@ -413,7 +414,7 @@ func projectEuler68() {
 		newgon := NewNGon(ngon_size)
 		newgon.Set(0, triple)
 		sum := 0
-		used := make([]bool, len(set.src) + 1)
+		used := make([]bool, len(set.src)+1)
 		// We'll never use 0, but marking it used here simplifies the
 		// logic later.
 		used[0] = true
