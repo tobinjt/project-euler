@@ -239,7 +239,7 @@ func (gon *NGon) Copy() *NGon {
 	return newgon
 }
 
-func (gon *NGon) ToInt() (int, error) {
+func (gon *NGon) ToInt() (int64, error) {
 	number := ""
 	offset := gon.StartIndex()
 	for i := range gon.inners {
@@ -249,7 +249,7 @@ func (gon *NGon) ToInt() (int, error) {
 			gon.outers[j].inner.value,
 			gon.outers[j].inner.inner.value)
 	}
-	return strconv.Atoi(number)
+	return strconv.ParseInt(number, 10, 64)
 }
 
 /*
@@ -364,6 +364,14 @@ func permute(set Permutable, used []bool, col, start, end, num_unused int) {
 	}
 }
 
+// Go doesn't provide sorting methods for int64.
+// Int64Slice attaches the methods of Interface to []int64, sorting in increasing order.
+type Int64Slice []int64
+
+func (p Int64Slice) Len() int           { return len(p) }
+func (p Int64Slice) Less(i, j int) bool { return p[i] < p[j] }
+func (p Int64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+
 // Recursively fill an NGon, returning an array of filled NGons.
 func fillNGon(gon *NGon, sum, next_index_to_fill int, used []bool) []NGon {
 	if next_index_to_fill == len(gon.outers) {
@@ -412,7 +420,7 @@ NUMBER:
 }
 
 func projectEuler68() {
-	numbers := []int{1, 2, 3, 4, 5, 6} //, 7, 8, 9, 10}
+	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	set := NewIntPermutation(numbers, 3)
 	Permute(&set)
 	ngons := make([]NGon, 0)
@@ -460,7 +468,7 @@ TRIPLE:
 		}
 	}
 
-	sort_me := make([]int, len(ngons))
+	sort_me := make([]int64, len(ngons))
 	for i, gon := range ngons {
 		value, err := gon.ToInt()
 		if err != nil {
@@ -468,7 +476,7 @@ TRIPLE:
 		}
 		sort_me[i] = value
 	}
-	sort.Ints(sort_me)
+	sort.Sort(Int64Slice(sort_me))
 	fmt.Println(sort_me[len(sort_me)-1])
 }
 
