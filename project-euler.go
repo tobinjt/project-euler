@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -238,6 +239,19 @@ func (gon *NGon) Copy() *NGon {
 	return newgon
 }
 
+func (gon *NGon) ToInt() (int, error) {
+	number := ""
+	offset := gon.StartIndex()
+	for i := range gon.inners {
+		j := (i + offset) % len(gon.inners)
+		number += fmt.Sprintf("%d%d%d",
+			gon.outers[j].value,
+			gon.outers[j].inner.value,
+			gon.outers[j].inner.inner.value)
+	}
+	return strconv.Atoi(number)
+}
+
 /*
 * An interface for permutable arrays.
  */
@@ -398,11 +412,11 @@ NUMBER:
 }
 
 func projectEuler68() {
-	numbers := []int{1, 2, 3, 4, 5, 6}
+	numbers := []int{1, 2, 3, 4, 5, 6} //, 7, 8, 9, 10}
 	set := NewIntPermutation(numbers, 3)
 	Permute(&set)
 	ngons := make([]NGon, 0)
-	ngon_size := 3
+	ngon_size := len(numbers) / 2
 	// We won't consider triples whose first value is lower than this;
 	// either the NGon would not be the answer or we would find it from
 	// another starting triple.
@@ -445,6 +459,17 @@ TRIPLE:
 			}
 		}
 	}
+
+	sort_me := make([]int, len(ngons))
+	for i, gon := range ngons {
+		value, err := gon.ToInt()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		sort_me[i] = value
+	}
+	sort.Ints(sort_me)
+	fmt.Println(sort_me[len(sort_me)-1])
 }
 
 func main() {
