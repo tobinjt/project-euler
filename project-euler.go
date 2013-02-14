@@ -167,7 +167,7 @@ func (inner NGonInner) String() string {
 		inner.inner.value)
 }
 
-func (gon *NGon) String() string {
+func (gon NGon) String() string {
 	results := make([]string, 0)
 	first := gon.StartIndex()
 	for i := range gon.inners {
@@ -373,15 +373,14 @@ func (p Int64Slice) Less(i, j int) bool { return p[i] < p[j] }
 func (p Int64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 // Recursively fill an NGon, returning an array of filled NGons.
-func fillNGon(gon *NGon, sum, next_index_to_fill int, used []bool) []NGon {
-	if next_index_to_fill == len(gon.outers) {
+func fillNGon(gon *NGon, sum, index_to_fill int, used []bool) []NGon {
+	if index_to_fill == len(gon.outers) {
 		return []NGon{*gon}
 	}
 	// We're constructing a triple [X, Y, Z].  Y is already set from the
 	// previous triple.  X + Y + Z == sum.
 	results := make([]NGon, 0)
-	triple := gon.Get(next_index_to_fill)
-	y := triple[1]
+	y := gon.Get(index_to_fill - 1)[2]
 NUMBER:
 	for x := range used {
 		z := sum - (x + y)
@@ -395,24 +394,29 @@ NUMBER:
 			continue NUMBER
 		}
 		// When filling the last triple, z will already have been used.
-		if triple[2] != 0 && triple[2] != z {
-			continue NUMBER
+		if used[z] {
+			if index_to_fill != len(gon.outers)-1 {
+				continue NUMBER
+			}
+			// Check that the calculated z equals y from the first
+			// triple.
+			if z != gon.Get(0)[1] {
+				continue NUMBER
+			}
 		}
-		if used[z] && triple[2] == 0 {
+		// 10 must be in the outer ring.
+		if z == 10 {
 			continue NUMBER
 		}
 
-		// x and z have passed the checks, recurse and see if we can
-		// fill the rest of the NGon.
+		// This triple has passed the checks, recurse and see if
+		// we can fill the rest of the NGon.
 		used[x] = true
 		used[z] = true
-		new_triples := [][]int{[]int{x, y, z}, []int{z, y, x}}
-		for _, new_triple := range new_triples {
-			newgon := gon.Copy()
-			newgon.Set(next_index_to_fill, new_triple)
-			results = append(results, fillNGon(newgon, sum,
-				next_index_to_fill+1, used)...)
-		}
+		newgon := gon.Copy()
+		newgon.Set(index_to_fill, []int{x, y, z})
+		results = append(results, fillNGon(newgon, sum,
+			index_to_fill+1, used)...)
 		used[x] = false
 		used[z] = false
 	}
@@ -441,6 +445,12 @@ TRIPLE:
 			// We have a better answer already.
 			continue TRIPLE
 		}
+		if triple[1] == 10 || triple[2] == 10 {
+			// 10 must be in the outer ring.
+			continue TRIPLE
+		}
+		// TODO(johntobin): is this check correct?  Are we guaranteed to
+		// generate all the possible NGons?
 		for _, ngon := range ngons {
 			if ngon.ContainsTriple(triple) {
 				continue TRIPLE
@@ -477,6 +487,9 @@ TRIPLE:
 		sort_me[i] = value
 	}
 	sort.Sort(Int64Slice(sort_me))
+	if len(sort_me) == 0 {
+		log.Fatalln("No results found :/")
+	}
 	fmt.Println(sort_me[len(sort_me)-1])
 }
 
