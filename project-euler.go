@@ -11,6 +11,10 @@ import (
 	"strings"
 )
 
+func breakpoint() {
+	fmt.Println("breakpoint reached")
+}
+
 // Shut up about unused import.
 var _ = fmt.Println
 
@@ -170,11 +174,13 @@ func (inner NGonInner) String() string {
 func (gon NGon) String() string {
 	results := make([]string, 0)
 	first := gon.StartIndex()
+	triple := gon.Get(first)
+	sum := triple[0] + triple[1] + triple[2]
 	for i := range gon.inners {
 		inner := gon.inners[(first+i)%len(gon.inners)]
 		results = append(results, fmt.Sprint(inner))
 	}
-	return fmt.Sprintf("%v: ", len(gon.inners)) +
+	return fmt.Sprintf("sum: %v: first: %v ", sum, first) +
 		strings.Join(results, "; ")
 }
 
@@ -375,6 +381,14 @@ func (p Int64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 // Recursively fill an NGon, returning an array of filled NGons.
 func fillNGon(gon *NGon, sum, index_to_fill int, used []bool) []NGon {
 	if index_to_fill == len(gon.outers) {
+		for i, val := range used {
+			if !val {
+				err := (fmt.Sprintf("%d is unused: %v\n%v\n", i,
+					used, gon))
+				fmt.Print(err)
+				panic(err)
+			}
+		}
 		return []NGon{*gon}
 	}
 	// We're constructing a triple [X, Y, Z].  Y is already set from the
@@ -409,6 +423,7 @@ NUMBER:
 			continue NUMBER
 		}
 
+		breakpoint()
 		// This triple has passed the checks, recurse and see if
 		// we can fill the rest of the NGon.
 		used[x] = true
@@ -437,6 +452,7 @@ func projectEuler68() {
 TRIPLE:
 	for i := set.NumPermutations() - 1; i >= 0; i-- {
 		triple := set.dest[i]
+		// XXX triple = []int{6, 7, 3}
 		if triple[0] > 6 {
 			// The NGon would start with a lower number.
 			continue TRIPLE
@@ -468,6 +484,7 @@ TRIPLE:
 			sum += num
 			used[num] = true
 		}
+		breakpoint()
 		gons := fillNGon(newgon, sum, 1, used)
 		ngons = append(ngons, gons...)
 		for _, gon := range gons {
@@ -478,6 +495,9 @@ TRIPLE:
 		}
 	}
 
+	for _, gon := range ngons {
+		fmt.Println(gon)
+	}
 	sort_me := make([]int64, len(ngons))
 	for i, gon := range ngons {
 		value, err := gon.ToInt()
