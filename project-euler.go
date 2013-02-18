@@ -433,7 +433,13 @@ NUMBER:
 		results = append(results, fillNGon(newgon, sum,
 			index_to_fill+1, used)...)
 		used[x] = false
-		used[z] = false
+		// It is incorrect to mark z as unused when filling the last
+		// triple, because it's being used for the second time: marking
+		// it unused would let it be used in other triples, resulting in
+		// it being used in the first, Nth, and final triples.
+		if index_to_fill != len(gon.outers)-1 {
+			used[z] = false
+		}
 	}
 	return results
 }
@@ -452,7 +458,6 @@ func projectEuler68() {
 TRIPLE:
 	for i := set.NumPermutations() - 1; i >= 0; i-- {
 		triple := set.dest[i]
-		// XXX triple = []int{6, 7, 3}
 		if triple[0] > 6 {
 			// The NGon would start with a lower number.
 			continue TRIPLE
