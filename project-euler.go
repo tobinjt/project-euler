@@ -34,10 +34,10 @@ var _ = fmt.Println
 * one-hundred rows.
 *
 * NOTE: This is a much more difficult version of Problem 18. It is not possible
-* to try every route to solve this problem, as there are 299 altogether! If you
-* could check one trillion (1012) routes every second it would take over twenty
-* billion years to check them all. There is an efficient algorithm to solve it.
-* ;o)
+* to try every route to solve this problem, as there are 2**99 altogether! If
+* you could check one trillion (1012) routes every second it would take over
+* twenty billion years to check them all. There is an efficient algorithm to
+* solve it.  ;o)
  */
 func parseTriangle(filename string) ([][]int, error) {
 	fh, err := os.Open(filename)
@@ -145,7 +145,8 @@ func projectEuler67() {
 *   smaller starting digit in the 5-gon.
 * - Starting with the higher valued triples, check if the triple is present in
 *   an existing 5-gon; if not try to generate a 5-gon.  This doesn't happen much
-*   in practice, at least when testing with 3-gons.
+*   with 3-gons, but eliminates 102 of 504 5-Gons.  TODO(johntobin): Are we
+*   guaranteed to generate all the possible NGons?  It works, but is it correct?
 * - If the outer value in a starting triple is lower than the outer value of the
 *   first triple (as it would be printed) in a valid NGon, we can discard that
 *   triple.  An NGon starting with that triple would not be the answer we want,
@@ -170,7 +171,6 @@ func (inner NGonInner) String() string {
 	return fmt.Sprintf("%v,%v,%v", inner.outer.value, inner.value,
 		inner.inner.value)
 }
-
 func (gon NGon) String() string {
 	results := make([]string, 0)
 	first := gon.StartIndex()
@@ -183,18 +183,6 @@ func (gon NGon) String() string {
 	return fmt.Sprintf("sum: %v: first: %v ", sum, first) +
 		strings.Join(results, "; ")
 }
-
-func (gon *NGon) StartIndex() int {
-	first, value := 0, gon.inners[0].outer.value
-	for i := range gon.inners {
-		if gon.inners[i].outer.value < value {
-			first = i
-			value = gon.inners[i].outer.value
-		}
-	}
-	return first
-}
-
 func NewNGon(n int) *NGon {
 	gon := &NGon{
 		inners: make([]NGonInner, n),
@@ -207,7 +195,16 @@ func NewNGon(n int) *NGon {
 	}
 	return gon
 }
-
+func (gon *NGon) StartIndex() int {
+	first, value := 0, gon.inners[0].outer.value
+	for i := range gon.inners {
+		if gon.inners[i].outer.value < value {
+			first = i
+			value = gon.inners[i].outer.value
+		}
+	}
+	return first
+}
 func (gon *NGon) ContainsTriple(triple []int) bool {
 	for _, outer := range gon.outers {
 		if triple[0] == outer.value &&
@@ -218,25 +215,26 @@ func (gon *NGon) ContainsTriple(triple []int) bool {
 	}
 	return false
 }
-
 func (gon *NGon) Set(index int, triple []int) {
 	if index >= len(gon.outers) {
-		log.Fatalf("index out of range: %d >= %d\n", index,
+		log.Fatalf("Set(): index out of range: %d >= %d\n", index,
 			len(gon.outers))
 	}
 	gon.outers[index].value = triple[0]
 	gon.outers[index].inner.value = triple[1]
 	gon.outers[index].inner.inner.value = triple[2]
 }
-
 func (gon *NGon) Get(index int) []int {
+	if index >= len(gon.outers) {
+		log.Fatalf("Get(): index out of range: %d >= %d\n", index,
+			len(gon.outers))
+	}
 	return []int{
 		gon.outers[index].value,
 		gon.outers[index].inner.value,
 		gon.outers[index].inner.inner.value,
 	}
 }
-
 func (gon *NGon) Copy() *NGon {
 	newgon := NewNGon(len(gon.inners))
 	for i := range gon.inners {
@@ -244,7 +242,6 @@ func (gon *NGon) Copy() *NGon {
 	}
 	return newgon
 }
-
 func (gon *NGon) ToInt() (int64, error) {
 	number := ""
 	offset := gon.StartIndex()
@@ -391,6 +388,7 @@ func fillNGon(gon *NGon, sum, index_to_fill int, used []bool) []NGon {
 		}
 		return []NGon{*gon}
 	}
+
 	// We're constructing a triple [X, Y, Z].  Y is already set from the
 	// previous triple.  X + Y + Z == sum.
 	results := make([]NGon, 0)
@@ -407,7 +405,11 @@ NUMBER:
 		if used[x] {
 			continue NUMBER
 		}
-		// When filling the last triple, z will already have been used.
+		// 10 must be in the outer ring.
+		if z == 10 {
+			continue NUMBER
+		}
+		// When filling the final triple, z will already have been used.
 		if used[z] {
 			if index_to_fill != len(gon.outers)-1 {
 				continue NUMBER
@@ -418,12 +420,7 @@ NUMBER:
 				continue NUMBER
 			}
 		}
-		// 10 must be in the outer ring.
-		if z == 10 {
-			continue NUMBER
-		}
 
-		breakpoint()
 		// This triple has passed the checks, recurse and see if
 		// we can fill the rest of the NGon.
 		used[x] = true
@@ -434,9 +431,10 @@ NUMBER:
 			index_to_fill+1, used)...)
 		used[x] = false
 		// It is incorrect to mark z as unused when filling the last
-		// triple, because it's being used for the second time: marking
-		// it unused would let it be used in other triples, resulting in
-		// it being used in the first, Nth, and final triples.
+		// triple, because it's being used for the second time, and
+		// marking it unused would let it be used in other triples,
+		// resulting in it being used in the first, Nth, and final
+		// triples.
 		if index_to_fill != len(gon.outers)-1 {
 			used[z] = false
 		}
@@ -470,8 +468,6 @@ TRIPLE:
 			// 10 must be in the outer ring.
 			continue TRIPLE
 		}
-		// TODO(johntobin): is this check correct?  Are we guaranteed to
-		// generate all the possible NGons?
 		for _, ngon := range ngons {
 			if ngon.ContainsTriple(triple) {
 				continue TRIPLE
@@ -489,7 +485,6 @@ TRIPLE:
 			sum += num
 			used[num] = true
 		}
-		breakpoint()
 		gons := fillNGon(newgon, sum, 1, used)
 		ngons = append(ngons, gons...)
 		for _, gon := range gons {
@@ -500,9 +495,6 @@ TRIPLE:
 		}
 	}
 
-	for _, gon := range ngons {
-		fmt.Println(gon)
-	}
 	sort_me := make([]int64, len(ngons))
 	for i, gon := range ngons {
 		value, err := gon.ToInt()
