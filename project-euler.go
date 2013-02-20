@@ -511,5 +511,5 @@ TRIPLE:
 }
 
 func main() {
-	projectEuler68()
+	projectEuler67()
 }
