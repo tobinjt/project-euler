@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"sort"
@@ -39,13 +40,7 @@ var _ = fmt.Println
 * twenty billion years to check them all. There is an efficient algorithm to
 * solve it.  ;o)
  */
-func parseTriangle(filename string) ([][]int, error) {
-	fh, err := os.Open(filename)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	defer fh.Close()
+func parseTriangle(fh io.Reader) ([][]int, error) {
 	bfh := bufio.NewReader(fh)
 	triangle := make([][]int, 0)
 	for {
@@ -75,7 +70,12 @@ func parseTriangle(filename string) ([][]int, error) {
 }
 
 func projectEuler67() {
-	triangle, err := parseTriangle("triangle.txt")
+	fh, err := os.Open("triangle.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fh.Close()
+	triangle, err := parseTriangle(fh)
 	if err != nil {
 		log.Fatalln(err)
 	}
