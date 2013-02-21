@@ -55,3 +55,20 @@ func TestNgons(t *testing.T) {
 		t.Errorf("ToInt: %v != %v\n", expected_int, actual_int)
 	}
 }
+
+func TestPermutable(t *testing.T) {
+	perm := NewIntPermutation([]int{1, 2, 3}, 2)
+	Permute(&perm)
+	expected_perm := [][]int{
+		[]int{1, 2},
+		[]int{1, 3},
+		[]int{2, 1},
+		[]int{2, 3},
+		[]int{3, 1},
+		[]int{3, 2},
+	}
+	if !reflect.DeepEqual(expected_perm, perm.dest) {
+		t.Errorf("bad Permute() result: %#v != %#v\n", expected_perm,
+			perm.dest)
+	}
+}
