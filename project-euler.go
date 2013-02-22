@@ -216,19 +216,11 @@ func (gon *NGon) ContainsTriple(triple []int) bool {
 	return false
 }
 func (gon *NGon) Set(index int, triple []int) {
-	if index >= len(gon.outers) {
-		log.Fatalf("Set(): index out of range: %d >= %d\n", index,
-			len(gon.outers))
-	}
 	gon.outers[index].value = triple[0]
 	gon.outers[index].inner.value = triple[1]
 	gon.outers[index].inner.inner.value = triple[2]
 }
 func (gon *NGon) Get(index int) []int {
-	if index >= len(gon.outers) {
-		log.Fatalf("Get(): index out of range: %d >= %d\n", index,
-			len(gon.outers))
-	}
 	return []int{
 		gon.outers[index].value,
 		gon.outers[index].inner.value,
@@ -290,11 +282,11 @@ func (self *IntPermutation) PermutationSize() int {
 func (self *IntPermutation) SetSize() int {
 	return len(self.src)
 }
-func NewIntPermutation(set []int, permutation_size int) IntPermutation {
+func NewIntPermutation(set []int, permutation_size int) (IntPermutation, error) {
 	set_size := len(set)
 	num_permutations, err := NumPermutations(set_size, permutation_size)
 	if err != nil {
-		log.Fatalln(err)
+		return IntPermutation{}, err
 	}
 	result := IntPermutation{
 		permutation_size: permutation_size,
@@ -307,7 +299,7 @@ func NewIntPermutation(set []int, permutation_size int) IntPermutation {
 	for i := range result.dest {
 		result.dest[i] = make([]int, permutation_size)
 	}
-	return result
+	return result, nil
 }
 
 /*
@@ -444,7 +436,10 @@ NUMBER:
 
 func projectEuler68() {
 	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	set := NewIntPermutation(numbers, 3)
+	set, err := NewIntPermutation(numbers, 3)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	Permute(&set)
 	ngons := make([]NGon, 0)
 	ngon_size := len(numbers) / 2
@@ -512,4 +507,5 @@ TRIPLE:
 
 func main() {
 	projectEuler67()
+	projectEuler68()
 }

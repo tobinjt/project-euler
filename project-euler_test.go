@@ -57,7 +57,11 @@ func TestNgons(t *testing.T) {
 }
 
 func TestPermutable(t *testing.T) {
-	perm := NewIntPermutation([]int{1, 2, 3}, 2)
+	_, err := NewIntPermutation([]int{}, 2)
+	if err == nil {
+		t.Error("NewIntPermutation should have returned an error")
+	}
+	perm, _ := NewIntPermutation([]int{1, 2, 3}, 2)
 	Permute(&perm)
 	expected_perm := [][]int{
 		[]int{1, 2},
