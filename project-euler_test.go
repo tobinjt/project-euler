@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -37,6 +38,9 @@ func TestNgons(t *testing.T) {
 	}
 	if !gon.ContainsTriple([]int{1, 6, 4}) {
 		t.Error("expected triple not found")
+	}
+	if gon.ContainsTriple([]int{2, 7, 5}) {
+		t.Error("unexpected triple found")
 	}
 	str := gon.String()
 	if str != "sum: 11: first: 1 1,6,4; 3,4,9; 2,9,6" {
@@ -74,5 +78,14 @@ func TestPermutable(t *testing.T) {
 	if !reflect.DeepEqual(expected_perm, perm.dest) {
 		t.Errorf("bad Permute() result: %#v != %#v\n", expected_perm,
 			perm.dest)
+	}
+}
+
+func TestInt64Sort(t *testing.T) {
+	sort_me := Int64Slice{6, 3, 8, 1}
+	sort.Sort(sort_me)
+	sorted := Int64Slice{1, 3, 6, 8}
+	if !reflect.DeepEqual(sort_me, sorted) {
+		t.Errorf("sort failed: %#v != %#v\n", sort_me, sorted)
 	}
 }

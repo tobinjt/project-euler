@@ -47,7 +47,6 @@ func parseTriangle(fh io.Reader) ([][]int, error) {
 		line, err := bfh.ReadString(byte('\n'))
 		if err != nil && len(line) > 0 {
 			// Incomplete read
-			log.Println(err)
 			return nil, err
 		}
 		if err != nil {
@@ -59,7 +58,6 @@ func parseTriangle(fh io.Reader) ([][]int, error) {
 			parsed_number, err := strconv.Atoi(ascii_number)
 			if err != nil {
 				// Parsing error
-				log.Println(err)
 				return nil, err
 			}
 			numbers = append(numbers, parsed_number)
