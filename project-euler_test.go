@@ -12,8 +12,20 @@ import (
 var _ = fmt.Println
 
 func TestParseTriangle(t *testing.T) {
-	fh := bytes.NewBufferString("1\n2 3\n")
+	fh := bytes.NewBufferString("1\n2 3")
 	triangle, err := parseTriangle(fh)
+	if err == nil {
+		t.Fatal("missing newline should have failed")
+	}
+
+	fh = bytes.NewBufferString("x\n")
+	triangle, err = parseTriangle(fh)
+	if err == nil {
+		t.Fatal("non-number should have failed")
+	}
+
+	fh = bytes.NewBufferString("1\n2 3\n")
+	triangle, err = parseTriangle(fh)
 	if err != nil {
 		t.Fatal(err)
 	}
