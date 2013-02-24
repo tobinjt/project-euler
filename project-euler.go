@@ -486,6 +486,18 @@ TRIPLE:
 	return sort_me[len(sort_me)-1]
 }
 
+/*
+* Euler's Totient function, φ(n) [sometimes called the phi function], is used to
+* determine the number of numbers less than n which are relatively prime to n.
+* For example, as 1, 2, 4, 5, 7, and 8, are all less than nine and relatively
+* prime to nine, φ(9)=6.
+*
+* [See table in original description.]
+* It can be seen that n=6 produces a maximum n/φ(n) for n  10.
+*
+* Find the value of n  1,000,000 for which n/φ(n) is a maximum.
+ */
+
 func SieveOfEratosthenes(size int) []bool {
 	primes := make([]bool, size+1)
 	for i := range primes {
@@ -507,6 +519,9 @@ func SieveOfEratosthenes(size int) []bool {
 func PrimeFactors(number int, sieve []bool) []int {
 	factors := []int{}
 	remainder := number
+	if number <= 1 {
+		return factors
+	}
 	for divisor, is_prime := range sieve {
 		if remainder == 1 {
 			break
@@ -514,11 +529,11 @@ func PrimeFactors(number int, sieve []bool) []int {
 		if !is_prime {
 			continue
 		}
-		if remainder % divisor != 0 {
+		if remainder%divisor != 0 {
 			continue
 		}
 		factors = append(factors, divisor)
-		for remainder % divisor == 0 {
+		for remainder%divisor == 0 {
 			remainder /= divisor
 		}
 	}
@@ -526,8 +541,6 @@ func PrimeFactors(number int, sieve []bool) []int {
 }
 
 func projectEuler69() int64 {
-	// bound := 10 ** 6
-	// primes := SieveOfEratosthenes(bound)
 	return int64(0)
 }
 

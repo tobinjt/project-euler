@@ -126,4 +126,9 @@ func TestPrimeFactors(t *testing.T) {
 	if !reflect.DeepEqual(expected, factors) {
 		t.Errorf("PrimeFactors: %#v != %#v\n", factors, expected)
 	}
+	factors = PrimeFactors(0, primes)
+	expected = []int{}
+	if !reflect.DeepEqual(expected, factors) {
+		t.Errorf("PrimeFactors: %#v != %#v\n", factors, expected)
+	}
 }
