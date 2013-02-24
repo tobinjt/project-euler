@@ -101,3 +101,17 @@ func TestInt64Sort(t *testing.T) {
 		t.Errorf("sort failed: %#v != %#v\n", sort_me, sorted)
 	}
 }
+
+func TestProjectEuler67(t *testing.T) {
+	result := projectEuler67()
+	if result != 7273 {
+		t.Errorf("bad result from projectEuler67(): %v\n", result)
+	}
+}
+
+func TestProjectEuler68(t *testing.T) {
+	result := projectEuler68()
+	if result != 6531031914842725 {
+		t.Errorf("bad result from projectEuler68(): %v\n", result)
+	}
+}
