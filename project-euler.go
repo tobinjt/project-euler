@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"os"
 	"sort"
 	"strconv"
@@ -485,10 +486,33 @@ TRIPLE:
 	return sort_me[len(sort_me)-1]
 }
 
+func SieveOfEratosthenes(size int) []bool {
+	primes := make([]bool, size+1)
+	for i := range primes {
+		primes[i] = true
+	}
+	primes[0] = false
+	primes[1] = false
+	bound := int(math.Ceil(math.Sqrt(float64(size+1)))) + 1
+	for i := 0; i < bound; i++ {
+		if primes[i] {
+			for multiple := i * 2; multiple <= size; multiple += i {
+				primes[multiple] = false
+			}
+		}
+	}
+	return primes
+}
+
+func projectEuler69() int64 {
+	return int64(0)
+}
+
 func main() {
-	functions := map[string]func() int64 {
+	functions := map[string]func() int64{
 		"67": projectEuler67,
 		"68": projectEuler68,
+		"69": projectEuler69,
 	}
 	flag.Parse()
 	args := flag.Args()

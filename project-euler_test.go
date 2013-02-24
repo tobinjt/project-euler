@@ -109,3 +109,12 @@ func TestProjectEuler68(t *testing.T) {
 		t.Errorf("bad result from projectEuler68(): %v\n", result)
 	}
 }
+
+func TestSieveOfEratosthenes(t *testing.T) {
+	primes := SieveOfEratosthenes(10)
+	expected := []bool{false, false, true, true, false, true, false, true,
+		false, false, false}
+	if !reflect.DeepEqual(primes, expected) {
+		t.Errorf("SieveOfEratosthenes: %#v != %#v\n", primes, expected)
+	}
+}
