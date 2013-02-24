@@ -589,6 +589,23 @@ func projectEuler69() int64 {
 * - when m and n are coprime, φ(m*n) = φ(m)*φ(n).
 * - If the prime factorisation of n is given by n =p1e1*...*pnen, then
 *   φ(n) = n *(1 - 1/p1)* ... (1 - 1/pn).
+*
+* Calculate all the primes.
+* Foreach prime:
+*   phi[prime] = prime - 1
+*   power = prime * prime
+*   powers[prime] = [prime]
+*   while power < bound:
+*	phi[power] = power * (1-1/prime)
+*       push powers[prime], power
+*       power *= prime
+* // Now I have phi(X) for every power of a prime.
+* func recurse(x, i, powers, phi) {
+*     foreach power in powers[i] {
+*         number = x * power
+*         phi[number] = phi[x] * phi[power]
+*         recurse(number, i+1, powers, phi)
+* recurse(1, 0, powers, phi)
 */
 
 func main() {
