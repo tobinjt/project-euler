@@ -142,10 +142,6 @@ func projectEuler67() int64 {
 *   the inner ring and from being the first number).
 * - The answer will not begin with 9, 8, or 7, because there will always be a
 *   smaller starting digit in the 5-gon.
-* - Starting with the higher valued triples, check if the triple is present in
-*   an existing 5-gon; if not try to generate a 5-gon.  This doesn't happen much
-*   with 3-gons, but eliminates 102 of 504 5-Gons.  TODO(johntobin): Are we
-*   guaranteed to generate all the possible NGons?  It works, but is it correct?
 * - If the outer value in a starting triple is lower than the outer value of the
 *   first triple (as it would be printed) in a valid NGon, we can discard that
 *   triple.  An NGon starting with that triple would not be the answer we want,
@@ -203,16 +199,6 @@ func (gon *NGon) StartIndex() int {
 		}
 	}
 	return first
-}
-func (gon *NGon) ContainsTriple(triple []int) bool {
-	for _, outer := range gon.outers {
-		if triple[0] == outer.value &&
-			triple[1] == outer.inner.value &&
-			triple[2] == outer.inner.inner.value {
-			return true
-		}
-	}
-	return false
 }
 func (gon *NGon) Set(index int, triple []int) {
 	gon.outers[index].value = triple[0]
@@ -461,11 +447,6 @@ TRIPLE:
 		if triple[1] == 10 || triple[2] == 10 {
 			// 10 must be in the outer ring.
 			continue TRIPLE
-		}
-		for _, ngon := range ngons {
-			if ngon.ContainsTriple(triple) {
-				continue TRIPLE
-			}
 		}
 
 		newgon := NewNGon(ngon_size)

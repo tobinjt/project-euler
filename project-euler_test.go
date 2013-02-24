@@ -48,12 +48,6 @@ func TestNgons(t *testing.T) {
 	if !reflect.DeepEqual(expected_triple, triple) {
 		t.Errorf("%#v != %#v\n", expected_triple, triple)
 	}
-	if !gon.ContainsTriple([]int{1, 6, 4}) {
-		t.Error("expected triple not found")
-	}
-	if gon.ContainsTriple([]int{2, 7, 5}) {
-		t.Error("unexpected triple found")
-	}
 	str := gon.String()
 	if str != "sum: 11: first: 1 1,6,4; 3,4,9; 2,9,6" {
 		t.Error("bad string:", str)
