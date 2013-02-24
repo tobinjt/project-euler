@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -67,7 +68,7 @@ func parseTriangle(fh io.Reader) ([][]int, error) {
 	return triangle, nil
 }
 
-func projectEuler67() {
+func projectEuler67() int64 {
 	fh, err := os.Open("triangle.txt")
 	if err != nil {
 		log.Fatal(err)
@@ -88,7 +89,7 @@ func projectEuler67() {
 			}
 		}
 	}
-	fmt.Println(triangle[0][0])
+	return int64(triangle[0][0])
 }
 
 /*
@@ -432,7 +433,7 @@ NUMBER:
 	return results
 }
 
-func projectEuler68() {
+func projectEuler68() int64 {
 	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	set, err := NewIntPermutation(numbers, 3)
 	if err != nil {
@@ -500,10 +501,23 @@ TRIPLE:
 	if len(sort_me) == 0 {
 		log.Fatalln("No results found :/")
 	}
-	fmt.Println(sort_me[len(sort_me)-1])
+	return sort_me[len(sort_me)-1]
 }
 
 func main() {
-	projectEuler67()
-	projectEuler68()
+	functions := map[string]func() int64 {
+		"67": projectEuler67,
+		"68": projectEuler68,
+	}
+	flag.Parse()
+	args := flag.Args()
+	if len(args) != 1 || functions[args[0]] == nil {
+		keys := []string{}
+		for key, _ := range functions {
+			keys = append(keys, key)
+		}
+		log.Fatalln("Only 1 arg accepted from this list: " +
+			strings.Join(keys, " "))
+	}
+	fmt.Println(functions[args[0]]())
 }
