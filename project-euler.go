@@ -42,6 +42,7 @@ var _ = fmt.Println
 * twenty billion years to check them all. There is an efficient algorithm to
 * solve it.  ;o)
  */
+
 func parseTriangle(fh io.Reader) ([][]int, error) {
 	bfh := bufio.NewReader(fh)
 	triangle := make([][]int, 0)
@@ -149,6 +150,7 @@ func projectEuler67() int64 {
 *   and if the NGon is better it must start with a different triple and so we
 *   would find it anyway.
  */
+
 type NGonOuter struct {
 	value int
 	inner *NGonInner
@@ -241,7 +243,7 @@ type Permutable interface {
 	Copy(src_i, dest_i, dest_j int)
 	// len(self.dest)
 	NumPermutations() int
-	// self,permutation_size
+	// self.permutation_size
 	PermutationSize() int
 	// len(self.dest)
 	SetSize() int
@@ -559,7 +561,7 @@ func projectEuler69() int64 {
 		if !is_prime {
 			continue
 		}
-		if result * number > bound {
+		if result*number > bound {
 			break
 		}
 		result *= number
