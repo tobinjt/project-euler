@@ -1,14 +1,3 @@
-69:
-Numbers are relatively prime if they do not stare *any* prime factors.  I need the number of relatively prime numbers less than N, which equals (N - (number not relatively prime)).
-sieve to get a list of primes <= 500,001.
-Create a hash mapping primes to counts called count-numbers-factored-by.
-Loop from 1 to 1,000,000:
-    Express each number N as a product of primes.
-    Initialise a counter to 0.
-    For each prime factor of N:
-        increment counter by count-numbers-factored-by[prime]
-        increment count-numbers-factored-by[prime]
-    (N - counter) is phi(N).
 
 Problem 71:
 The result must be between 2/5 and 3/7, so I can probably figure out bounds for

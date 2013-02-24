@@ -497,6 +497,17 @@ TRIPLE:
 *
 * Find the value of n  1,000,000 for which n/φ(n) is a maximum.
  */
+/*
+* You calculate phi(N) with Euler's Totient function:
+* http://en.wikipedia.org/wiki/Totient_function
+* - phi(N) = N(product of (1-1/p) where p is a prime divisor of N)
+* - N/phi(N) = (product of (1-1/p) where p is a prime divisor of N)
+* Note that to get a larger N/phi(N) does not require a larger N, it requires
+* more prime factors, and the best way to get more prime factors is to multiply
+* all the small primes together.  Calculate the prime numbers less than
+* sqrt(1000000), then multiply them together to find the smallest product of
+* primes less than 1000000.
+ */
 
 func SieveOfEratosthenes(size int) []bool {
 	primes := make([]bool, size+1)
@@ -541,7 +552,19 @@ func PrimeFactors(number int, sieve []bool) []int {
 }
 
 func projectEuler69() int64 {
-	return int64(0)
+	bound := 1000000
+	primes := SieveOfEratosthenes(int(math.Ceil(math.Sqrt(float64(bound)))))
+	result := 1
+	for number, is_prime := range primes {
+		if !is_prime {
+			continue
+		}
+		if result * number > bound {
+			break
+		}
+		result *= number
+	}
+	return int64(result)
 }
 
 func main() {
