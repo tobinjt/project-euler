@@ -504,7 +504,30 @@ func SieveOfEratosthenes(size int) []bool {
 	return primes
 }
 
+func PrimeFactors(number int, sieve []bool) []int {
+	factors := []int{}
+	remainder := number
+	for divisor, is_prime := range sieve {
+		if remainder == 1 {
+			break
+		}
+		if !is_prime {
+			continue
+		}
+		if remainder % divisor != 0 {
+			continue
+		}
+		factors = append(factors, divisor)
+		for remainder % divisor == 0 {
+			remainder /= divisor
+		}
+	}
+	return factors
+}
+
 func projectEuler69() int64 {
+	// bound := 10 ** 6
+	// primes := SieveOfEratosthenes(bound)
 	return int64(0)
 }
 

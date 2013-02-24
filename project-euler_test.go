@@ -118,3 +118,12 @@ func TestSieveOfEratosthenes(t *testing.T) {
 		t.Errorf("SieveOfEratosthenes: %#v != %#v\n", primes, expected)
 	}
 }
+
+func TestPrimeFactors(t *testing.T) {
+	primes := SieveOfEratosthenes(10)
+	factors := PrimeFactors(15, primes)
+	expected := []int{3, 5}
+	if !reflect.DeepEqual(expected, factors) {
+		t.Errorf("PrimeFactors: %#v != %#v\n", factors, expected)
+	}
+}
