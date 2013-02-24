@@ -96,20 +96,6 @@ func TestInt64Sort(t *testing.T) {
 	}
 }
 
-func TestProjectEuler67(t *testing.T) {
-	result := projectEuler67()
-	if result != 7273 {
-		t.Errorf("bad result from projectEuler67(): %v\n", result)
-	}
-}
-
-func TestProjectEuler68(t *testing.T) {
-	result := projectEuler68()
-	if result != 6531031914842725 {
-		t.Errorf("bad result from projectEuler68(): %v\n", result)
-	}
-}
-
 func TestSieveOfEratosthenes(t *testing.T) {
 	primes := SieveOfEratosthenes(10)
 	expected := []bool{false, false, true, true, false, true, false, true,
@@ -130,5 +116,24 @@ func TestPrimeFactors(t *testing.T) {
 	expected = []int{}
 	if !reflect.DeepEqual(expected, factors) {
 		t.Errorf("PrimeFactors: %#v != %#v\n", factors, expected)
+	}
+}
+
+func TestProjectEuler(t *testing.T) {
+	table := []struct{
+		result     int64
+		function   func() int64
+		name       string
+	}{
+		{7273,             projectEuler67, "projectEuler67"},
+		{6531031914842725, projectEuler68, "projectEuler68"},
+		{510510,           projectEuler69, "projectEuler69"},
+	}
+	for _, test := range table {
+		actual := test.function()
+		if actual != test.result {
+			t.Errorf("bad result from %v(): %v != %v\n", test.name,
+				actual, test.result)
+		}
 	}
 }
