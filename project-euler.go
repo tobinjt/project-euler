@@ -606,13 +606,59 @@ func projectEuler69() int64 {
 *         phi[number] = phi[x] * phi[power]
 *         recurse(number, i+1, powers, phi)
 * recurse(1, 0, powers, phi)
-*/
+ */
+
+func projectEuler70recurse(bound, number int64, i int, powers [][]int64, phi []int64) {
+	for _, power := range powers[i] {
+		new_number := number * power
+		if new_number > bound {
+			continue
+		}
+		phi[new_number] = phi[number] * phi[power]
+		if i+1 < len(powers) {
+			projectEuler70recurse(bound, new_number, i+1, powers, phi)
+		}
+	}
+}
+
+func projectEuler70() int64 {
+	bound := int64(10 * 1000 * 1000)
+	phi := make([]int64, int(bound)+1)
+	phi[1] = 1
+	primes := SieveOfEratosthenes(int(bound) + 1)
+	powers := make([][]int64, 0)
+	powers_i := -1
+
+	for prime, is_prime := range primes {
+		if !is_prime {
+			continue
+		}
+		prime64 := int64(prime)
+		phi[prime] = prime64 - 1
+		power := prime64 * prime64
+		slice_created := false
+		for power <= bound {
+			if !slice_created {
+				powers = append(powers, make([]int64, 0))
+				powers_i++
+				slice_created = true
+			}
+			phi[int(power)] = power * (prime64 - 1) / prime64
+			powers[powers_i] = append(powers[powers_i], power)
+			power *= prime64
+		}
+	}
+	fmt.Println(powers)
+	// projectEuler70recurse(bound, 1, 0, powers, phi)
+	return int64(bound)
+}
 
 func main() {
 	functions := map[string]func() int64{
 		"67": projectEuler67,
 		"68": projectEuler68,
 		"69": projectEuler69,
+		"70": projectEuler70,
 	}
 	flag.Parse()
 	args := flag.Args()

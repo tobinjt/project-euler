@@ -120,14 +120,14 @@ func TestPrimeFactors(t *testing.T) {
 }
 
 func TestProjectEuler(t *testing.T) {
-	table := []struct{
-		result     int64
-		function   func() int64
-		name       string
+	table := []struct {
+		result   int64
+		function func() int64
+		name     string
 	}{
-		{7273,             projectEuler67, "projectEuler67"},
+		{7273, projectEuler67, "projectEuler67"},
 		{6531031914842725, projectEuler68, "projectEuler68"},
-		{510510,           projectEuler69, "projectEuler69"},
+		{510510, projectEuler69, "projectEuler69"},
 	}
 	for _, test := range table {
 		actual := test.function()
