@@ -105,6 +105,26 @@ func TestSieveOfEratosthenes(t *testing.T) {
 	}
 }
 
+func TestIntsArePermutations(t *testing.T) {
+	tests := []struct{
+		a, b int64
+		result bool
+	}{
+		{0, 0, true},
+		{0, 1, false},
+		{17, 71, true},
+		{17, 72, false},
+		{112, 121, true},
+	}
+	for _, test := range tests {
+		if IntsArePermutations(test.a, test.b) == test.result {
+			continue
+		}
+		t.Errorf("IntsArePermutations(%v, %v): bad result: %v\n",
+			test.a, test.b, test.result)
+	}
+}
+
 func TestPrimeFactors(t *testing.T) {
 	primes := SieveOfEratosthenes(10)
 	factors := PrimeFactors(15, primes)

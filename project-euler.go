@@ -608,6 +608,24 @@ func projectEuler69() int64 {
 * recurse(1, 0, powers, phi)
  */
 
+ func IntsArePermutations(a, b int64) bool {
+	 exists := make(map[int]int)
+	 for a > 0 {
+		 exists[int(a%10)]++
+		 a /= 10
+	 }
+	 for b > 0 {
+		 exists[int(b%10)]--
+		 b /= 10
+	 }
+	 for _, count := range exists {
+		 if count != 0 {
+			 return false
+		 }
+	 }
+	 return true
+ }
+
 func projectEuler70recurse(bound, number int64, i int, powers [][]int64, phi []int64) {
 	for _, power := range powers[i] {
 		new_number := number * power
