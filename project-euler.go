@@ -545,8 +545,8 @@ func PrimeFactors(number int, sieve []bool) []int {
 		if remainder%divisor != 0 {
 			continue
 		}
-		factors = append(factors, divisor)
 		for remainder%divisor == 0 {
+			factors = append(factors, divisor)
 			remainder /= divisor
 		}
 	}
@@ -639,22 +639,22 @@ func projectEuler70() int64 {
 		}
 		prime64 := int64(prime)
 		phi[prime] = prime64 - 1
-		power := prime64 * prime64
-		slice_created := false
-		for power <= bound64 {
-			if !slice_created {
-				powers = append(powers, make([]int64, 0))
-				powers_i++
-				slice_created = true
-			}
-			phi[int(power)] = power * (prime64 - 1) / prime64
-			powers[powers_i] = append(powers[powers_i], power)
-			power *= prime64
+		powers = append(powers, make([]int64, 0))
+		powers_i++
+		powers[powers_i] = append(powers[powers_i], prime64)
+		power64 := prime64 * prime64
+		for power64 <= bound64 {
+			phi[int(power64)] = power64 * (prime64 - 1) / prime64
+			powers[powers_i] = append(powers[powers_i], power64)
+			power64 *= prime64
 		}
 	}
-	fmt.Println(powers)
 	projectEuler70recurse(bound64, 1, 0, powers, phi)
 	return int64(bound)
+}
+
+func test() int64 {
+	return int64(0)
 }
 
 func main() {
@@ -663,6 +663,7 @@ func main() {
 		"68": projectEuler68,
 		"69": projectEuler69,
 		"70": projectEuler70,
+		"test": test,
 	}
 	flag.Parse()
 	args := flag.Args()

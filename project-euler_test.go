@@ -117,6 +117,11 @@ func TestPrimeFactors(t *testing.T) {
 	if !reflect.DeepEqual(expected, factors) {
 		t.Errorf("PrimeFactors: %#v != %#v\n", factors, expected)
 	}
+	factors = PrimeFactors(9, primes)
+	expected = []int{3, 3}
+	if !reflect.DeepEqual(expected, factors) {
+		t.Errorf("PrimeFactors: %#v != %#v\n", factors, expected)
+	}
 }
 
 func TestProjectEuler(t *testing.T) {
