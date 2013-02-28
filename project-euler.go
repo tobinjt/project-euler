@@ -641,8 +641,7 @@ func projectEuler70() int64 {
 		phi[prime] = prime64 - 1
 		powers = append(powers, make([]int64, 0))
 		powers_i++
-		powers[powers_i] = append(powers[powers_i], prime64)
-		power64 := prime64 * prime64
+		power64 := prime64
 		for power64 <= bound64 {
 			phi[int(power64)] = power64 * (prime64 - 1) / prime64
 			powers[powers_i] = append(powers[powers_i], power64)
