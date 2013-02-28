@@ -659,10 +659,10 @@ func test() int64 {
 
 func main() {
 	functions := map[string]func() int64{
-		"67": projectEuler67,
-		"68": projectEuler68,
-		"69": projectEuler69,
-		"70": projectEuler70,
+		"67":   projectEuler67,
+		"68":   projectEuler68,
+		"69":   projectEuler69,
+		"70":   projectEuler70,
 		"test": test,
 	}
 	flag.Parse()
