@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -270,12 +269,9 @@ func (self *IntPermutation) PermutationSize() int {
 func (self *IntPermutation) SetSize() int {
 	return len(self.src)
 }
-func NewIntPermutation(set []int, permutation_size int) (IntPermutation, error) {
+func NewIntPermutation(set []int, permutation_size int) IntPermutation {
 	set_size := len(set)
-	num_permutations, err := NumPermutations(set_size, permutation_size)
-	if err != nil {
-		return IntPermutation{}, err
-	}
+	num_permutations := NumPermutations(set_size, permutation_size)
 	result := IntPermutation{
 		permutation_size: permutation_size,
 		src:              make([]int, set_size),
@@ -287,7 +283,7 @@ func NewIntPermutation(set []int, permutation_size int) (IntPermutation, error) 
 	for i := range result.dest {
 		result.dest[i] = make([]int, permutation_size)
 	}
-	return result, nil
+	return result
 }
 
 /*
@@ -296,17 +292,12 @@ func NewIntPermutation(set []int, permutation_size int) (IntPermutation, error) 
 *  set_size: the number of elements in the set.
 *  permutation_size: the number of elements in each permutation.
  */
-func NumPermutations(set_size, permutation_size int) (int, error) {
-	if set_size < permutation_size {
-		return 0, errors.New(fmt.Sprintf(
-			"set_size (%v) < permutation_size (%v)", set_size,
-			permutation_size))
-	}
+func NumPermutations(set_size, permutation_size int) int {
 	result := 1
 	for i := set_size; i > set_size-permutation_size; i-- {
 		result *= i
 	}
-	return result, nil
+	return result
 }
 
 /*
@@ -424,10 +415,7 @@ NUMBER:
 
 func projectEuler68() int64 {
 	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	set, err := NewIntPermutation(numbers, 3)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	set := NewIntPermutation(numbers, 3)
 	Permute(&set)
 	ngons := make([]NGon, 0)
 	ngon_size := len(numbers) / 2
@@ -607,6 +595,14 @@ func projectEuler69() int64 {
 *         recurse(number, i+1, powers, phi)
 * recurse(1, 0, powers, phi)
  */
+/*
+* To minimise n/φ(n), we need to:
+* a) minimise the difference between n and φ(n), by minimising the number of
+*    prime factors in n.
+* b) maximise n so that the difference between n and φ(n) is a small fraction of
+*    n.
+*
+ */
 
 func IntsArePermutations(a, b int64) bool {
 	exists := make(map[int]int)
@@ -666,11 +662,31 @@ func projectEuler70() int64 {
 			power64 *= prime64
 		}
 	}
+
+	fmt.Println("recursing")
 	projectEuler70recurse(bound64, 1, 0, powers, phi)
-	return int64(bound)
+
+	fmt.Println("processing")
+	ratio := float64(2) / float64(phi[2])
+	number := 0
+	for n, phi_n := range phi {
+		r := float64(n) / float64(phi_n)
+		if n > 1 && r < ratio && IntsArePermutations(int64(n), phi_n) {
+			fmt.Printf("%v < %v; %v replaces %v\n",
+				r, ratio, n, number)
+			number = n
+			ratio = r
+		}
+	}
+	return int64(number)
 }
 
 func test() int64 {
+	numbers := []int{21, 291, 2817, 2991, 4435, 20617, 45421, 69271, 75841}
+	primes := SieveOfEratosthenes(75841/2)
+	for _, number := range numbers {
+		fmt.Printf("%v -> %v\n", number, PrimeFactors(number, primes))
+	}
 	return int64(0)
 }
 
