@@ -103,7 +103,7 @@ func TestSieveOfEratosthenes(t *testing.T) {
 
 func TestIntsArePermutations(t *testing.T) {
 	tests := []struct{
-		a, b int64
+		a, b int
 		result bool
 	}{
 		{0, 0, true},
@@ -149,6 +149,7 @@ func TestProjectEuler(t *testing.T) {
 		{7273, projectEuler67, "projectEuler67"},
 		{6531031914842725, projectEuler68, "projectEuler68"},
 		{510510, projectEuler69, "projectEuler69"},
+		{8319823, projectEuler70, "projectEuler70"},
 	}
 	for _, test := range table {
 		actual := test.function()

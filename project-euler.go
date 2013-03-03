@@ -577,23 +577,6 @@ func projectEuler69() int64 {
 * - when m and n are coprime, φ(m*n) = φ(m)*φ(n).
 * - If the prime factorisation of n is given by n =p1e1*...*pnen, then
 *   φ(n) = n *(1 - 1/p1)* ... (1 - 1/pn).
-*
-* Calculate all the primes.
-* Foreach prime:
-*   phi[prime] = prime - 1
-*   power = prime * prime
-*   powers[prime] = [prime]
-*   while power < bound:
-*	phi[power] = power * (1-1/prime)
-*       push powers[prime], power
-*       power *= prime
-* // Now I have phi(X) for every power of a prime.
-* func recurse(x, i, powers, phi) {
-*     foreach power in powers[i] {
-*         number = x * power
-*         phi[number] = phi[x] * phi[power]
-*         recurse(number, i+1, powers, phi)
-* recurse(1, 0, powers, phi)
  */
 /*
 * To minimise n/φ(n), we need to:
@@ -601,10 +584,12 @@ func projectEuler69() int64 {
 *    prime factors in n.
 * b) maximise n so that the difference between n and φ(n) is a small fraction of
 *    n.
-*
+* Pick a threshold, e.g. sqrt(bound)*1.5, find the primes below it, sort them in
+* descending order, generate all the pairs, and test them.  If the bound is too
+* low, increase it; if pairs don't work, try triples.
  */
 
-func IntsArePermutations(a, b int64) bool {
+func IntsArePermutations(a, b int) bool {
 	exists := make(map[int]int)
 	for a > 0 {
 		exists[int(a%10)]++
@@ -622,71 +607,39 @@ func IntsArePermutations(a, b int64) bool {
 	return true
 }
 
-func projectEuler70recurse(bound, number int64, i int, powers [][]int64, phi []int64) {
-	for _, power := range powers[i] {
-		new_number := number * power
-		if new_number > bound {
-			continue
-		}
-		phi[new_number] = phi[number] * phi[power]
-		if i+1 < len(powers) {
-			projectEuler70recurse(bound, new_number, i+1, powers, phi)
-		}
-	}
-	if i+1 < len(powers) {
-		projectEuler70recurse(bound, number, i+1, powers, phi)
-	}
-}
-
 func projectEuler70() int64 {
-	bound := 10 * 1000 * 10
-	bound64 := int64(bound)
-	phi := make([]int64, bound+1)
-	phi[1] = 1
-	primes := SieveOfEratosthenes(bound + 1)
-	powers := make([][]int64, 0)
-	powers_i := -1
-
-	for prime, is_prime := range primes {
+	bound := 10 * 1000 * 1000
+	prime_bound := int(1.5 * math.Sqrt(float64(bound)))
+	sieve := SieveOfEratosthenes(prime_bound + 1)
+	primes := make([]int, 0)
+	for prime, is_prime := range sieve {
 		if !is_prime {
 			continue
 		}
-		prime64 := int64(prime)
-		phi[prime] = prime64 - 1
-		powers = append(powers, make([]int64, 0))
-		powers_i++
-		power64 := prime64
-		for power64 <= bound64 {
-			phi[int(power64)] = power64 * (prime64 - 1) / prime64
-			powers[powers_i] = append(powers[powers_i], power64)
-			power64 *= prime64
-		}
+		primes = append(primes, prime)
 	}
 
-	fmt.Println("recursing")
-	projectEuler70recurse(bound64, 1, 0, powers, phi)
-
-	fmt.Println("processing")
-	ratio := float64(2) / float64(phi[2])
+	permutation := NewIntPermutation(primes, 2)
+	Permute(&permutation)
 	number := 0
-	for n, phi_n := range phi {
-		r := float64(n) / float64(phi_n)
-		if n > 1 && r < ratio && IntsArePermutations(int64(n), phi_n) {
-			fmt.Printf("%v < %v; %v replaces %v\n",
-				r, ratio, n, number)
+	ratio := 10.0
+	for _, pair := range permutation.dest {
+		n := pair[0] * pair[1]
+		if n > bound {
+			continue
+		}
+		phi_n := (pair[0] - 1) * (pair[1] - 1)
+		ratio_n := float64(n) / float64(phi_n)
+		if ratio_n < ratio && IntsArePermutations(n, phi_n) {
+			ratio = ratio_n
 			number = n
-			ratio = r
 		}
 	}
+
 	return int64(number)
 }
 
 func test() int64 {
-	numbers := []int{21, 291, 2817, 2991, 4435, 20617, 45421, 69271, 75841}
-	primes := SieveOfEratosthenes(75841/2)
-	for _, number := range numbers {
-		fmt.Printf("%v -> %v\n", number, PrimeFactors(number, primes))
-	}
 	return int64(0)
 }
 
