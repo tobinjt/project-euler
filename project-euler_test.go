@@ -11,6 +11,13 @@ import (
 // Shut up about unused import.
 var _ = fmt.Println
 
+func TestBreakpoint(t *testing.T) {
+	result := breakpoint()
+	if result != "breakpoint reached" {
+		t.Fatal("bad output from breakpoint: ", result)
+	}
+}
+
 func TestParseTriangle(t *testing.T) {
 	fh := bytes.NewBufferString("1\n2 3")
 	triangle, err := parseTriangle(fh)

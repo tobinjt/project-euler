@@ -13,8 +13,8 @@ import (
 	"strings"
 )
 
-func breakpoint() {
-	fmt.Println("breakpoint reached")
+func breakpoint() string {
+	return fmt.Sprint("breakpoint reached")
 }
 
 // Shut up about unused import.
