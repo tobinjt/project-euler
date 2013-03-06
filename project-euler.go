@@ -349,14 +349,6 @@ func (p Int64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 // Recursively fill an NGon, returning an array of filled NGons.
 func fillNGon(gon *NGon, sum, index_to_fill int, used []bool) []NGon {
 	if index_to_fill == len(gon.outers) {
-		for i, val := range used {
-			if !val {
-				err := (fmt.Sprintf("%d is unused: %v\n%v\n", i,
-					used, gon))
-				fmt.Print(err)
-				panic(err)
-			}
-		}
 		return []NGon{*gon}
 	}
 
