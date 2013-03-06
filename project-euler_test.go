@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/tobinjt/assert"
 	"bytes"
 	"fmt"
 	"reflect"
@@ -12,10 +13,7 @@ import (
 var _ = fmt.Println
 
 func TestBreakpoint(t *testing.T) {
-	result := breakpoint()
-	if result != "breakpoint reached" {
-		t.Fatal("bad output from breakpoint: ", result)
-	}
+	assert.Equal(t, "breakpoint()", "breakpoint reached", breakpoint())
 }
 
 func TestParseTriangle(t *testing.T) {
