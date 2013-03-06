@@ -455,10 +455,9 @@ TRIPLE:
 
 	sort_me := make([]int64, len(ngons))
 	for i, gon := range ngons {
-		value, err := gon.ToInt()
-		if err != nil {
-			log.Fatalln(err)
-		}
+		// It's not good to ignore the error, but I know it cannot
+		// happen, because I generate everything.
+		value, _ := gon.ToInt()
 		sort_me[i] = value
 	}
 	sort.Sort(Int64Slice(sort_me))
