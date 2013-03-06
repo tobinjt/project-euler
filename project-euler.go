@@ -462,9 +462,6 @@ TRIPLE:
 		sort_me[i] = value
 	}
 	sort.Sort(Int64Slice(sort_me))
-	if len(sort_me) == 0 {
-		log.Fatalln("No results found :/")
-	}
 	return sort_me[len(sort_me)-1]
 }
 
