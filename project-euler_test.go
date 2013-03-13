@@ -135,3 +135,18 @@ func TestProjectEuler(t *testing.T) {
 		}
 	}
 }
+
+func TestRealMain(t *testing.T) {
+	bad_args := [][]string{
+		[]string{},
+		[]string{"does not exist"},
+		[]string{"a", "b"},
+	}
+	for _, args := range bad_args {
+		_, err := realMain(args)
+		assert.ErrContains(t, "realMain()", err,
+			"Only 1 arg accepted from this list")
+	}
+	_, err := realMain([]string{"fortesting"})
+	assert.ErrIsNil(t, "realMain()", err)
+}

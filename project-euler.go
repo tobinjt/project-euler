@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -631,23 +632,38 @@ func test() int64 {
 	return int64(0)
 }
 
+// A dummy function to be called during testing.
+func fortesting() int64 {
+	return 0
+}
+
 func main() {
-	functions := map[string]func() int64{
-		"67":   projectEuler67,
-		"68":   projectEuler68,
-		"69":   projectEuler69,
-		"70":   projectEuler70,
-		"test": test,
-	}
 	flag.Parse()
-	args := flag.Args()
+	result, err := realMain(flag.Args())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(result)
+}
+
+func realMain(args []string) (int64, error) {
+	functions := map[string]func() int64{
+		"67":         projectEuler67,
+		"68":         projectEuler68,
+		"69":         projectEuler69,
+		"70":         projectEuler70,
+		"test":       test,
+		"fortesting": fortesting,
+	}
 	if len(args) != 1 || functions[args[0]] == nil {
 		keys := []string{}
 		for key, _ := range functions {
-			keys = append(keys, key)
+			if key != "fortesting" {
+				keys = append(keys, key)
+			}
 		}
-		log.Fatalln("Only 1 arg accepted from this list: " +
+		return 0, errors.New("Only 1 arg accepted from this list: " +
 			strings.Join(keys, " "))
 	}
-	fmt.Println(functions[args[0]]())
+	return functions[args[0]](), nil
 }
