@@ -6,6 +6,8 @@ Or, iterate over d and save the best value as I go.
 Hmm, another time I wrote:
     Bounds are 3/8 to 3/7
 
+TODO: could I start from the top instead?
+
 upper_bound := 3/7  // this will never change
 lower_bound := 2/5  // this will gradually be tightened.
 DENOMINATOR:
