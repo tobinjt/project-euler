@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/tobinjt/assert"
 	"bytes"
 	"fmt"
+	"github.com/tobinjt/assert"
 	"sort"
 	"testing"
 )
@@ -81,8 +81,8 @@ func TestSieveOfEratosthenes(t *testing.T) {
 }
 
 func TestIntsArePermutations(t *testing.T) {
-	tests := []struct{
-		a, b int
+	tests := []struct {
+		a, b   int
 		result bool
 	}{
 		{0, 0, true},
@@ -102,8 +102,8 @@ func TestIntsArePermutations(t *testing.T) {
 
 func TestPrimeFactors(t *testing.T) {
 	primes := SieveOfEratosthenes(10)
-	tests := []struct{
-		number int
+	tests := []struct {
+		number   int
 		expected []int
 	}{
 		{15, []int{3, 5}},
@@ -133,6 +133,20 @@ func TestProjectEuler(t *testing.T) {
 			t.Errorf("bad result from %v(): %v != %v\n", test.name,
 				actual, test.result)
 		}
+	}
+}
+
+func TestGreatestCommonDenominator(t *testing.T) {
+	tests := []struct {
+		a, b, expected int64
+	}{
+		{12, 8, 4},
+		{12, 7, 1},
+		{99, 44, 11},
+	}
+	for _, test := range tests {
+		assert.Equal(t, "GreatestCommonDenominator", test.expected,
+			GreatestCommonDenominator(test.a, test.b))
 	}
 }
 

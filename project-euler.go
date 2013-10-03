@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"math"
+	"math/big"
 	"os"
 	"sort"
 	"strconv"
@@ -643,7 +644,7 @@ func projectEuler70() int64 {
 * By listing the set of reduced proper fractions for d <= 1,000,000 in ascending
 * order of size, find the numerator of the fraction immediately to the left of
 * 3/7.
-*/
+ */
 /*
 * Thoughts:
 * We have an upper and lower bound (3/7 and 2/5 respectively).  The upper bound
@@ -658,7 +659,11 @@ func projectEuler70() int64 {
 * downwards, exiting the inner loop when I update the lower bound?
 * TODO: could I start the outer loop from 1000000 and work downwards?  That
 * would probably work better if the first TODO is addressed.
-*/
+ */
+
+func GreatestCommonDenominator(a, b int64) int64 {
+	return big.NewInt(0).GCD(nil, nil, big.NewInt(a), big.NewInt(b)).Int64()
+}
 
 func projectEuler71() int64 {
 	return 0
