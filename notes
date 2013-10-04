@@ -9,18 +9,13 @@ Hmm, another time I wrote:
 TODO: could I start from the top instead?
 
 upper_bound := 3/7  // this will never change
-lower_bound := 2/5  // this will gradually be tightened.
-DENOMINATOR:
-for denominator := 6; i <= 1000000; i++ {
-  // Some type coercion will be necessary here.
-  lower_numerator := denominator * lower_bound
-  upper_numerator := denominator * upper_bound
-  for numerator := upper_numerator; numerator >= lower_numerator; numerator-- {
-    fraction := numerator/denominator
-    if fraction < upper_bound && fraction > lower_bound {
-      lower_bound = fraction
-      continue DENOMINATOR
+answer := 2/5
+for denominator := 6; denominator <= 1000000; denominator++ {
+  for numerator := answer.Num(), current := numerator/denominator;
+      upper_bound.Cmp(current) == 1;
+      numerator++, current = numerator/denominator {
+    if gcd(numerator, denominator) == 1 {
+      answer = current ???
     }
   }
 }
-// Reduce the fraction.

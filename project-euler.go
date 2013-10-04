@@ -645,21 +645,6 @@ func projectEuler70() int64 {
 * order of size, find the numerator of the fraction immediately to the left of
 * 3/7.
  */
-/*
-* Thoughts:
-* We have an upper and lower bound (3/7 and 2/5 respectively).  The upper bound
-* is fixed, but the lower bound can be gradually tightened as we find better
-* answers.  The denominators range from 1 to 1000000; the numerators will range
-* from denominator*lower_bound to denominator*upper_bound.  Each time we find a
-* fraction between the lower and upper bounds, we use it as the new lower bound.
-* When we run out of denominators, the current lower bound is the fraction
-* closest to the upper bound, and just needs to be reduced.
-*
-* TODO: could I start the inner loop from denominator*upper_bound and work
-* downwards, exiting the inner loop when I update the lower bound?
-* TODO: could I start the outer loop from 1000000 and work downwards?  That
-* would probably work better if the first TODO is addressed.
- */
 
 func GreatestCommonDenominator(a, b int64) int64 {
 	return big.NewInt(0).GCD(nil, nil, big.NewInt(a), big.NewInt(b)).Int64()
