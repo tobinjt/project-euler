@@ -126,6 +126,7 @@ func TestProjectEuler(t *testing.T) {
 		{6531031914842725, projectEuler68, "projectEuler68"},
 		{510510, projectEuler69, "projectEuler69"},
 		{8319823, projectEuler70, "projectEuler70"},
+		{2, projectEuler71test, "projectEuler71"},
 	}
 	for _, test := range table {
 		actual := test.function()

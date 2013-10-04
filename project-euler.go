@@ -651,7 +651,32 @@ func GreatestCommonDenominator(a, b int64) int64 {
 }
 
 func projectEuler71() int64 {
-	return 0
+	return projectEuler71actual(1000000)
+}
+
+func projectEuler71test() int64 {
+	// This function is for testing projectEuler71actual, because it takes
+	// about 30 seconds to do the real calculation.
+	return projectEuler71actual(8)
+}
+
+func projectEuler71actual(max_denominator int64) int64 {
+	upper_bound := big.NewRat(3, 7)
+	answer := big.NewRat(1, 5)
+	var denominator int64
+	for denominator = 1; denominator <= max_denominator; denominator++ {
+		numerator := answer.Num().Int64()
+		current := big.NewRat(numerator, denominator)
+		for upper_bound.Cmp(current) == 1 {
+			if GreatestCommonDenominator(numerator, denominator) ==
+				1 && answer.Cmp(current) == -1 {
+				answer.Set(current)
+			}
+			numerator++
+			current = big.NewRat(numerator, denominator)
+		}
+	}
+	return answer.Num().Int64()
 }
 
 func test() int64 {
@@ -678,6 +703,7 @@ func realMain(args []string) (int64, error) {
 		"68":         projectEuler68,
 		"69":         projectEuler69,
 		"70":         projectEuler70,
+		"71":         projectEuler71,
 		"test":       test,
 		"fortesting": fortesting,
 	}
