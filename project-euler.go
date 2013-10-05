@@ -633,8 +633,8 @@ func projectEuler70() int64 {
 * Consider the fraction, n/d, where n and d are positive integers. If n<d and
 * HCF(n,d)=1, it is called a reduced proper fraction.
 *
-* If we list the set of reduced proper fractions for d <= 8 in ascending order of
-* size, we get:
+* If we list the set of reduced proper fractions for d <= 8 in ascending order
+* of size, we get:
 *
 * 1/8, 1/7, 1/6, 1/5, 1/4, 2/7, 1/3, 3/8, 2/5, 3/7, 1/2, 4/7, 3/5, 5/8, 2/3,
 * 5/7, 3/4, 4/5, 5/6, 6/7, 7/8
@@ -648,13 +648,14 @@ func projectEuler70() int64 {
 /*
 * We have upper (2/5) and lower (3/7) bounds, so we don't need to search the
 * entire problem space.  We don't need to generate all the possible fractions
-* between the lower and upper bounds: every time we find a better answer, we can
-* tighten the lower bound, and the lower bound will eventually be our answer.
-* We do need to generate all denominators from 5 to 1,000,000; but for each
-* denominator, the first numerator we use will be the numerator of the current
-* lower bound, and we increment the numerator until te current fraction exceeds
-* the upper bound.  If any of the fractions we generate are better than the
-* current lower bound, we replace the lower bound with that fraction.
+* between the lower and upper bounds: every time we find a fraction that is
+* better than our current lower bound, we can tighten the lower bound, and the
+* lower bound will eventually be our answer.  We do need to generate all
+* denominators from 5 to 1,000,000; but for each denominator, the first
+* numerator we use will be the numerator of the current lower bound, and we stop
+* incrementing the numerator when the current fraction exceeds the upper bound.
+* If any of the fractions we generate are better than the current lower bound,
+* we replace the lower bound with that fraction.
  */
 
 func GreatestCommonDenominator(a, b int64) int64 {
