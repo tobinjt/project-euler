@@ -707,9 +707,26 @@ func projectEuler71actual(max_denominator int64) int64 {
 * for d ≤ 1,000,000?
  */
 
- func projectEuler72() int64 {
-	 return 0
- }
+/*
+* A reduced proper fraction has gcd(numerator, denominator) == 1, which means
+* the numerator is relatively prime to the denominator.  The number of reduced
+* proper fractions with denominator D is the number of relatively prime integers
+* less than D; this is Euler's Totient function, phi.  To calculate phi for a
+* number, generate all the prime numbers less than the number, and multiply (1 -
+* 1/p) for all prime numbers (see
+* http://en.wikipedia.org/wiki/Euler's_totient_function#Euler.27s_product_formula).
+* Rather than calculating all the primes for each denominator, we can use a
+* method similar to the Sieve of Eratosthenes:
+* - initialise an array so that array[i] = i;
+* - iterate over the array from 2 onwards; for each array[i] == i, that's a prime
+*   number, and we multiple every muliple of i by (1 - 1/i).
+* Now we know phi(denominator) for every denominator, so we sum them to get the
+* answer to the problem.
+ */
+
+func projectEuler72() int64 {
+	return 0
+}
 
 func test() int64 {
 	return int64(0)
