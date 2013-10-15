@@ -724,6 +724,28 @@ func projectEuler71actual(max_denominator int64) int64 {
 * answer to the problem.
  */
 
+func MakePhiLookupTable(size int) []int64 {
+	table := make([]float64, size + 1)
+	for i := range table {
+		table[i] = float64(i)
+	}
+	for i := range table {
+		if i <= 1 || table[i] != float64(i) {
+			// i is not prime.
+			continue
+		}
+		for j := i; j <= size; j += i {
+			tmp := float64(i)
+			table[j] *= (1 - 1/tmp)
+		}
+	}
+	result := make([]int64, size + 1)
+	for i, value := range table {
+		result[i] = int64(value)
+	}
+	return result
+}
+
 func projectEuler72() int64 {
 	return 0
 }

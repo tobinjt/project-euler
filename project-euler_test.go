@@ -116,6 +116,12 @@ func TestPrimeFactors(t *testing.T) {
 	}
 }
 
+func TestMakePhiLookupTablet(t *testing.T) {
+	assert.Equal(t, "MakePhiLookupTable",
+		[]int64{0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4},
+		MakePhiLookupTable(10))
+}
+
 func TestProjectEuler(t *testing.T) {
 	table := []struct {
 		result   int64
