@@ -746,8 +746,24 @@ func MakePhiLookupTable(size int) []int64 {
 	return result
 }
 
+func projectEuler72actual(size int) int64 {
+	phi_table := MakePhiLookupTable(size)
+	var total int64 = 0
+	for _, value := range phi_table {
+		total += value
+	}
+	// 1/1 is not a reduced proper fraction, because the numerator must be
+	// less than the denominator.
+	total -= phi_table[1]
+	return total
+}
+
+func projectEuler72test() int64 {
+	return projectEuler72actual(8)
+}
+
 func projectEuler72() int64 {
-	return 0
+	return projectEuler72actual(1000000)
 }
 
 func test() int64 {
@@ -775,6 +791,7 @@ func realMain(args []string) (int64, error) {
 		"69":         projectEuler69,
 		"70":         projectEuler70,
 		"71":         projectEuler71,
+		"72":         projectEuler72,
 		"test":       test,
 		"fortesting": fortesting,
 	}
