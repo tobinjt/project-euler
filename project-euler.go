@@ -713,13 +713,13 @@ func projectEuler71actual(max_denominator int64) int64 {
 * proper fractions with denominator D is the number of relatively prime integers
 * less than D; this is Euler's Totient function, phi.  To calculate phi for a
 * number, generate all the prime numbers less than the number, and multiply (1 -
-* 1/p) for all prime numbers (see
+* 1/prime) for all prime numbers (see
 * http://en.wikipedia.org/wiki/Euler's_totient_function#Euler.27s_product_formula).
 * Rather than calculating all the primes for each denominator, we can use a
 * method similar to the Sieve of Eratosthenes:
 * - initialise an array so that array[i] = i;
-* - iterate over the array from 2 onwards; for each array[i] == i, that's a prime
-*   number, and we multiple every muliple of i by (1 - 1/i).
+* - iterate over the array from 2 onwards; when array[i] == i, that's a prime
+*   number, and we multiply every multiple of i by (1 - 1/i).
 * Now we know phi(denominator) for every denominator, so we sum them to get the
 * answer to the problem.
  */
