@@ -725,7 +725,7 @@ func projectEuler71actual(max_denominator int64) int64 {
  */
 
 func MakePhiLookupTable(size int) []int64 {
-	table := make([]float64, size + 1)
+	table := make([]float64, size+1)
 	for i := range table {
 		table[i] = float64(i)
 	}
@@ -739,7 +739,7 @@ func MakePhiLookupTable(size int) []int64 {
 			table[j] *= (1 - 1/tmp)
 		}
 	}
-	result := make([]int64, size + 1)
+	result := make([]int64, size+1)
 	for i, value := range table {
 		result[i] = int64(value)
 	}
