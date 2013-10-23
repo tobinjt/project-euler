@@ -782,13 +782,33 @@ func projectEuler72() int64 {
 * fractions for d <= 12,000?
  */
 
-/*
-* Is there a better option that generating every fraction and checking if it's
-* reduced?
- */
+func projectEuler73actual(n int64) int64 {
+	count := int64(0)
+	lower := big.NewRat(1, 3)
+	upper := big.NewRat(1, 2)
+	current := big.NewRat(1, 1)
+	// Use Farey Sequences (http://en.wikipedia.org/wiki/Farey_sequence)
+	// This is taken mostly-unchanged from Wikipedia.
+	var a, b, c, d int64
+	a, b, c, d = 0, 1, 1, n
+	for c <= n {
+		k := int64((n + b) / d)
+		a, b, c, d = c, d, k*c-a, k*d-b
+		current.Num().SetInt64(a)
+		current.Denom().SetInt64(b)
+		if lower.Cmp(current) == -1 && upper.Cmp(current) == 1 {
+			count++
+		}
+	}
+	return count
+}
+
+func projectEuler73test() int64 {
+	return projectEuler73actual(8)
+}
 
 func projectEuler73() int64 {
-	return 0
+	return projectEuler73actual(12000)
 }
 
 func test() int64 {
@@ -817,6 +837,7 @@ func realMain(args []string) (int64, error) {
 		"70":         projectEuler70,
 		"71":         projectEuler71,
 		"72":         projectEuler72,
+		"73":         projectEuler73,
 		"test":       test,
 		"fortesting": fortesting,
 	}
