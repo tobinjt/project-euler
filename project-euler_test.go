@@ -122,6 +122,14 @@ func TestMakePhiLookupTablet(t *testing.T) {
 		MakePhiLookupTable(10))
 }
 
+func TestMakeSumOfFactorials(t *testing.T) {
+	sum_of_factorials := MakeSumOfFactorials()
+	// The test results are copied from the description of problem 74.
+	assert.Equal(t, "MakeSumOfFactorials", 145, sum_of_factorials[145])
+	assert.Equal(t, "MakeSumOfFactorials", 363601, sum_of_factorials[169])
+	assert.Equal(t, "MakeSumOfFactorials", 45361, sum_of_factorials[871])
+}
+
 func TestProjectEuler(t *testing.T) {
 	table := []struct {
 		result   int64

@@ -840,6 +840,28 @@ func projectEuler73() int64 {
 *
  */
 
+// Returns a slice containing the sum of factorials for numbers up to 1000.
+// This is NOT generic - everything is hard-coded for 1000.
+func MakeSumOfFactorials() []int {
+	sum_of_factorials := make([]int, 1000)
+	sum_of_factorials[1] = 1
+	for i := 2; i < 10; i++ {
+		sum_of_factorials[i] = sum_of_factorials[i-1] * i
+	}
+	for i := 10; i < 1000; i++ {
+		i1, i2, i3 := i%10, (i/10)%10, i/100
+		sum_of_factorials[i] = sum_of_factorials[i1] +
+			sum_of_factorials[i2] + sum_of_factorials[i3]
+	}
+	return sum_of_factorials
+}
+
+func projectEuler74() int64 {
+	// chain_length := map[int]int
+	// for i := 1; i <
+	return 0
+}
+
 func test() int64 {
 	return int64(0)
 }
@@ -867,6 +889,7 @@ func realMain(args []string) (int64, error) {
 		"71":         projectEuler71,
 		"72":         projectEuler72,
 		"73":         projectEuler73,
+		"74":         projectEuler74,
 		"test":       test,
 		"fortesting": fortesting,
 	}
