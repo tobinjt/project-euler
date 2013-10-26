@@ -840,6 +840,20 @@ func projectEuler73() int64 {
 *
  */
 
+func CalculateFactorialSum(number int) int {
+	factorials := []int{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880}
+	if number == 0 {
+		return factorials[number]
+	}
+	sum := 0
+	for number > 0 {
+		digit := number%10
+		sum += factorials[digit]
+		number /= 10
+	}
+	return sum
+}
+
 func projectEuler74() int64 {
 	// chain_length := map[int]int
 	// for i := 1; i <
