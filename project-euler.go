@@ -840,14 +840,87 @@ func projectEuler73() int64 {
 *
  */
 
+func CalculateFactorialSum(number int) int {
+	factorials := []int{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880}
+	if number == 0 {
+		return factorials[number]
+	}
+	sum := 0
+	for number > 0 {
+		digit := number%10
+		sum += factorials[digit]
+		number /= 10
+	}
+	return sum
+}
+
+// Modifies chain_lengths if a necessary number is missing.
+func CalculateFactorialChainLength(chain_lengths map[int]int, number int) int {
+	sum := CalculateFactorialSum(number)
+	length, present := chain_lengths[sum]
+	if present {
+		return length + 1
+	}
+
+	// The problem tells us that the longest non-repeating chain contains 60
+	// elements.
+	chain := make([]int, 62)
+	chain[0] = number
+	chain[1] = sum
+	chain_index := 2
+
+	for ! present {
+		sum = CalculateFactorialSum(sum)
+		length, present = chain_lengths[sum]
+		if present {
+			break
+		}
+		// Check if we have found a loop.
+		for i := 0; i < chain_index; i++ {
+			if chain[i] != sum {
+				continue
+			}
+			present = true
+			length = chain_index
+			// We can only cache the length of the first sum we
+			// calculated.  Consider this chain:
+			// 69 -> 363600 -> 1454 -> 169 -> 363601 -> 1454
+			// We cannot record a chain length for 169 or 363601.
+			// We *could* record a chain length for 1454, but that's
+			// complex and doesn't save us much overall.
+			chain_lengths[chain[1]] = chain_index - 1
+		}
+		if ! present {
+			// Still no loop, extend the chain.
+			chain[chain_index] = sum
+			chain_index++
+		}
+	}
+	return length
+}
+
 func projectEuler74() int64 {
-	// chain_length := map[int]int
-	// for i := 1; i <
+	// The first 1,000,000 numbers produce 4015 unique sums, none of which
+	// are greater than 1,000,000.  Recording the chain lengths means we'll
+	// only have to follow 4015 chains fully, so we'll have a fast-path
+	// lookup for >99.5% of numbers.
+	// Maps [sum of factorials] to [chain length].
+	// Note that you'll need to add 1 to the length, because the first
+	// number is not included in the length.
+	// chain_lengths := map[int]int
+	for i := 1; i < 1000000; i++ {
+		sum := CalculateFactorialSum(i)
+		fmt.Printf("%d -> %d\n", i, sum)
+	}
 	return 0
 }
 
 func test() int64 {
-	return int64(0)
+	chain_lengths := map[int]int{}
+	length := CalculateFactorialChainLength(chain_lengths, 69)
+	fmt.Println("between")
+	length = CalculateFactorialChainLength(chain_lengths, 69)
+	return int64(0 * length)
 }
 
 // A dummy function to be called during testing.

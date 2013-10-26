@@ -122,6 +122,36 @@ func TestMakePhiLookupTablet(t *testing.T) {
 		MakePhiLookupTable(10))
 }
 
+func TestCalculateFactorialSum(t *testing.T) {
+	// The test results are copied from the description of problem 74.
+	assert.Equal(t, "CalculateFactorialSum",
+		1, CalculateFactorialSum(0))
+	assert.Equal(t, "CalculateFactorialSum",
+		720, CalculateFactorialSum(6))
+	assert.Equal(t, "CalculateFactorialSum",
+		363600, CalculateFactorialSum(69))
+	assert.Equal(t, "CalculateFactorialSum",
+		362881, CalculateFactorialSum(90))
+	assert.Equal(t, "CalculateFactorialSum",
+		145, CalculateFactorialSum(145))
+	assert.Equal(t, "CalculateFactorialSum",
+		169, CalculateFactorialSum(1454))
+	assert.Equal(t, "CalculateFactorialSum",
+		363601, CalculateFactorialSum(169))
+	assert.Equal(t, "CalculateFactorialSum",
+		45361, CalculateFactorialSum(871))
+}
+
+func TestCalculateFactorialChainLength(t *testing.T) {
+	chain_lengths := map[int]int{}
+	assert.Equal(t, "CalculateFactorialChainLength", 5, 
+		CalculateFactorialChainLength(chain_lengths, 69))
+	// Make sure we correctly use cached lengths - we cache the length of
+	// the loop for the sum, not the number, so we need to add 1.
+	assert.Equal(t, "CalculateFactorialChainLength", 5, 
+		CalculateFactorialChainLength(chain_lengths, 69))
+}
+
 func TestProjectEuler(t *testing.T) {
 	table := []struct {
 		result   int64
