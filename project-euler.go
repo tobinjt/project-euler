@@ -916,11 +916,7 @@ func projectEuler74() int64 {
 }
 
 func test() int64 {
-	chain_lengths := map[int]int{}
-	length := CalculateFactorialChainLength(chain_lengths, 69)
-	fmt.Println("between")
-	length = CalculateFactorialChainLength(chain_lengths, 69)
-	return int64(0 * length)
+	return int64(0)
 }
 
 // A dummy function to be called during testing.
