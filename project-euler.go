@@ -786,7 +786,6 @@ func projectEuler73actual(n int64) int64 {
 	count := int64(0)
 	lower := big.NewRat(1, 3)
 	upper := big.NewRat(1, 2)
-	current := big.NewRat(1, 1)
 	// Use Farey Sequences (http://en.wikipedia.org/wiki/Farey_sequence)
 	// This is taken mostly-unchanged from Wikipedia.
 	var a, b, c, d int64
@@ -794,8 +793,9 @@ func projectEuler73actual(n int64) int64 {
 	for c <= n {
 		k := int64((n + b) / d)
 		a, b, c, d = c, d, k*c-a, k*d-b
-		current.Num().SetInt64(a)
-		current.Denom().SetInt64(b)
+		// With older versions of go, changing the denominator fails, so
+		// create a new variable on each iteration.
+		current := big.NewRat(a, b)
 		if lower.Cmp(current) == -1 && upper.Cmp(current) == 1 {
 			count++
 		}
