@@ -889,6 +889,8 @@ func CalculateFactorialChainLength(chain_lengths map[int]int, number int) int {
 			// We *could* record a chain length for 1454, but that's
 			// complex and doesn't save us much overall.
 			chain_lengths[chain[1]] = chain_index - 1
+fmt.Printf("number=%d creates chain starting with %d length=%d\n", number,
+	chain[1], chain_index - 1)
 		}
 		if ! present {
 			// Still no loop, extend the chain.
@@ -907,12 +909,20 @@ func projectEuler74() int64 {
 	// Maps [sum of factorials] to [chain length].
 	// Note that you'll need to add 1 to the length, because the first
 	// number is not included in the length.
-	// chain_lengths := map[int]int
+	chain_lengths := map[int]int{}
+	counts := map[int]int{}
+	count := 0
 	for i := 1; i < 1000000; i++ {
-		sum := CalculateFactorialSum(i)
-		fmt.Printf("%d -> %d\n", i, sum)
+		length := CalculateFactorialChainLength(chain_lengths, i)
+		counts[length]++
+		if length == 1 {
+			// fmt.Println(i)
+			count++
+		}
 	}
-	return 0
+	fmt.Println(chain_lengths)
+	fmt.Println(counts)
+	return int64(count)
 }
 
 func test() int64 {
