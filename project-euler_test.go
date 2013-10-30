@@ -167,11 +167,7 @@ func TestProjectEuler(t *testing.T) {
 		{3, projectEuler73test, "projectEuler73"},
 	}
 	for _, test := range table {
-		actual := test.function()
-		if actual != test.result {
-			t.Errorf("bad result from %v(): %v != %v\n", test.name,
-				actual, test.result)
-		}
+		assert.Equal(t, test.name, test.result, test.function())
 	}
 }
 
