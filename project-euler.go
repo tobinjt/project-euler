@@ -15,6 +15,50 @@ import (
 	"strings"
 )
 
+func test() int64 {
+	return int64(0)
+}
+
+// A dummy function to be called during testing.
+func fortesting() int64 {
+	return 0
+}
+
+func main() {
+	flag.Parse()
+	result, err := realMain(flag.Args())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(result)
+}
+
+func realMain(args []string) (int64, error) {
+	functions := map[string]func() int64{
+		"67":         projectEuler67,
+		"68":         projectEuler68,
+		"69":         projectEuler69,
+		"70":         projectEuler70,
+		"71":         projectEuler71,
+		"72":         projectEuler72,
+		"73":         projectEuler73,
+		"74":         projectEuler74,
+		"test":       test,
+		"fortesting": fortesting,
+	}
+	if len(args) != 1 || functions[args[0]] == nil {
+		keys := []string{}
+		for key, _ := range functions {
+			if key != "fortesting" {
+				keys = append(keys, key)
+			}
+		}
+		return 0, errors.New("Only 1 arg accepted from this list: " +
+			strings.Join(keys, " "))
+	}
+	return functions[args[0]](), nil
+}
+
 func breakpoint() string {
 	return fmt.Sprint("breakpoint reached")
 }
@@ -923,48 +967,4 @@ func projectEuler74() int64 {
 	fmt.Println(chain_lengths)
 	fmt.Println(counts)
 	return int64(count)
-}
-
-func test() int64 {
-	return int64(0)
-}
-
-// A dummy function to be called during testing.
-func fortesting() int64 {
-	return 0
-}
-
-func main() {
-	flag.Parse()
-	result, err := realMain(flag.Args())
-	if err != nil {
-		log.Fatalln(err)
-	}
-	fmt.Println(result)
-}
-
-func realMain(args []string) (int64, error) {
-	functions := map[string]func() int64{
-		"67":         projectEuler67,
-		"68":         projectEuler68,
-		"69":         projectEuler69,
-		"70":         projectEuler70,
-		"71":         projectEuler71,
-		"72":         projectEuler72,
-		"73":         projectEuler73,
-		"74":         projectEuler74,
-		"test":       test,
-		"fortesting": fortesting,
-	}
-	if len(args) != 1 || functions[args[0]] == nil {
-		keys := []string{}
-		for key, _ := range functions {
-			if key != "fortesting" {
-				keys = append(keys, key)
-			}
-		}
-		return 0, errors.New("Only 1 arg accepted from this list: " +
-			strings.Join(keys, " "))
-	}
-	return functions[args[0]](), nil
 }
