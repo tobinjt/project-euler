@@ -144,11 +144,14 @@ func TestCalculateFactorialSum(t *testing.T) {
 
 func TestCalculateFactorialChainLength(t *testing.T) {
 	chain_lengths := map[int]int{}
-	assert.Equal(t, "CalculateFactorialChainLength", 5, 
-		CalculateFactorialChainLength(chain_lengths, 69))
-	// Make sure we correctly use cached lengths - we cache the length of
-	// the loop for the sum, not the number, so we need to add 1.
-	assert.Equal(t, "CalculateFactorialChainLength", 5, 
+	assert.Equal(t, "CalculateFactorialChainLength 169", 3,
+		CalculateFactorialChainLength(chain_lengths, 169))
+	assert.Equal(t, "CalculateFactorialChainLength 871", 2,
+		CalculateFactorialChainLength(chain_lengths, 871))
+	// One of the numbers in the chain for 69 is in the cache from
+	// calculating 169.  Make sure the caching doesn't break later
+	// calculations.
+	assert.Equal(t, "CalculateFactorialChainLength 69", 5,
 		CalculateFactorialChainLength(chain_lengths, 69))
 }
 

@@ -923,36 +923,36 @@ func CalculateFactorialChainLength(chain_lengths map[int]int, number int) int {
 	chain[1] = sum
 	chain_index := 2
 
-	for ! present {
+	for !present {
 		sum = CalculateFactorialSum(sum)
 		length, present = chain_lengths[sum]
 		if present {
-			break
+			// We found the start of a known loop.
+			length = length + chain_index - 1
+			chain_lengths[number] = length
+			return length
 		}
 		// Check if we have found a loop.
 		for i := 0; i < chain_index; i++ {
-			if chain[i] != sum {
-				continue
+			if chain[i] == sum {
+				length = chain_index
+				// We can only cache the length of the first sum
+				// we calculated.  Consider this chain:
+				// 69 -> 363600 -> 1454 -> 169 -> 363601 -> 1454
+				// We cannot record a chain length for 169 or
+				// 363601.  We *could* record a chain length for
+				// 1454, but that's complex and doesn't save us
+				// much overall.
+				chain_lengths[chain[1]] = chain_index - 1
+				chain_lengths[number] = length
+				return length
 			}
-			present = true
-			length = chain_index
-			// We can only cache the length of the first sum we
-			// calculated.  Consider this chain:
-			// 69 -> 363600 -> 1454 -> 169 -> 363601 -> 1454
-			// We cannot record a chain length for 169 or 363601.
-			// We *could* record a chain length for 1454, but that's
-			// complex and doesn't save us much overall.
-			chain_lengths[chain[1]] = chain_index - 1
-fmt.Printf("number=%d creates chain starting with %d length=%d\n", number,
-	chain[1], chain_index - 1)
 		}
-		if ! present {
-			// Still no loop, extend the chain.
-			chain[chain_index] = sum
-			chain_index++
-		}
+		// Still no loop, extend the chain.
+		chain[chain_index] = sum
+		chain_index++
 	}
-	return length
+	panic(fmt.Sprintf("Did not find chain end for %d\n", number))
 }
 
 func projectEuler74() int64 {
