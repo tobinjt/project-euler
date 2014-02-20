@@ -913,9 +913,7 @@ func CalculateFactorialChainLength(chain_lengths map[int]int, number int) int {
 	sum := CalculateFactorialSum(number)
 	length, present := chain_lengths[sum]
 	if present {
-		length = length + 1
-		chain_lengths[number] = length
-		return length
+		return length + 1
 	}
 
 	// The problem tells us that the longest non-repeating chain contains 60
@@ -930,9 +928,7 @@ func CalculateFactorialChainLength(chain_lengths map[int]int, number int) int {
 		length, present = chain_lengths[sum]
 		if present {
 			// We found the start of a known loop.
-			length = length + chain_index - 1
-			chain_lengths[number] = length
-			return length
+			return length + chain_index - 1
 		}
 		// Check if we have found a loop.
 		for i := 0; i < chain_index; i++ {
@@ -946,7 +942,6 @@ func CalculateFactorialChainLength(chain_lengths map[int]int, number int) int {
 				// 1454, but that's complex and doesn't save us
 				// much overall.
 				chain_lengths[chain[1]] = chain_index - 1
-				chain_lengths[number] = length
 				return length
 			}
 		}
