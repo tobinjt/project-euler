@@ -91,7 +91,7 @@ var _ = fmt.Println
 * solve it.  ;o)
  */
 
- // Parse a file containing a triangle of numbers.
+// Parse a file containing a triangle of numbers.
 func parseTriangle(fh io.Reader) ([][]int, error) {
 	bfh := bufio.NewReader(fh)
 	triangle := make([][]int, 0)
@@ -775,8 +775,8 @@ func projectEuler71actual(max_denominator int64) int64 {
 * answer to the problem.
  */
 
- // Generate a lookup table for Euler's Totient function, phi.  See description
- // above.
+// Generate a lookup table for Euler's Totient function, phi.  See description
+// above.
 func MakePhiLookupTable(size int) []int64 {
 	table := make([]float64, size+1)
 	for i := range table {
@@ -901,7 +901,7 @@ func CalculateFactorialSum(number int) int {
 	}
 	sum := 0
 	for number > 0 {
-		digit := number%10
+		digit := number % 10
 		sum += factorials[digit]
 		number /= 10
 	}
