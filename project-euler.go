@@ -1,3 +1,6 @@
+/*
+Solutions to Project Euler problems.
+*/
 package main
 
 import (
@@ -88,6 +91,7 @@ var _ = fmt.Println
 * solve it.  ;o)
  */
 
+ // Parse a file containing a triangle of numbers.
 func parseTriangle(fh io.Reader) ([][]int, error) {
 	bfh := bufio.NewReader(fh)
 	triangle := make([][]int, 0)
@@ -98,7 +102,7 @@ func parseTriangle(fh io.Reader) ([][]int, error) {
 			return nil, err
 		}
 		if err != nil {
-			break
+			return triangle, nil
 		}
 		line = strings.TrimRight(line, "\n")
 		numbers := make([]int, 0)
@@ -112,7 +116,6 @@ func parseTriangle(fh io.Reader) ([][]int, error) {
 		}
 		triangle = append(triangle, numbers)
 	}
-	return triangle, nil
 }
 
 func projectEuler67() int64 {
@@ -533,6 +536,7 @@ TRIPLE:
 * primes less than 1000000.
  */
 
+// Generate a prime table using Sieve of Erastosthenes.
 func SieveOfEratosthenes(size int) []bool {
 	primes := make([]bool, size+1)
 	for i := range primes {
@@ -551,6 +555,7 @@ func SieveOfEratosthenes(size int) []bool {
 	return primes
 }
 
+// Generate a list of prime factors for a number.  Factors are not deduplicated.
 func PrimeFactors(number int, sieve []bool) []int {
 	factors := []int{}
 	remainder := number
@@ -623,6 +628,7 @@ func projectEuler69() int64 {
 * low, increase it; if pairs don't work, try triples.
  */
 
+// Check if the digits in two non-negative ints are permutations.
 func IntsArePermutations(a, b int) bool {
 	exists := make(map[int]int)
 	for a > 0 {
@@ -702,6 +708,7 @@ func projectEuler70() int64 {
 * we replace the lower bound with that fraction.
  */
 
+// Determine the GCD of two numbers.
 func GreatestCommonDenominator(a, b int64) int64 {
 	return big.NewInt(0).GCD(nil, nil, big.NewInt(a), big.NewInt(b)).Int64()
 }
@@ -768,6 +775,8 @@ func projectEuler71actual(max_denominator int64) int64 {
 * answer to the problem.
  */
 
+ // Generate a lookup table for Euler's Totient function, phi.  See description
+ // above.
 func MakePhiLookupTable(size int) []int64 {
 	table := make([]float64, size+1)
 	for i := range table {
@@ -832,6 +841,7 @@ func projectEuler73actual(n int64) int64 {
 	upper := big.NewRat(1, 2)
 	// Use Farey Sequences (http://en.wikipedia.org/wiki/Farey_sequence)
 	// This is taken mostly-unchanged from Wikipedia.
+	// This is complete voodoo and I have no idea how it works :(
 	var a, b, c, d int64
 	a, b, c, d = 0, 1, 1, n
 	for c <= n {
