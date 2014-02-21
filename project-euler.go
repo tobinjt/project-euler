@@ -882,7 +882,7 @@ func projectEuler73() int64 {
 * It is not difficult to prove that EVERY starting number will eventually get
 * stuck in a loop. For example,
 *
-* 69 → 363600 → 1454 → 169 → 363601 (→ 1454 → 69 → (363601))
+* 69 → 363600 → 1454 → 169 → 363601 (→ 1454)
 * 78 → 45360 → 871 → 45361 (→ 871)
 * 540 → 145 (→ 145)
 *
@@ -893,6 +893,13 @@ func projectEuler73() int64 {
 * sixty non-repeating terms?
 *
  */
+
+/*
+* I started with heavy caching, and fought to get it right in all the possible
+* cases, but then I found that removing the caching gave me a >25% performance
+* boost.  The non-caching version is not just faster, it's much simpler and
+* clearer.
+*/
 
 func CalculateFactorialSum(number int) int {
 	factorials := []int{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880}
@@ -929,7 +936,6 @@ func CalculateFactorialChainLength(number int) int {
 		chain[chain_index] = sum
 		chain_index++
 	}
-	panic(fmt.Sprintf("Did not find chain end for %d\n", number))
 }
 
 func projectEuler74() int64 {
