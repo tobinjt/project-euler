@@ -933,18 +933,11 @@ func CalculateFactorialChainLength(number int) int {
 }
 
 func projectEuler74() int64 {
-	// The first 1,000,000 numbers produce 4015 unique sums, none of which
-	// are greater than 1,000,000.
-	counts := map[int]int{}
 	count := 0
 	for i := 1; i < 1000000; i++ {
-		length := CalculateFactorialChainLength(i)
-		counts[length]++
-		if length == 60 {
-			fmt.Println(i)
+		if CalculateFactorialChainLength(i) == 60 {
 			count++
 		}
 	}
-	fmt.Printf("counts: %v\n", counts)
 	return int64(count)
 }
