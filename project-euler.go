@@ -909,31 +909,7 @@ func CalculateFactorialSum(number int) int {
 }
 
 func CalculateFactorialChainLength(number int) int {
-	// These are magic numbers taken from the problem description.
-	chain_lengths := map[int]int{
-		1454: 3,
-		145: 1,
-		169: 3,
-		363601: 3,
-		45361: 2,
-		45362: 2,
-		871: 2,
-		872: 2,
-	}
-
-	length, present := chain_lengths[number]
-	if present {
-// fmt.Printf("number %d length %d\n", number, length + 1)
-		return length
-	}
 	sum := CalculateFactorialSum(number)
-// fmt.Printf("number %d sum %d\n", number, sum)
-	length, present = chain_lengths[sum]
-	if present {
-// fmt.Printf("number %d sum %d length %d\n", number, sum, length + 1)
-		return length + 1
-	}
-
 	// The problem tells us that the longest non-repeating chain contains 60
 	// elements.
 	chain := make([]int, 62)
@@ -941,21 +917,12 @@ func CalculateFactorialChainLength(number int) int {
 	chain[1] = sum
 	chain_index := 2
 
-	for !present {
+	for {
 		sum = CalculateFactorialSum(sum)
-		length, present = chain_lengths[sum]
-		if present {
-// fmt.Printf("number %d sum %d length %d chain_index %d final %d\n", number, sum, length,
-// chain_index, length + chain_index - 1)
-			// We found the start of a known loop.
-			return length + chain_index
-		}
 		// Check if we have found a loop.
-// fmt.Printf("number %d chain_index %d chain %v\n", number, chain_index, chain)
 		for i := 0; i < chain_index; i++ {
 			if chain[i] == sum {
 				return chain_index
-// fmt.Printf("number %d sum %d == chain[%d] %d\n", number, sum, i, chain[i])
 			}
 		}
 		// Still no loop, extend the chain.
