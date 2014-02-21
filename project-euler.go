@@ -882,7 +882,7 @@ func projectEuler73() int64 {
 * It is not difficult to prove that EVERY starting number will eventually get
 * stuck in a loop. For example,
 *
-* 69 → 363600 → 1454 → 169 → 363601 (→ 1454)
+* 69 → 363600 → 1454 → 169 → 363601 (→ 1454 → 69 → (363601))
 * 78 → 45360 → 871 → 45361 (→ 871)
 * 540 → 145 (→ 145)
 *
@@ -908,11 +908,29 @@ func CalculateFactorialSum(number int) int {
 	return sum
 }
 
-// Modifies chain_lengths if a necessary number is missing.
-func CalculateFactorialChainLength(chain_lengths map[int]int, number int) int {
-	sum := CalculateFactorialSum(number)
-	length, present := chain_lengths[sum]
+func CalculateFactorialChainLength(number int) int {
+	// These are magic numbers taken from the problem description.
+	chain_lengths := map[int]int{
+		1454: 3,
+		145: 1,
+		169: 3,
+		363601: 3,
+		45361: 2,
+		45362: 2,
+		871: 2,
+		872: 2,
+	}
+
+	length, present := chain_lengths[number]
 	if present {
+// fmt.Printf("number %d length %d\n", number, length + 1)
+		return length
+	}
+	sum := CalculateFactorialSum(number)
+// fmt.Printf("number %d sum %d\n", number, sum)
+	length, present = chain_lengths[sum]
+	if present {
+// fmt.Printf("number %d sum %d length %d\n", number, sum, length + 1)
 		return length + 1
 	}
 
@@ -927,22 +945,17 @@ func CalculateFactorialChainLength(chain_lengths map[int]int, number int) int {
 		sum = CalculateFactorialSum(sum)
 		length, present = chain_lengths[sum]
 		if present {
+// fmt.Printf("number %d sum %d length %d chain_index %d final %d\n", number, sum, length,
+// chain_index, length + chain_index - 1)
 			// We found the start of a known loop.
-			return length + chain_index - 1
+			return length + chain_index
 		}
 		// Check if we have found a loop.
+// fmt.Printf("number %d chain_index %d chain %v\n", number, chain_index, chain)
 		for i := 0; i < chain_index; i++ {
 			if chain[i] == sum {
-				length = chain_index
-				// We can only cache the length of the first sum
-				// we calculated.  Consider this chain:
-				// 69 -> 363600 -> 1454 -> 169 -> 363601 -> 1454
-				// We cannot record a chain length for 169 or
-				// 363601.  We *could* record a chain length for
-				// 1454, but that's complex and doesn't save us
-				// much overall.
-				chain_lengths[chain[1]] = chain_index - 1
-				return length
+				return chain_index
+// fmt.Printf("number %d sum %d == chain[%d] %d\n", number, sum, i, chain[i])
 			}
 		}
 		// Still no loop, extend the chain.
@@ -954,24 +967,17 @@ func CalculateFactorialChainLength(chain_lengths map[int]int, number int) int {
 
 func projectEuler74() int64 {
 	// The first 1,000,000 numbers produce 4015 unique sums, none of which
-	// are greater than 1,000,000.  Recording the chain lengths means we'll
-	// only have to follow 4015 chains fully, so we'll have a fast-path
-	// lookup for >99.5% of numbers.
-	// Maps [sum of factorials] to [chain length].
-	// Note that you'll need to add 1 to the length, because the first
-	// number is not included in the length.
-	chain_lengths := map[int]int{}
+	// are greater than 1,000,000.
 	counts := map[int]int{}
 	count := 0
 	for i := 1; i < 1000000; i++ {
-		length := CalculateFactorialChainLength(chain_lengths, i)
+		length := CalculateFactorialChainLength(i)
 		counts[length]++
-		if length == 1 {
-			// fmt.Println(i)
+		if length == 60 {
+			fmt.Println(i)
 			count++
 		}
 	}
-	fmt.Println(chain_lengths)
-	fmt.Println(counts)
+	fmt.Printf("counts: %v\n", counts)
 	return int64(count)
 }

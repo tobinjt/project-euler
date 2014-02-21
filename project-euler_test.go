@@ -140,19 +140,23 @@ func TestCalculateFactorialSum(t *testing.T) {
 		363601, CalculateFactorialSum(169))
 	assert.Equal(t, "CalculateFactorialSum",
 		45361, CalculateFactorialSum(871))
+	assert.Equal(t, "CalculateFactorialSum",
+		45360, CalculateFactorialSum(78))
 }
 
 func TestCalculateFactorialChainLength(t *testing.T) {
-	chain_lengths := map[int]int{}
 	assert.Equal(t, "CalculateFactorialChainLength 169", 3,
-		CalculateFactorialChainLength(chain_lengths, 169))
+		CalculateFactorialChainLength(169))
 	assert.Equal(t, "CalculateFactorialChainLength 871", 2,
-		CalculateFactorialChainLength(chain_lengths, 871))
-	// One of the numbers in the chain for 69 is in the cache from
-	// calculating 169.  Make sure the caching doesn't break later
-	// calculations.
+		CalculateFactorialChainLength(871))
 	assert.Equal(t, "CalculateFactorialChainLength 69", 5,
-		CalculateFactorialChainLength(chain_lengths, 69))
+		CalculateFactorialChainLength(69))
+	assert.Equal(t, "CalculateFactorialChainLength 78", 4,
+		CalculateFactorialChainLength(78))
+	assert.Equal(t, "CalculateFactorialChainLength 540", 2,
+		CalculateFactorialChainLength(540))
+	assert.Equal(t, "CalculateFactorialChainLength 4197", 60,
+		CalculateFactorialChainLength(4197))
 }
 
 func TestProjectEuler(t *testing.T) {
