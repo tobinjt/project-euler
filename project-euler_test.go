@@ -11,6 +11,54 @@ import (
 // Shut up about unused import.
 var _ = fmt.Println
 
+func TestProjectEuler(t *testing.T) {
+	table := []struct {
+		result   int64
+		function func() int64
+		name     string
+	}{
+		{7273, projectEuler67, "projectEuler67"},
+		{6531031914842725, projectEuler68, "projectEuler68"},
+		{510510, projectEuler69, "projectEuler69"},
+		{8319823, projectEuler70, "projectEuler70"},
+		{2, projectEuler71test, "projectEuler71"},
+		{21, projectEuler72test, "projectEuler72"},
+		{3, projectEuler73test, "projectEuler73"},
+	}
+	for _, test := range table {
+		assert.Equal(t, test.name, test.result, test.function())
+	}
+}
+
+func TestGreatestCommonDenominator(t *testing.T) {
+	tests := []struct {
+		a, b, expected int64
+	}{
+		{12, 8, 4},
+		{12, 7, 1},
+		{99, 44, 11},
+	}
+	for _, test := range tests {
+		assert.Equal(t, "GreatestCommonDenominator", test.expected,
+			GreatestCommonDenominator(test.a, test.b))
+	}
+}
+
+func TestRealMain(t *testing.T) {
+	bad_args := [][]string{
+		[]string{},
+		[]string{"does not exist"},
+		[]string{"a", "b"},
+	}
+	for _, args := range bad_args {
+		_, err := realMain(args)
+		assert.ErrContains(t, "realMain()", err,
+			"Only 1 arg accepted from this list")
+	}
+	_, err := realMain([]string{"fortesting"})
+	assert.ErrIsNil(t, "realMain()", err)
+}
+
 func TestBreakpoint(t *testing.T) {
 	assert.Equal(t, "breakpoint()", "breakpoint reached", breakpoint())
 }
@@ -157,52 +205,4 @@ func TestCalculateFactorialChainLength(t *testing.T) {
 		CalculateFactorialChainLength(540))
 	assert.Equal(t, "CalculateFactorialChainLength 4197", 60,
 		CalculateFactorialChainLength(4197))
-}
-
-func TestProjectEuler(t *testing.T) {
-	table := []struct {
-		result   int64
-		function func() int64
-		name     string
-	}{
-		{7273, projectEuler67, "projectEuler67"},
-		{6531031914842725, projectEuler68, "projectEuler68"},
-		{510510, projectEuler69, "projectEuler69"},
-		{8319823, projectEuler70, "projectEuler70"},
-		{2, projectEuler71test, "projectEuler71"},
-		{21, projectEuler72test, "projectEuler72"},
-		{3, projectEuler73test, "projectEuler73"},
-	}
-	for _, test := range table {
-		assert.Equal(t, test.name, test.result, test.function())
-	}
-}
-
-func TestGreatestCommonDenominator(t *testing.T) {
-	tests := []struct {
-		a, b, expected int64
-	}{
-		{12, 8, 4},
-		{12, 7, 1},
-		{99, 44, 11},
-	}
-	for _, test := range tests {
-		assert.Equal(t, "GreatestCommonDenominator", test.expected,
-			GreatestCommonDenominator(test.a, test.b))
-	}
-}
-
-func TestRealMain(t *testing.T) {
-	bad_args := [][]string{
-		[]string{},
-		[]string{"does not exist"},
-		[]string{"a", "b"},
-	}
-	for _, args := range bad_args {
-		_, err := realMain(args)
-		assert.ErrContains(t, "realMain()", err,
-			"Only 1 arg accepted from this list")
-	}
-	_, err := realMain([]string{"fortesting"})
-	assert.ErrIsNil(t, "realMain()", err)
 }
