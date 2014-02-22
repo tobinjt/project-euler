@@ -900,7 +900,7 @@ func projectEuler73() int64 {
 * cases, but then I found that removing the caching gave me a >25% performance
 * boost.  The non-caching version is not just faster, it's much simpler and
 * clearer.
-*/
+ */
 
 func CalculateFactorialSum(number int) int {
 	factorials := []int{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880}
@@ -978,8 +978,8 @@ func projectEuler74() int64 {
 * array of 1.5M ints.  Start with 3, 4, 5, then generate all the child triples.
 * Maintain a queue of children, sum the lengths of each child, and increment
 * every multiple of that sum.  Eventually there will be no more children whose
-* sum is <=1.5M.  Then count the all the array elements whose value is 1, and
-* that's the answer.
+* sum is <=1.5M.  Then count all the array elements whose value is 1, and that's
+* the answer.
  */
 
 type PythagoreanTriple struct {
