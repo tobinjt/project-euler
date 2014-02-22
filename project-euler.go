@@ -46,6 +46,7 @@ func realMain(args []string) (int64, error) {
 		"72":         projectEuler72,
 		"73":         projectEuler73,
 		"74":         projectEuler74,
+		"75":         projectEuler75,
 		"test":       test,
 		"fortesting": fortesting,
 	}
@@ -946,4 +947,61 @@ func projectEuler74() int64 {
 		}
 	}
 	return int64(count)
+}
+
+/*
+* It turns out that 12 cm is the smallest length of wire that can be bent to
+* form an integer sided right angle triangle in exactly one way, but there are
+* many more examples.
+*
+* 12 cm: (3,4,5)
+* 24 cm: (6,8,10)
+* 30 cm: (5,12,13)
+* 36 cm: (9,12,15)
+* 40 cm: (8,15,17)
+* 48 cm: (12,16,20)
+*
+* In contrast, some lengths of wire, like 20 cm, cannot be bent to form an
+* integer sided right angle triangle, and other lengths allow more than one
+* solution to be found; for example, using 120 cm it is possible to form exactly
+* three different integer sided right angle triangles.
+*
+* 120 cm: (30,40,50), (20,48,52), (24,45,51)
+*
+* Given that L is the length of the wire, for how many values of L ≤ 1,500,000
+* can exactly one integer sided right angle triangle be formed?
+*
+ */
+
+func projectEuler75() int64 {
+	return 0
+}
+
+type PythagoreanTriple struct {
+	a, b, c int
+}
+
+// Generate three child PythagoreanTriple from a parent PythagoreanTriple.
+// http://en.wikipedia.org/wiki/Pythagorean_triple#Parent.2Fchild_relationships
+func (parent PythagoreanTriple) MakeChildren() []PythagoreanTriple {
+	child1 := PythagoreanTriple{
+		a: parent.a - (2 * parent.b) + (2 * parent.c),
+		b: (2 * parent.a) - parent.b + (2 * parent.c),
+		c: (2 * parent.a) - (2 * parent.b) + (3 * parent.c),
+	}
+	child2 := PythagoreanTriple{
+		a: parent.a + (2 * parent.b) + (2 * parent.c),
+		b: (2 * parent.a) + parent.b + (2 * parent.c),
+		c: (2 * parent.a) + (2 * parent.b) + (3 * parent.c),
+	}
+	child3 := PythagoreanTriple{
+		a: (-1 * parent.a) + (2 * parent.b) + (2 * parent.c),
+		b: (-2 * parent.a) + parent.b + (2 * parent.c),
+		c: (-2 * parent.a) + (2 * parent.b) + (3 * parent.c),
+	}
+	return []PythagoreanTriple{
+		child1,
+		child2,
+		child3,
+	}
 }

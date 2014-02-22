@@ -206,3 +206,14 @@ func TestCalculateFactorialChainLength(t *testing.T) {
 	assert.Equal(t, "CalculateFactorialChainLength 4197", 60,
 		CalculateFactorialChainLength(4197))
 }
+
+func TestMakeChildren(t *testing.T) {
+	parent := PythagoreanTriple{a: 3, b: 4, c: 5,}
+	expected_children := []PythagoreanTriple{
+		PythagoreanTriple{a: 5, b: 12, c: 13},
+		PythagoreanTriple{a: 21, b: 20, c: 29},
+		PythagoreanTriple{a: 15, b: 8, c: 17},
+	}
+	children := parent.MakeChildren()
+	assert.Equal(t, "MakeChildren", expected_children, children)
+}
