@@ -973,9 +973,14 @@ func projectEuler74() int64 {
 *
  */
 
-func projectEuler75() int64 {
-	return 0
-}
+/*
+* I'm going to take a similar approach to Sieve of Eratosthenes.  Initialise an
+* array of 1.5M ints.  Start with 3, 4, 5, then generate all the child triples.
+* Maintain a queue of children, sum the lengths of each child, and increment
+* every multiple of that sum.  Eventually there will be no more children whose
+* sum is <=1.5M.  Then count the all the array elements whose value is 1, and
+* that's the answer.
+ */
 
 type PythagoreanTriple struct {
 	a, b, c int
@@ -1004,4 +1009,44 @@ func (parent PythagoreanTriple) MakeChildren() []PythagoreanTriple {
 		child2,
 		child3,
 	}
+}
+
+func projectEuler75() int64 {
+	return projectEuler75_actual(1500000)
+}
+
+func projectEuler75test() int64 {
+	return projectEuler75_actual(100)
+}
+
+func projectEuler75_actual(upper_bound int) int64 {
+	counts := make([]int, upper_bound+1)
+	triples := make([]PythagoreanTriple, 1)
+	triples[0] = PythagoreanTriple{a: 3, b: 4, c: 5}
+
+	for index := 0; index < len(triples); index++ {
+		triple := triples[index]
+		children := triple.MakeChildren()
+		for _, child := range children {
+			sum := child.a + child.b + child.c
+			if sum <= upper_bound {
+				triples = append(triples, child)
+			}
+		}
+
+		sum := triple.a + triple.b + triple.c
+		multiple := sum
+		for multiple <= upper_bound {
+			counts[multiple]++
+			multiple += sum
+		}
+	}
+
+	result := 0
+	for _, count := range counts {
+		if count == 1 {
+			result++
+		}
+	}
+	return int64(result)
 }
