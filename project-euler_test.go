@@ -25,6 +25,7 @@ func TestProjectEuler(t *testing.T) {
 		{21, projectEuler72test, "projectEuler72"},
 		{3, projectEuler73test, "projectEuler73"},
 		{11, projectEuler75test, "projectEuler75"},
+		{626, projectEuler76test, "projectEuler75"},
 	}
 	for _, test := range table {
 		assert.Equal(t, test.name, test.result, test.function())
@@ -220,6 +221,8 @@ func TestMakeChildren(t *testing.T) {
 }
 
 func TestNumIntegerPartitions(t *testing.T) {
+	// Caching shouldn't break the tests.
+	assert.Equal(t, "NumIntegerPartitions", 6, NumIntegerPartitions(5, 4))
 	assert.Equal(t, "NumIntegerPartitions", 7, NumIntegerPartitions(5, 5))
 	assert.Equal(t, "NumIntegerPartitions", 6, NumIntegerPartitions(5, 4))
 }

@@ -1066,7 +1066,23 @@ func projectEuler75_actual(upper_bound int) int64 {
 * positive integers?
  */
 
+/*
+* Running NumIntegerPartitions(i, i-1) for 2 <= i <= 20 calls
+* NumIntegerPartitions(1, 1) 1597 times.  Caching should be effective.
+* Testing shows that PE 76 takes 0.5 seconds with caching, 88 seconds without
+* caching.
+ */
+
+type IPArgs struct {
+	number, max_component int
+}
+var IPResults map[IPArgs]int = make(map[IPArgs]int)
+
 func NumIntegerPartitions(number, max_component int) int {
+	result, exists := IPResults[IPArgs{number, max_component}]
+	if exists {
+		return result
+	}
 	if number <= 1 {
 		return 1
 	}
@@ -1081,9 +1097,16 @@ func NumIntegerPartitions(number, max_component int) int {
 			sum += NumIntegerPartitions(number, number)
 		}
 	}
+	IPResults[IPArgs{number, max_component}] = sum
 	return sum
 }
 
+func projectEuler76actual() int64 {
+	return int64(NumIntegerPartitions(100, 99))
+}
+func projectEuler76test() int64 {
+	return int64(NumIntegerPartitions(20, 19))
+}
 func projectEuler76() int64 {
-	return int64(NumIntegerPartitions(9, 8))
+	return projectEuler76actual()
 }
