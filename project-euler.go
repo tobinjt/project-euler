@@ -47,6 +47,7 @@ func realMain(args []string) (int64, error) {
 		"73":         projectEuler73,
 		"74":         projectEuler74,
 		"75":         projectEuler75,
+		"76":         projectEuler76,
 		"test":       test,
 		"fortesting": fortesting,
 	}
@@ -1049,4 +1050,40 @@ func projectEuler75_actual(upper_bound int) int64 {
 		}
 	}
 	return int64(result)
+}
+
+/*
+* It is possible to write five as a sum in exactly six different ways:
+*
+* 4 + 1
+* 3 + 2
+* 3 + 1 + 1
+* 2 + 2 + 1
+* 2 + 1 + 1 + 1
+* 1 + 1 + 1 + 1 + 1
+*
+* How many different ways can one hundred be written as a sum of at least two
+* positive integers?
+ */
+
+func NumIntegerPartitions(number, max_component int) int {
+	if number <= 1 {
+		return 1
+	}
+	sum := 0
+	if max_component <= number {
+		sum += NumIntegerPartitions(number-max_component, max_component)
+	}
+	if max_component > 1 {
+		if max_component <= number {
+			sum += NumIntegerPartitions(number, max_component-1)
+		} else {
+			sum += NumIntegerPartitions(number, number)
+		}
+	}
+	return sum
+}
+
+func projectEuler76() int64 {
+	return int64(NumIntegerPartitions(9, 8))
 }

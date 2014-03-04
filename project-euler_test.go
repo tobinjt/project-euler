@@ -218,3 +218,8 @@ func TestMakeChildren(t *testing.T) {
 	children := parent.MakeChildren()
 	assert.Equal(t, "MakeChildren", expected_children, children)
 }
+
+func TestNumIntegerPartitions(t *testing.T) {
+	assert.Equal(t, "NumIntegerPartitions", 7, NumIntegerPartitions(5, 5))
+	assert.Equal(t, "NumIntegerPartitions", 6, NumIntegerPartitions(5, 4))
+}
