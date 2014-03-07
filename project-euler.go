@@ -1077,6 +1077,7 @@ func projectEuler75_actual(upper_bound int) int64 {
 type IPArgs struct {
 	number, max_component int
 }
+
 var IPResults map[IPArgs]int = make(map[IPArgs]int)
 
 func NumIntegerPartitions(number, max_component int) int {
