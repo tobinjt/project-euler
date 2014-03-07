@@ -48,6 +48,7 @@ func realMain(args []string) (int64, error) {
 		"74":         projectEuler74,
 		"75":         projectEuler75,
 		"76":         projectEuler76,
+		"77":         projectEuler77,
 		"test":       test,
 		"fortesting": fortesting,
 	}
@@ -1109,4 +1110,28 @@ func projectEuler76test() int64 {
 }
 func projectEuler76() int64 {
 	return projectEuler76actual()
+}
+
+/*
+* It is possible to write ten as the sum of primes in exactly five different
+* ways:
+*
+* 7 + 3
+* 5 + 5
+* 5 + 3 + 2
+* 3 + 3 + 2 + 2
+* 2 + 2 + 2 + 2 + 2
+*
+* What is the first value which can be written as the sum of primes in over five
+* thousand different ways?
+ */
+
+func projectEuler77actual() int64 {
+	return int64(0)
+}
+func projectEuler77test() int64 {
+	return int64(0)
+}
+func projectEuler77() int64 {
+	return projectEuler77actual()
 }
