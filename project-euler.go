@@ -1127,6 +1127,19 @@ func projectEuler76() int64 {
 * thousand different ways?
  */
 
+func SumOfPrimeFactors(number int, sieve []bool) int {
+	factors := PrimeFactors(number, sieve)
+	sum := 0
+	last_factor := 0
+	for _, factor := range factors {
+		if factor != last_factor {
+			sum += factor
+			last_factor = factor
+		}
+	}
+	return sum
+}
+
 func projectEuler77actual() int64 {
 	return int64(0)
 }

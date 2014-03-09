@@ -227,3 +227,14 @@ func TestNumIntegerPartitions(t *testing.T) {
 	assert.Equal(t, "NumIntegerPartitions", 7, NumIntegerPartitions(5, 5))
 	assert.Equal(t, "NumIntegerPartitions", 6, NumIntegerPartitions(5, 4))
 }
+
+func TestSumOfPrimeFactors(t *testing.T) {
+	sieve := SieveOfEratosthenes(50)
+	assert.Equal(t, "SumOfPrimeFactors", 0, SumOfPrimeFactors(0, sieve))
+	assert.Equal(t, "SumOfPrimeFactors", 5, SumOfPrimeFactors(5, sieve))
+	assert.Equal(t, "SumOfPrimeFactors", 7, SumOfPrimeFactors(10, sieve))
+	// Duplicate prime factors should not increase the sum.
+	assert.Equal(t, "SumOfPrimeFactors", 7, SumOfPrimeFactors(20, sieve))
+	assert.Equal(t, "SumOfPrimeFactors", 15, SumOfPrimeFactors(105, sieve))
+	assert.Equal(t, "SumOfPrimeFactors", 14, SumOfPrimeFactors(140, sieve))
+}
