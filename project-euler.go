@@ -1127,6 +1127,16 @@ func projectEuler76() int64 {
 * thousand different ways?
  */
 
+/*
+* The formula for calculating the number of prime partitions i(described in
+* http://oeis.org/A000607) is voodoo.  There is discussion about how useful the
+* formula is for computation rather than abstract math in
+* http://math.stackexchange.com/questions/89240/prime-partition I'm using the
+* formula described in one of the comments
+* (http://math.stackexchange.com/a/89661).  I admin I don't understand *why* or
+* *how* this works, but it seems to.
+ */
+
 func SumOfPrimeFactors(number int, sieve []bool) int {
 	factors := PrimeFactors(number, sieve)
 	sum := 0
@@ -1138,6 +1148,35 @@ func SumOfPrimeFactors(number int, sieve []bool) int {
 		}
 	}
 	return sum
+}
+
+func SumOfPrimeFactors_Cached(number int, sieve []bool, sopf_cache map[int]int) int {
+	result, exists := sopf_cache[number]
+	if !exists {
+		result = SumOfPrimeFactors(number, sieve)
+		sopf_cache[number] = result
+	}
+	return result
+}
+
+func NumPrimePartitions(number int, sieve []bool, npp_cache map[int]int,
+	sopf_cache map[int]int) int {
+	if number == 1 {
+		return 0
+	}
+	result, exists := npp_cache[number]
+	if exists {
+		return result
+	}
+
+	sum := SumOfPrimeFactors_Cached(number, sieve, sopf_cache)
+	for j := 1; j < number; j++ {
+		sopf_j := SumOfPrimeFactors_Cached(j, sieve, sopf_cache)
+		npp_number_minus_j := NumPrimePartitions(number-j, sieve,
+			npp_cache, sopf_cache)
+		sum += npp_number_minus_j * sopf_j
+	}
+	return sum / number
 }
 
 func projectEuler77actual() int64 {

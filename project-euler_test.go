@@ -238,3 +238,15 @@ func TestSumOfPrimeFactors(t *testing.T) {
 	assert.Equal(t, "SumOfPrimeFactors", 15, SumOfPrimeFactors(105, sieve))
 	assert.Equal(t, "SumOfPrimeFactors", 14, SumOfPrimeFactors(140, sieve))
 }
+
+func TestNumPrimePartitions(t *testing.T) {
+	sieve := SieveOfEratosthenes(50)
+	sopf_cache := make(map[int]int)
+	npp_cache := make(map[int]int)
+	assert.Equal(t, "NumPrimePartitions", 1,
+		NumPrimePartitions(2, sieve, npp_cache, sopf_cache))
+	assert.Equal(t, "NumPrimePartitions", 7,
+		NumPrimePartitions(12, sieve, npp_cache, sopf_cache))
+	assert.Equal(t, "NumPrimePartitions", 26,
+		NumPrimePartitions(20, sieve, npp_cache, sopf_cache))
+}
