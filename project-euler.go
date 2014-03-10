@@ -49,6 +49,7 @@ func realMain(args []string) (int64, error) {
 		"75":         projectEuler75,
 		"76":         projectEuler76,
 		"77":         projectEuler77,
+		"78":         projectEuler78,
 		"test":       test,
 		"fortesting": fortesting,
 	}
@@ -1196,6 +1197,34 @@ func projectEuler77actual(target int) int64 {
 func projectEuler77test() int64 {
 	return projectEuler77actual(26)
 }
+
 func projectEuler77() int64 {
 	return projectEuler77actual(5000)
+}
+
+/*
+* Let p(n) represent the number of different ways in which n coins can be
+* separated into piles. For example, five coins can separated into piles in
+* exactly seven different ways, so p(5)=7.
+*
+* OOOOO
+* OOOO   O
+* OOO   OO
+* OOO   O   O
+* OO   OO   O
+* OO   O   O   O
+* O   O   O   O   O
+* Find the least value of n for which p(n) is divisible by one million.
+ */
+
+func projectEuler78actual() int64 {
+	return int64(0)
+}
+
+func projectEuler78test() int64 {
+	return int64(0)
+}
+
+func projectEuler78() int64 {
+	return int64(0)
 }
