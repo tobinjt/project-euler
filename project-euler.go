@@ -1103,14 +1103,11 @@ func NumIntegerPartitions(number, max_component int) int {
 	return sum
 }
 
-func projectEuler76actual() int64 {
-	return int64(NumIntegerPartitions(100, 99))
-}
 func projectEuler76test() int64 {
 	return int64(NumIntegerPartitions(20, 19))
 }
 func projectEuler76() int64 {
-	return projectEuler76actual()
+	return int64(NumIntegerPartitions(100, 99))
 }
 
 /*
@@ -1184,18 +1181,12 @@ func NumPrimePartitions(number int, sieve []bool, npp_cache map[int]int,
 }
 
 func projectEuler77actual(target int) int64 {
-	sieve_size := 1000
-	sieve := SieveOfEratosthenes(sieve_size)
+	sieve := SieveOfEratosthenes(100)
 	npp_cache := make(map[int]int)
 	sopf_cache := make(map[int]int)
 
 	number, result := 0, 0
 	for number = 1; result < target; number++ {
-		if number/2 > sieve_size {
-			fmt.Printf("growing sieve to %d\n", sieve_size)
-			sieve_size *= 2
-			sieve = SieveOfEratosthenes(sieve_size)
-		}
 		result = NumPrimePartitions(number, sieve, npp_cache,
 			sopf_cache)
 	}
