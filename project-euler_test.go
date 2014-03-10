@@ -26,7 +26,7 @@ func TestProjectEuler(t *testing.T) {
 		{3, projectEuler73test, "projectEuler73"},
 		{11, projectEuler75test, "projectEuler75"},
 		{626, projectEuler76test, "projectEuler76"},
-		{0, projectEuler77test, "projectEuler77"},
+		{20, projectEuler77test, "projectEuler77"},
 	}
 	for _, test := range table {
 		assert.Equal(t, test.name, test.result, test.function())
@@ -211,7 +211,7 @@ func TestCalculateFactorialChainLength(t *testing.T) {
 }
 
 func TestMakeChildren(t *testing.T) {
-	parent := PythagoreanTriple{a: 3, b: 4, c: 5,}
+	parent := PythagoreanTriple{a: 3, b: 4, c: 5}
 	expected_children := []PythagoreanTriple{
 		PythagoreanTriple{a: 5, b: 12, c: 13},
 		PythagoreanTriple{a: 21, b: 20, c: 29},
@@ -247,6 +247,8 @@ func TestNumPrimePartitions(t *testing.T) {
 		NumPrimePartitions(2, sieve, npp_cache, sopf_cache))
 	assert.Equal(t, "NumPrimePartitions", 7,
 		NumPrimePartitions(12, sieve, npp_cache, sopf_cache))
+	assert.Equal(t, "NumPrimePartitions", 10,
+		NumPrimePartitions(14, sieve, npp_cache, sopf_cache))
 	assert.Equal(t, "NumPrimePartitions", 26,
 		NumPrimePartitions(20, sieve, npp_cache, sopf_cache))
 }

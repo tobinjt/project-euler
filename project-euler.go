@@ -1176,15 +1176,35 @@ func NumPrimePartitions(number int, sieve []bool, npp_cache map[int]int,
 			npp_cache, sopf_cache)
 		sum += npp_number_minus_j * sopf_j
 	}
-	return sum / number
+	result = sum / number
+	// Without caching, the time taken to calculate NumPrimePartitions(n) is
+	// O(2^n).  n=29 is when it takes longer than 1 minute on my laptop.
+	npp_cache[number] = result
+	return result
 }
 
-func projectEuler77actual() int64 {
-	return int64(0)
+func projectEuler77actual(target int) int64 {
+	sieve_size := 1000
+	sieve := SieveOfEratosthenes(sieve_size)
+	npp_cache := make(map[int]int)
+	sopf_cache := make(map[int]int)
+
+	number, result := 0, 0
+	for number = 1; result < target; number++ {
+		if number/2 > sieve_size {
+			fmt.Printf("growing sieve to %d\n", sieve_size)
+			sieve_size *= 2
+			sieve = SieveOfEratosthenes(sieve_size)
+		}
+		result = NumPrimePartitions(number, sieve, npp_cache,
+			sopf_cache)
+	}
+	return int64(number - 1)
 }
+
 func projectEuler77test() int64 {
-	return int64(0)
+	return projectEuler77actual(26)
 }
 func projectEuler77() int64 {
-	return projectEuler77actual()
+	return projectEuler77actual(5000)
 }
