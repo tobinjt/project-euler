@@ -1125,13 +1125,13 @@ func projectEuler76() int64 {
  */
 
 /*
-* The formula for calculating the number of prime partitions i(described in
-* http://oeis.org/A000607) is voodoo.  There is discussion about how useful the
-* formula is for computation rather than abstract math in
-* http://math.stackexchange.com/questions/89240/prime-partition I'm using the
-* formula described in one of the comments
-* (http://math.stackexchange.com/a/89661).  I admin I don't understand *why* or
-* *how* this works, but it seems to.
+* The [formula for calculating the number of prime
+* partitions](http://oeis.org/A000607) is voodoo, and it's not good for
+* implementing an algorithm.  The formula can be transformed using [Euler's
+* Transform](http://mathworld.wolfram.com/EulerTransform.html) into [something
+* that can be implemented reasonably
+* easily](http://math.stackexchange.com/a/89661).  I admit that I don't
+* understand *why* or *how* either of these formulae work.
  */
 
 func SumOfPrimeFactors(number int, sieve []bool) int {
