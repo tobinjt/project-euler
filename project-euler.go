@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func test() int64 {
@@ -1217,14 +1218,32 @@ func projectEuler77() int64 {
 * Find the least value of n for which p(n) is divisible by one million.
  */
 
-func projectEuler78actual() int64 {
-	return int64(0)
+/*
+* Calling NumIntegerPartitions in a loop would work, except that performance
+* falls off a cliff:
+* 7.307216ms 6028 => -5051972599416803847
+* 9.74248ms 6029 => 1953721510414805365
+* 3.615389811s 6030 => -9113343080961881073
+* 257.840184ms 6031 => 63892779937861297
+* 227.194138ms 6032 => 8738253903924976475
+* 223.567489ms 6033 => 5975595644718247526
+*/
+
+func projectEuler78actual(multiple int) int64 {
+	number := 1
+	for result := 1; result%multiple != 0; number++ {
+		start := time.Now()
+		result = NumIntegerPartitions(number, number)
+		duration := time.Since(start)
+		fmt.Printf("%s %d => %d\n", duration.String(), number, result)
+	}
+	return int64(number - 1)
 }
 
 func projectEuler78test() int64 {
-	return int64(0)
+	return projectEuler78actual(7)
 }
 
 func projectEuler78() int64 {
-	return int64(0)
+	return projectEuler78actual(1000 * 1000)
 }
