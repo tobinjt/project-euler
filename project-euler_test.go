@@ -268,3 +268,7 @@ func TestGeneralisedPentagonalNumber(t *testing.T) {
 			GeneralisedPentagonalNumber(number))
 	}
 }
+
+func TestNumIntegerPartitions2(t *testing.T) {
+	assert.Equal(t, "NumIntegerPartitions2", 7, NumIntegerPartitions2(5))
+}

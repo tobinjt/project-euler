@@ -1245,6 +1245,33 @@ func GeneralisedPentagonalNumber(number int) int {
 	}
 }
 
+var IPresults2 map[int]int = map[int]int{0: 1}
+
+func NumIntegerPartitions2(number int) int {
+fmt.Printf("NumIntegerPartitions(%d)\n", number)
+	result, exists := IPresults2[number]
+	if exists {
+fmt.Printf("fast path\n")
+		return result
+	}
+	// This is rotated one place to the right because we start with i=1
+	// rather than i=0.
+	signs := []int{-1, 1, 1, -1}
+	sum := 0
+	for i := 1; i > 0; i++ {
+		pentagonal_number := GeneralisedPentagonalNumber(i)
+fmt.Printf("GeneralisedPentagonalNumber(%d) == %d\n", i, pentagonal_number)
+		if pentagonal_number > number {
+			break
+		}
+		num_ip := NumIntegerPartitions2(number - pentagonal_number)
+		sum += signs[i%len(signs)] * num_ip
+	}
+fmt.Printf("NumIntegerPartitions(%d) == %d\n", number, sum)
+	IPresults2[number] = sum
+	return sum
+}
+
 func projectEuler78actual(multiple int) int64 {
 	return int64(multiple - 2)
 }
