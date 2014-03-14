@@ -1229,7 +1229,11 @@ func projectEuler77() int64 {
 * 257.840184ms 6031 => 63892779937861297
 * 227.194138ms 6032 => 8738253903924976475
 * 223.567489ms 6033 => 5975595644718247526
-*/
+ */
+
+func PentagonalNumber(number int) int {
+	return ((3 * number * number) - number) / 2
+}
 
 func projectEuler78actual(multiple int) int64 {
 	return int64(multiple - 2)

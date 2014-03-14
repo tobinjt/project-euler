@@ -253,3 +253,10 @@ func TestNumPrimePartitions(t *testing.T) {
 	assert.Equal(t, "NumPrimePartitions", 26,
 		NumPrimePartitions(20, sieve, npp_cache, sopf_cache))
 }
+
+func TestPentagonalNumber(t *testing.T) {
+	assert.Equal(t, "PentagonalNumber", 1, PentagonalNumber(1))
+	assert.Equal(t, "PentagonalNumber", 5, PentagonalNumber(2))
+	assert.Equal(t, "PentagonalNumber", 35, PentagonalNumber(5))
+	assert.Equal(t, "PentagonalNumber", 92, PentagonalNumber(8))
+}
