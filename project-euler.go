@@ -1257,8 +1257,9 @@ fmt.Printf("fast path\n")
 	// This is rotated one place to the right because we start with i=1
 	// rather than i=0.
 	signs := []int{-1, 1, 1, -1}
-	sum := 0
-	for i := 1; i > 0; i++ {
+	sum, i := 0, 0
+	for {
+		i++
 		pentagonal_number := GeneralisedPentagonalNumber(i)
 fmt.Printf("GeneralisedPentagonalNumber(%d) == %d\n", i, pentagonal_number)
 		if pentagonal_number > number {
