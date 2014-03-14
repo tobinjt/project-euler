@@ -260,3 +260,11 @@ func TestPentagonalNumber(t *testing.T) {
 	assert.Equal(t, "PentagonalNumber", 35, PentagonalNumber(5))
 	assert.Equal(t, "PentagonalNumber", 92, PentagonalNumber(8))
 }
+
+func TestGeneralisedPentagonalNumber(t *testing.T) {
+	expected := []int{0, 1, 2, 5, 7, 12, 15, 22, 26, 35, 40}
+	for number, result := range expected {
+		assert.Equal(t, "GeneralisedPentagonalNumber", result,
+			GeneralisedPentagonalNumber(number))
+	}
+}

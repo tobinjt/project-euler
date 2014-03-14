@@ -1235,6 +1235,16 @@ func PentagonalNumber(number int) int {
 	return ((3 * number * number) - number) / 2
 }
 
+func GeneralisedPentagonalNumber(number int) int {
+	// input:   0, 1,  2, 3,  4, 5,  6, 7,  8
+	// becomes: 0, 1, -1, 2, -2, 3, -3, 4, -4
+	if number%2 == 0 {
+		return PentagonalNumber(number / -2)
+	} else {
+		return PentagonalNumber((number + 1) / 2)
+	}
+}
+
 func projectEuler78actual(multiple int) int64 {
 	return int64(multiple - 2)
 }
