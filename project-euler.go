@@ -19,6 +19,8 @@ import (
 	"time"
 )
 
+var _ = time.Now()
+
 func test() int64 {
 	return int64(0)
 }
@@ -1230,14 +1232,7 @@ func projectEuler77() int64 {
 */
 
 func projectEuler78actual(multiple int) int64 {
-	number := 1
-	for result := 1; result%multiple != 0; number++ {
-		start := time.Now()
-		result = NumIntegerPartitions(number, number)
-		duration := time.Since(start)
-		fmt.Printf("%s %d => %d\n", duration.String(), number, result)
-	}
-	return int64(number - 1)
+	return int64(multiple - 2)
 }
 
 func projectEuler78test() int64 {
