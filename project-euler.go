@@ -1247,6 +1247,11 @@ func GeneralisedPentagonalNumber(number int) int {
 
 var IPresults2 map[int]*big.Int = map[int]*big.Int{0: big.NewInt(1)}
 
+/*
+* The formula is described in
+* http://en.wikipedia.org/wiki/Partition_(number_theory)#Generating_function
+* but it needs a bit of interpretation to get something that you can implement.
+ */
 func NumIntegerPartitions2(number int) *big.Int {
 	result, exists := IPresults2[number]
 	if exists {
