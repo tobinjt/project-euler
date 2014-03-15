@@ -1245,17 +1245,18 @@ func GeneralisedPentagonalNumber(number int) int {
 	}
 }
 
-var IPresults2 map[int]int64 = map[int]int64{0: int64(1)}
+var IPresults2 map[int]*big.Int = map[int]*big.Int{0: big.NewInt(1)}
 
-func NumIntegerPartitions2(number int) int64 {
+func NumIntegerPartitions2(number int) *big.Int {
 	result, exists := IPresults2[number]
 	if exists {
 		return result
 	}
 	// This is rotated one place to the right because we start with i=1
 	// rather than i=0.
-	signs := []int64{-1, 1, 1, -1}
-	sum, i := int64(0), 0
+	signs := []*big.Int{big.NewInt(-1), big.NewInt(1), big.NewInt(1),
+		big.NewInt(-1)}
+	sum, i := big.NewInt(0), 0
 	for {
 		i++
 		pentagonal_number := GeneralisedPentagonalNumber(i)
@@ -1263,19 +1264,26 @@ func NumIntegerPartitions2(number int) int64 {
 			break
 		}
 		num_ip := NumIntegerPartitions2(number - pentagonal_number)
-		sum += signs[i%len(signs)] * num_ip
+		temp := big.NewInt(0)
+		temp.Mul(signs[i%len(signs)], num_ip)
+		sum.Add(sum, temp)
 	}
 	IPresults2[number] = sum
 	return sum
 }
 
 func projectEuler78actual(multiple int64) int64 {
-	result, i := int64(1), -1
-	for result % multiple != 0 {
+	big_multiple := big.NewInt(multiple)
+	modulus := big.NewInt(0)
+	i := 0
+	for {
 		i++
-		result = NumIntegerPartitions2(i)
+		nip := NumIntegerPartitions2(i)
+		modulus.Mod(nip, big_multiple)
+		if modulus.Int64() == 0 {
+			return int64(i)
+		}
 	}
-	return int64(i)
 }
 
 func projectEuler78test() int64 {

@@ -270,5 +270,13 @@ func TestGeneralisedPentagonalNumber(t *testing.T) {
 }
 
 func TestNumIntegerPartitions2(t *testing.T) {
-	assert.Equal(t, "NumIntegerPartitions2", int64(7), NumIntegerPartitions2(5))
+	expected := []int64{1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42, 56, 77, 101,
+		135, 176, 231, 297, 385, 490, 627, 792, 1002, 1255, 1575, 1958,
+		2436, 3010, 3718, 4565, 5604, 6842, 8349, 10143, 12310, 14883,
+		17977, 21637, 26015, 31185, 37338, 44583, 53174, 63261, 75175,
+		89134, 105558, 124754, 147273, 173525}
+	for number, result := range expected {
+		assert.Equal(t, "NumIntegerPartitions2", result,
+			NumIntegerPartitions2(number).Int64())
+	}
 }
