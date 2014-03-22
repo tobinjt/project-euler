@@ -28,6 +28,7 @@ func TestProjectEuler(t *testing.T) {
 		{626, projectEuler76test, "projectEuler76"},
 		{20, projectEuler77test, "projectEuler77"},
 		{5, projectEuler78test, "projectEuler78"},
+		{0, projectEuler80test, "projectEuler80"},
 	}
 	for _, test := range table {
 		assert.Equal(t, test.name, test.result, test.function())
