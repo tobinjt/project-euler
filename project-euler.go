@@ -1309,7 +1309,79 @@ func projectEuler78() int64 {
 *
 * For the first one hundred natural numbers, find the total of the digital sums
 * of the first one hundred decimal digits for all the irrational square roots.
-*/
+ */
+
+type SqrtResult struct {
+	integer    uint
+	fractional []uint
+}
+
+// http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Decimal_.28base_10.29
+// The numbered comments in the function refer to the steps in the Wikipedia
+// article.
+func SqrtPE80(number, precision uint) SqrtResult {
+	result := SqrtResult{fractional: make([]uint, 0)}
+	result.integer = uint(math.Floor(math.Sqrt(float64(number))))
+	digit_stack := []uint{}
+	for remainder := number; remainder > 0; remainder /= 10 {
+		digit_stack = append(digit_stack, remainder%10)
+	}
+	digit_stack_i := len(digit_stack) - 1
+
+	remainder, root_so_far, fractional_i := uint(0), uint(0), uint(0)
+	after_decimal_point := false
+	for fractional_i < precision {
+		// Step 1.
+		current := remainder
+		// Shift the digit stack so that an odd number of digits is
+		// interpreted as 0X rather than X0.
+		if digit_stack_i == 0 {
+			digit_stack_i++
+			if len(digit_stack) == 1 {
+				digit_stack = append(digit_stack, 0)
+			} else {
+				digit_stack[1] = 0
+			}
+		}
+		for j := 0; j < 2; j++ {
+			current = current * 10
+			if digit_stack_i >= 0 {
+				current += digit_stack[digit_stack_i]
+			}
+			digit_stack_i--
+		}
+
+		// Step 2.
+		next_digit := uint(0)
+		for {
+			next_digit++
+			value := next_digit * ((20 * root_so_far) + next_digit)
+			if value > current {
+				next_digit--
+				break
+			}
+		}
+
+		// Step 3.
+		subtract_me := next_digit * ((20 * root_so_far) + next_digit)
+		remainder = current - subtract_me
+		root_so_far = (root_so_far * 10) + next_digit
+		if after_decimal_point {
+			result.fractional = append(result.fractional,
+				next_digit)
+			fractional_i++
+		}
+		if root_so_far == result.integer {
+			after_decimal_point = true
+		}
+
+		// Step 4.
+		if remainder == 0 && digit_stack_i < 0 {
+			break
+		}
+	}
+	return result
+}
 
 func projectEuler80actual() int64 {
 	return 0

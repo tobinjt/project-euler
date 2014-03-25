@@ -281,3 +281,18 @@ func TestNumIntegerPartitions2(t *testing.T) {
 			NumIntegerPartitions2(number).Int64())
 	}
 }
+
+func TestSqrt(t *testing.T) {
+	expected := SqrtResult{
+		integer:    uint(1),
+		fractional: []uint{4, 1, 4, 2, 1, 3, 5, 6, 2, 3}}
+	assert.Equal(t, "SqrtPE80(2, 10)", expected, SqrtPE80(2, 10))
+	expected = SqrtResult{
+		integer:    uint(5),
+		fractional: []uint{}}
+	assert.Equal(t, "SqrtPE80(25, 10)", expected, SqrtPE80(25, 10))
+	expected = SqrtResult{
+		integer:    uint(31),
+		fractional: []uint{}}
+	assert.Equal(t, "SqrtPE80(961, 10)", expected, SqrtPE80(961, 10))
+}
