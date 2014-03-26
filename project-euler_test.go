@@ -28,7 +28,7 @@ func TestProjectEuler(t *testing.T) {
 		{626, projectEuler76test, "projectEuler76"},
 		{20, projectEuler77test, "projectEuler77"},
 		{5, projectEuler78test, "projectEuler78"},
-		{0, projectEuler80test, "projectEuler80"},
+		{476, projectEuler80test, "projectEuler80"},
 	}
 	for _, test := range table {
 		assert.Equal(t, test.name, test.result, test.function())
@@ -283,16 +283,17 @@ func TestNumIntegerPartitions2(t *testing.T) {
 }
 
 func TestSqrt(t *testing.T) {
-	expected := SqrtResult{
-		integer:    uint(1),
-		fractional: []uint{4, 1, 4, 2, 1, 3, 5, 6, 2, 3}}
+	expected := []int{1, 4, 1, 4, 2, 1, 3, 5, 6, 2}
 	assert.Equal(t, "SqrtPE80(2, 10)", expected, SqrtPE80(2, 10))
-	expected = SqrtResult{
-		integer:    uint(5),
-		fractional: []uint{}}
+	expected = []int{5}
 	assert.Equal(t, "SqrtPE80(25, 10)", expected, SqrtPE80(25, 10))
-	expected = SqrtResult{
-		integer:    uint(31),
-		fractional: []uint{}}
-	assert.Equal(t, "SqrtPE80(961, 10)", expected, SqrtPE80(961, 10))
+	// expected = []int{31}
+	// assert.Equal(t, "SqrtPE80(961, 10)", expected, SqrtPE80(961, 10))
+	expected = []int{1, 4, 1, 4, 2, 1, 3, 5, 6, 2, 3, 7, 3, 0, 9, 5, 0, 4,
+			8, 8, 0, 1, 6, 8, 8, 7, 2, 4, 2, 0, 9, 6, 9, 8, 0, 7, 8,
+			5, 6, 9, 6, 7, 1, 8, 7, 5, 3, 7, 6, 9, 4, 8, 0, 7, 3, 1,
+			7, 6, 6, 7, 9, 7, 3, 7, 9, 9, 0, 7, 3, 2, 4, 7, 8, 4, 6,
+			2, 1, 0, 7, 0, 3, 8, 8, 5, 0, 3, 8, 7, 5, 3, 4, 3, 2, 7,
+			6, 4, 1, 5, 7, 2}
+	assert.Equal(t, "SqrtPE80(2, 100)", expected, SqrtPE80(2, 100))
 }

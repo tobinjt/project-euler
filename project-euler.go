@@ -1311,28 +1311,24 @@ func projectEuler78() int64 {
 * of the first one hundred decimal digits for all the irrational square roots.
  */
 
-type SqrtResult struct {
-	integer    uint
-	fractional []uint
-}
-
 // http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Decimal_.28base_10.29
 // The numbered comments in the function refer to the steps in the Wikipedia
 // article.
-func SqrtPE80(number, precision uint) SqrtResult {
-	result := SqrtResult{fractional: make([]uint, 0)}
-	result.integer = uint(math.Floor(math.Sqrt(float64(number))))
-	digit_stack := []uint{}
+func SqrtPE80(number, precision int) []int {
+	digit_stack := []int{}
 	for remainder := number; remainder > 0; remainder /= 10 {
 		digit_stack = append(digit_stack, remainder%10)
 	}
 	digit_stack_i := len(digit_stack) - 1
 
-	remainder, root_so_far, fractional_i := uint(0), uint(0), uint(0)
-	after_decimal_point := false
-	for fractional_i < precision {
+	remainder, root_so_far := big.NewInt(0), big.NewInt(0)
+	zero, one := big.NewInt(0), big.NewInt(1)
+	ten, twenty := big.NewInt(10), big.NewInt(20)
+	result := make([]int, 0)
+	for len(result) < precision {
 		// Step 1.
-		current := remainder
+		current := big.NewInt(0)
+		current.Set(remainder)
 		// Shift the digit stack so that an odd number of digits is
 		// interpreted as 0X rather than X0.
 		if digit_stack_i == 0 {
@@ -1344,53 +1340,64 @@ func SqrtPE80(number, precision uint) SqrtResult {
 			}
 		}
 		for j := 0; j < 2; j++ {
-			current = current * 10
+			current = current.Mul(current, ten)
 			if digit_stack_i >= 0 {
-				current += digit_stack[digit_stack_i]
+				current.Add(current,
+					big.NewInt(int64(digit_stack[digit_stack_i])))
 			}
 			digit_stack_i--
 		}
 
 		// Step 2.
-		next_digit := uint(0)
+		next_digit, subtract_me := big.NewInt(0), big.NewInt(0)
 		for {
-			next_digit++
-			value := next_digit * ((20 * root_so_far) + next_digit)
-			if value > current {
-				next_digit--
+			next_digit.Add(next_digit, one)
+			temp := big.NewInt(0)
+			temp.Set(root_so_far)
+			temp.Mul(temp, twenty)
+			temp.Add(temp, next_digit)
+			temp.Mul(temp, next_digit)
+fmt.Printf("current: %s, next_digit: %s, root_so_far: %s, temp: %s\n", current, next_digit, root_so_far, temp)
+			if temp.Cmp(current) == 1 {
+				next_digit.Sub(next_digit, one)
 				break
 			}
+			subtract_me.Set(temp)
 		}
 
 		// Step 3.
-		subtract_me := next_digit * ((20 * root_so_far) + next_digit)
-		remainder = current - subtract_me
-		root_so_far = (root_so_far * 10) + next_digit
-		if after_decimal_point {
-			result.fractional = append(result.fractional,
-				next_digit)
-			fractional_i++
-		}
-		if root_so_far == result.integer {
-			after_decimal_point = true
-		}
+fmt.Printf("current: %s, subtract_me: %s, remainder: %s, next_digit: %s\n",
+	current, subtract_me, remainder, next_digit)
+		remainder.Sub(current, subtract_me)
+fmt.Printf("new remainder: %s\n", remainder)
+		root_so_far.Mul(root_so_far, ten)
+		root_so_far.Add(root_so_far, next_digit)
+		result = append(result, int(next_digit.Int64()))
 
 		// Step 4.
-		if remainder == 0 && digit_stack_i < 0 {
+		if remainder.Cmp(zero) == 0 && digit_stack_i < 0 {
 			break
 		}
 	}
 	return result
 }
 
-func projectEuler80actual() int64 {
-	return 0
+func projectEuler80actual(upper_bound int) int64 {
+	result := 0
+	for i := 0; i <= upper_bound; i++ {
+		sqrt := SqrtPE80(i, 100)
+		fmt.Printf("%d => %v\n", i, sqrt)
+		for j := 0; j < len(sqrt); j++ {
+			result += sqrt[j]
+		}
+	}
+	return int64(result)
 }
 
 func projectEuler80test() int64 {
-	return projectEuler80actual()
+	return projectEuler80actual(2)
 }
 
 func projectEuler80() int64 {
-	return projectEuler80actual()
+	return projectEuler80actual(100)
 }
