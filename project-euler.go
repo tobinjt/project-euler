@@ -1321,7 +1321,7 @@ func SqrtPE80(number, precision int) []int {
 	}
 	// Pad the digit stack so that an odd number of digits is interpreted
 	// as 0A, BC rather than AB, 0C.
-	if len(digit_stack) % 2 == 1 {
+	if len(digit_stack)%2 == 1 {
 		digit_stack = append(digit_stack, 0)
 	}
 	digit_stack_i := len(digit_stack) - 1
