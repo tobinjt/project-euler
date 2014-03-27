@@ -53,6 +53,7 @@ func realMain(args []string) (int64, error) {
 		"76":         projectEuler76,
 		"77":         projectEuler77,
 		"78":         projectEuler78,
+		"80":         projectEuler80,
 		"test":       test,
 		"fortesting": fortesting,
 	}
@@ -1384,9 +1385,13 @@ func projectEuler80actual(upper_bound int) int64 {
 	result := 0
 	for i := 0; i <= upper_bound; i++ {
 		sqrt := SqrtPE80(i, 100)
-		fmt.Printf("%d => %v\n", i, sqrt)
-		for j := 0; j < len(sqrt); j++ {
-			result += sqrt[j]
+		// Irrational roots will have more than a single digit.  I'm
+		// cheating somewhat because I know this function won't be
+		// called with an upper bound >99.
+		if len(sqrt) > 1 {
+			for j := 0; j < len(sqrt); j++ {
+				result += sqrt[j]
+			}
 		}
 	}
 	return int64(result)
@@ -1397,5 +1402,5 @@ func projectEuler80test() int64 {
 }
 
 func projectEuler80() int64 {
-	return projectEuler80actual(100)
+	return projectEuler80actual(99)
 }
