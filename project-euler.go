@@ -1352,7 +1352,6 @@ func SqrtPE80(number, precision int) []int {
 			temp.Mul(temp, twenty)
 			temp.Add(temp, next_digit)
 			temp.Mul(temp, next_digit)
-fmt.Printf("current: %s, next_digit: %s, root_so_far: %s, temp: %s\n", current, next_digit, root_so_far, temp)
 			if temp.Cmp(current) == 1 {
 				next_digit.Sub(next_digit, one)
 				break
@@ -1361,10 +1360,7 @@ fmt.Printf("current: %s, next_digit: %s, root_so_far: %s, temp: %s\n", current, 
 		}
 
 		// Step 3.
-fmt.Printf("current: %s, subtract_me: %s, remainder: %s, next_digit: %s\n",
-	current, subtract_me, remainder, next_digit)
 		remainder.Sub(current, subtract_me)
-fmt.Printf("new remainder: %s\n", remainder)
 		root_so_far.Mul(root_so_far, ten)
 		root_so_far.Add(root_so_far, next_digit)
 		result = append(result, int(next_digit.Int64()))
