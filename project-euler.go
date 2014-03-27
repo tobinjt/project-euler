@@ -654,8 +654,7 @@ func IntsArePermutations(a, b int) bool {
 	return true
 }
 
-func projectEuler70() int64 {
-	bound := 10 * 1000 * 1000
+func projectEuler70actual(bound int) int64 {
 	prime_bound := int(1.5 * math.Sqrt(float64(bound)))
 	sieve := SieveOfEratosthenes(prime_bound + 1)
 	primes := make([]int, 0)
@@ -684,6 +683,14 @@ func projectEuler70() int64 {
 	}
 
 	return int64(number)
+}
+
+func projectEuler70test() int64 {
+	return projectEuler70actual(10 * 1000)
+}
+
+func projectEuler70() int64 {
+	return projectEuler70actual(10 * 1000 * 1000)
 }
 
 /*
