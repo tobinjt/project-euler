@@ -287,8 +287,8 @@ func TestSqrt(t *testing.T) {
 	assert.Equal(t, "SqrtPE80(2, 10)", expected, SqrtPE80(2, 10))
 	expected = []int{5}
 	assert.Equal(t, "SqrtPE80(25, 10)", expected, SqrtPE80(25, 10))
-	// expected = []int{31}
-	// assert.Equal(t, "SqrtPE80(961, 10)", expected, SqrtPE80(961, 10))
+	expected = []int{3, 1}
+	assert.Equal(t, "SqrtPE80(961, 10)", expected, SqrtPE80(961, 10))
 	expected = []int{1, 4, 1, 4, 2, 1, 3, 5, 6, 2, 3, 7, 3, 0, 9, 5, 0, 4,
 			8, 8, 0, 1, 6, 8, 8, 7, 2, 4, 2, 0, 9, 6, 9, 8, 0, 7, 8,
 			5, 6, 9, 6, 7, 1, 8, 7, 5, 3, 7, 6, 9, 4, 8, 0, 7, 3, 1,

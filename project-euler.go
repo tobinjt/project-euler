@@ -1319,6 +1319,11 @@ func SqrtPE80(number, precision int) []int {
 	for remainder := number; remainder > 0; remainder /= 10 {
 		digit_stack = append(digit_stack, remainder%10)
 	}
+	// Pad the digit stack so that an odd number of digits is interpreted
+	// as 0A, BC rather than AB, 0C.
+	if len(digit_stack) % 2 == 1 {
+		digit_stack = append(digit_stack, 0)
+	}
 	digit_stack_i := len(digit_stack) - 1
 
 	remainder, root_so_far := big.NewInt(0), big.NewInt(0)
@@ -1329,16 +1334,6 @@ func SqrtPE80(number, precision int) []int {
 		// Step 1.
 		current := big.NewInt(0)
 		current.Set(remainder)
-		// Shift the digit stack so that an odd number of digits is
-		// interpreted as 0X rather than X0.
-		if digit_stack_i == 0 {
-			digit_stack_i++
-			if len(digit_stack) == 1 {
-				digit_stack = append(digit_stack, 0)
-			} else {
-				digit_stack[1] = 0
-			}
-		}
 		for j := 0; j < 2; j++ {
 			current = current.Mul(current, ten)
 			if digit_stack_i >= 0 {
