@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/tobinjt/assert"
 	"sort"
+	"strings"
 	"testing"
 )
 
@@ -296,4 +297,25 @@ func TestSqrt(t *testing.T) {
 		9, 7, 3, 7, 9, 9, 0, 7, 3, 2, 4, 7, 8, 4, 6, 2, 1, 0, 7, 0, 3,
 		8, 8, 5, 0, 3, 8, 7, 5, 3, 4, 3, 2, 7, 6, 4, 1, 5, 7, 2}
 	assert.Equal(t, "SqrtPE80(2, 100)", expected, SqrtPE80(2, 100))
+}
+
+func TestReadIntsFromCSVFile(t *testing.T) {
+	tests := []struct {
+		csv, err string
+		expected [][]uint64
+	}{
+		{csv: "1,7,42", expected: [][]uint64{{1, 7, 42}}},
+		{csv: "1,7,42,qwerty", err: "strconv.ParseUint"},
+		{csv: "1,7,42,qwe\"rty", err: "non-quoted-field"},
+	}
+	for _, test := range tests {
+		actual, err := readIntsFromCSVFile(strings.NewReader(test.csv))
+		desc := fmt.Sprintf("readIntsFromCSVFile(%q)", test.csv)
+		if test.err == "" {
+			assert.ErrIsNil(t, "gon.ToInt()", err)
+			assert.Equal(t, desc, test.expected, actual)
+		} else {
+			assert.ErrContains(t, desc, err, test.err)
+		}
+	}
 }

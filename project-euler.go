@@ -5,6 +5,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/csv"
 	"errors"
 	"flag"
 	"fmt"
@@ -1420,6 +1421,26 @@ func projectEuler80() int64 {
 * As..."), a 31K text file containing a 80 by 80 matrix, from the top left to
 * the bottom right by only moving right and down.
  */
+
+func readIntsFromCSVFile(r io.Reader) ([][]uint64, error) {
+	csvr := csv.NewReader(r)
+	ints := [][]uint64{}
+	rows, err := csvr.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	for i, row := range rows {
+		ints = append(ints, make([]uint64, len(row)))
+		for j, s := range row {
+			ints[i][j], err = strconv.ParseUint(s, 10, 64)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	return ints, nil
+}
 
 func projectEuler81actual() int64 {
 	return 0
