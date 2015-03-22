@@ -55,6 +55,7 @@ func realMain(args []string) (int64, error) {
 		"77":         projectEuler77,
 		"78":         projectEuler78,
 		"80":         projectEuler80,
+		"81":         projectEuler81,
 		"test":       test,
 		"fortesting": fortesting,
 	}
@@ -1442,14 +1443,48 @@ func readIntsFromCSVFile(r io.Reader) ([][]uint64, error) {
 	return ints, nil
 }
 
-func projectEuler81actual() int64 {
-	return 0
+func projectEuler81actual(r io.Reader) int64 {
+	matrix, err := readIntsFromCSVFile(r)
+	size := len(matrix)
+	if err != nil {
+		return -1
+	}
+	grid := make([][]uint64, size)
+	// There's only one way to fill the first row or column, so prefill them and make filling the remainder easier.
+	grid[0] = make([]uint64, size)
+	grid[0][0] = matrix[0][0]
+	for i := 1; i < size; i++ {
+		grid[i] = make([]uint64, size)
+		grid[i][0] = grid[i-1][0] + matrix[i][0]
+		grid[0][i] = grid[0][i-1] + matrix[0][i]
+	}
+	// Each square in the grid is min(grid square above, grid square left) + matrix square.  The bottom right grid square is the sum of the minimum path.
+	for i := 1; i < size; i++ {
+		for j := 1; j < size; j++ {
+			a, b := grid[i-1][j], grid[i][j-1]
+			if a < b {
+				grid[i][j] = a + matrix[i][j]
+			} else {
+				grid[i][j] = b + matrix[i][j]
+			}
+		}
+	}
+	return int64(grid[len(grid)-1][len(grid[0])-1])
 }
 
 func projectEuler81test() int64 {
-	return projectEuler81actual()
+	data := `131,637,234,103,18
+201,96,342,965,150
+630,803,746,422,111
+537,699,497,121,956
+805,732,524,37,331`
+	return projectEuler81actual(strings.NewReader(data))
 }
 
 func projectEuler81() int64 {
-	return projectEuler81actual()
+	fd, err := os.Open("matrix.txt")
+	if err != nil {
+		return -1
+	}
+	return projectEuler81actual(fd)
 }
