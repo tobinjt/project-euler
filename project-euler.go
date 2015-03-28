@@ -66,6 +66,7 @@ func realMain(args []string) (int64, error) {
 				keys = append(keys, key)
 			}
 		}
+		sort.Strings(keys)
 		return 0, errors.New("Only 1 arg accepted from this list: " +
 			strings.Join(keys, " "))
 	}
@@ -1503,7 +1504,7 @@ func projectEuler81() int64 {
 * Find the minimal path sum, in matrix.txt (right click and "Save Link/Target
 * As..."), a 31K text file containing a 80 by 80 matrix, from the left column to
 * the right column.
-*/
+ */
 
 func projectEuler82actual(r io.Reader) int64 {
 	return 0
