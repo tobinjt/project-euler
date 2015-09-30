@@ -56,6 +56,7 @@ func realMain(args []string) (int64, error) {
 		"78":         projectEuler78,
 		"80":         projectEuler80,
 		"81":         projectEuler81,
+		"92":         projectEuler92,
 		"test":       test,
 		"fortesting": fortesting,
 	}
@@ -1543,14 +1544,68 @@ func projectEuler82() int64 {
  * How many starting numbers below ten million will arrive at 89?
  */
 
-func projectEuler92actual() int64 {
-	return 0
+/*
+* Return the digits making up a uint.
+ */
+func uintToDigits(number uint) []uint {
+	var reverseDigits []uint
+	for number != 0 {
+		reverseDigits = append(reverseDigits, number%10)
+		number = number / 10
+	}
+	digits := make([]uint, len(reverseDigits))
+	for i, digit := range reverseDigits {
+		digits[len(reverseDigits)-i-1] = digit
+	}
+	return digits
+}
+
+/*
+ * The biggest possible number to check is 9999999 -> 81*7 -> 567, so we
+ * maintain a cache of 568 elements mapping to 1 or 89.
+ */
+const _SQUARE_CHAIN_CACHE_SIZE uint = 568
+
+/*
+* Return the last element in the square chain for number, either 1 or 89.
+* cache is used to short circuit following the chain and is updated.
+ */
+func squareChain(number uint, cache []uint) uint {
+	if number < _SQUARE_CHAIN_CACHE_SIZE && cache[number] != 0 {
+		return cache[number]
+	}
+	digits := uintToDigits(number)
+	var sum uint
+	for _, digit := range digits {
+		sum += digit * digit
+	}
+	result := squareChain(sum, cache)
+	if number < _SQUARE_CHAIN_CACHE_SIZE {
+		cache[number] = result
+	}
+	return result
+}
+
+func projectEuler92actual(limit uint) int64 {
+	cache := make([]uint, _SQUARE_CHAIN_CACHE_SIZE)
+	cache[1] = 1
+	cache[89] = 89
+	count_1, count_89 := 0, 0
+	for i := uint(1); i < limit; i++ {
+		result := squareChain(i, cache)
+		if result == 1 {
+			count_1++
+		} else {
+			count_89++
+		}
+	}
+	return int64(count_89)
 }
 
 func projectEuler92test() int64 {
-	return projectEuler92actual()
+	return projectEuler92actual(10)
 }
 
 func projectEuler92() int64 {
-	return projectEuler92actual()
+	return projectEuler92actual(10 * 1000 * 1000)
 }

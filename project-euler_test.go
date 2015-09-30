@@ -32,6 +32,7 @@ func TestProjectEuler(t *testing.T) {
 		{475, projectEuler80test, "projectEuler80"},
 		{2427, projectEuler81test, "projectEuler81"},
 		{0, projectEuler82test, "projectEuler82"},
+		{7, projectEuler92test, "projectEuler92"},
 	}
 	for _, test := range table {
 		assert.Equal(t, test.name, test.result, test.function())
@@ -319,4 +320,20 @@ func TestReadIntsFromCSVFile(t *testing.T) {
 			assert.ErrContains(t, desc, err, test.err)
 		}
 	}
+}
+
+func TestUintToDigits(t *testing.T) {
+	assert.Equal(t, "uintToDigits(1)", []uint{1}, uintToDigits(1))
+	assert.Equal(t, "uintToDigits(12)", []uint{1, 2}, uintToDigits(12))
+	assert.Equal(t, "uintToDigits(749753)", []uint{7, 4, 9, 7, 5, 3}, uintToDigits(749753))
+}
+
+func TestsquareChain(t *testing.T) {
+	cache := make([]uint, _SQUARE_CHAIN_CACHE_SIZE)
+	cache[1] = 1
+	cache[89] = 89
+	assert.Equal(t, "squareChain(1)", 1, squareChain(1, cache))
+	assert.Equal(t, "squareChain(89)", 89, squareChain(89, cache))
+	assert.Equal(t, "squareChain(44)", 1, squareChain(44, cache))
+	assert.Equal(t, "squareChain(85)", 89, squareChain(85, cache))
 }
