@@ -14,6 +14,7 @@ import (
 	"math"
 	"math/big"
 	"os"
+	"runtime/pprof"
 	"sort"
 	"strconv"
 	"strings"
@@ -21,6 +22,8 @@ import (
 )
 
 var _ = time.Now()
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+var memprofile = flag.String("memprofile", "", "write memory profile to this file")
 
 func test() int64 {
 	return int64(0)
@@ -33,11 +36,28 @@ func fortesting() int64 {
 
 func main() {
 	flag.Parse()
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 	result, err := realMain(flag.Args())
 	if err != nil {
 		log.Fatalln(err)
 	}
 	fmt.Println(result)
+	// TODO(johntobin): is this too late?  Have we cleaned up the memory we allocated?
+	if *memprofile != "" {
+		f, err := os.Create(*memprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.WriteHeapProfile(f)
+		f.Close()
+	}
 }
 
 func realMain(args []string) (int64, error) {
