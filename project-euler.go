@@ -1594,9 +1594,11 @@ func squareChain(number uint, cache []uint) uint {
 	if number < _SQUARE_CHAIN_CACHE_SIZE && cache[number] != 0 {
 		return cache[number]
 	}
-	digits := uintToDigits(number)
 	var sum uint
-	for _, digit := range digits {
+	num := number
+	for num != 0 {
+		digit := num % 10
+		num = num / 10
 		sum += digit * digit
 	}
 	result := squareChain(sum, cache)
