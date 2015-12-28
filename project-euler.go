@@ -1565,22 +1565,6 @@ func projectEuler82() int64 {
  */
 
 /*
-* Return the digits making up a uint.
- */
-func uintToDigits(number uint) []uint {
-	var reverseDigits []uint
-	for number != 0 {
-		reverseDigits = append(reverseDigits, number%10)
-		number = number / 10
-	}
-	digits := make([]uint, len(reverseDigits))
-	for i, digit := range reverseDigits {
-		digits[len(reverseDigits)-i-1] = digit
-	}
-	return digits
-}
-
-/*
  * The biggest possible number to check is 9999999 -> 81*7 -> 567, so we
  * maintain a cache of 568 elements mapping to 1 or 89.
  */
