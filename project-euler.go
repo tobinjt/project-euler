@@ -1580,6 +1580,56 @@ func projectEuler82() int64 {
 * than four consecutive identical units.
  */
 
+type romanNumeral struct {
+	numerals string
+	value    uint
+}
+
+var allRomanNumerals = []romanNumeral{
+	{"M", 1000},
+	{"CM", 900},
+	{"D", 500},
+	{"CD", 400},
+	{"C", 100},
+	{"XC", 90},
+	{"L", 50},
+	{"XL", 40},
+	{"X", 10},
+	{"IX", 9},
+	{"V", 5},
+	{"IV", 4},
+	{"I", 1},
+}
+
+func romanNumeralsToUint(s string) (uint, error) {
+	if len(s) == 0 {
+		return 0, errors.New("empty string is invalid")
+	}
+	var result uint
+	pointer := s
+	smallest := allRomanNumerals[0]
+	for len(pointer) > 0 {
+		matched := false
+		for _, r := range allRomanNumerals {
+			if !strings.HasPrefix(pointer, r.numerals) {
+				continue
+			}
+			if r.value > smallest.value {
+				return 0, errors.New("sequence \"" + r.numerals + "\" followed smaller sequence \"" + smallest.numerals + "\"")
+			}
+			result += r.value
+			pointer = pointer[len(r.numerals):]
+			smallest = r
+			matched = true
+			break
+		}
+		if !matched {
+			return 0, errors.New("unrecognised sequence: " + pointer)
+		}
+	}
+	return result, nil
+}
+
 func projectEuler89actual() int64 {
 	return 0
 }

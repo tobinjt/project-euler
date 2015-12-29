@@ -323,12 +323,51 @@ func TestReadIntsFromCSVFile(t *testing.T) {
 	}
 }
 
-func TestsquareChain(t *testing.T) {
+func TestSquareChain(t *testing.T) {
 	cache := make([]uint, _SQUARE_CHAIN_CACHE_SIZE)
 	cache[1] = 1
 	cache[89] = 89
-	assert.Equal(t, "squareChain(1)", 1, squareChain(1, cache))
-	assert.Equal(t, "squareChain(89)", 89, squareChain(89, cache))
-	assert.Equal(t, "squareChain(44)", 1, squareChain(44, cache))
-	assert.Equal(t, "squareChain(85)", 89, squareChain(85, cache))
+	assert.Equal(t, "squareChain(1)", uint(1), squareChain(1, cache))
+	assert.Equal(t, "squareChain(89)", uint(89), squareChain(89, cache))
+	assert.Equal(t, "squareChain(44)", uint(1), squareChain(44, cache))
+	assert.Equal(t, "squareChain(85)", uint(89), squareChain(85, cache))
 }
+
+func TestRomanNumeralsToUint(t *testing.T) {
+	should_assert := []struct {
+		input string
+		msg   string
+	}{
+		{input: "", msg: "empty string is invalid"},
+		{input: "JTXIV", msg: "unrecognised sequence: JTXIV"},
+		{input: "XIJI", msg: "unrecognised sequence: JI"},
+		{input: "DIXX", msg: "sequence \"X\" followed smaller sequence \"IX\""},
+	}
+	for _, test := range should_assert {
+		_, err := romanNumeralsToUint(test.input)
+		assert.ErrContains(t, "romanNumeralsToUint(\""+test.input+"\")",
+			err, test.msg)
+	}
+
+	valid := []struct {
+		input  string
+		result uint
+	}{
+		{input: "III", result: 3},
+		{input: "V", result: 5},
+		{input: "X", result: 10},
+		{input: "XIX", result: 19},
+		{input: "LV", result: 55},
+		{input: "DCLXVI", result: 666},
+		{input: "MCMXCVII", result: 1997},
+	}
+	for _, test := range valid {
+		result, err := romanNumeralsToUint(test.input)
+		assert.ErrIsNil(t, "romanNumeralsToUint(\""+test.input+"\")", err)
+		assert.Equal(t, "romanNumeralsToUint(\""+test.input+"\")", test.result, result)
+	}
+}
+
+// NOTE BEWARE ACHTUNG!
+// The first character after 'Test' in the function name must be uppercase or
+// 'go test' will silently ignore it.  Gah.
