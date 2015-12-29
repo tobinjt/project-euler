@@ -1630,6 +1630,20 @@ func romanNumeralsToUint(s string) (uint, error) {
 	return result, nil
 }
 
+func uintToRomanNumerals(n uint) (string, error) {
+	if n == 0 {
+		return "", errors.New("0 is invalid")
+	}
+	var numerals []string
+	for _, r := range allRomanNumerals {
+		for r.value <= n {
+			n -= r.value
+			numerals = append(numerals, r.numerals)
+		}
+	}
+	return strings.Join(numerals, ""), nil
+}
+
 func projectEuler89actual() int64 {
 	return 0
 }

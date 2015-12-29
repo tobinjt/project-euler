@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/tobinjt/assert"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -365,6 +366,29 @@ func TestRomanNumeralsToUint(t *testing.T) {
 		result, err := romanNumeralsToUint(test.input)
 		assert.ErrIsNil(t, "romanNumeralsToUint(\""+test.input+"\")", err)
 		assert.Equal(t, "romanNumeralsToUint(\""+test.input+"\")", test.result, result)
+	}
+}
+
+func TestUintToRomanNumerals(t *testing.T) {
+	result, err := uintToRomanNumerals(0)
+	assert.ErrContains(t, "uintToRomanNumerals(0)", err, "0 is invalid")
+	valid := []struct {
+		input  uint
+		result string
+	}{
+		{input: 3, result: "III"},
+		{input: 5, result: "V"},
+		{input: 10, result: "X"},
+		{input: 19, result: "XIX"},
+		{input: 55, result: "LV"},
+		{input: 666, result: "DCLXVI"},
+		{input: 1997, result: "MCMXCVII"},
+	}
+	for _, test := range valid {
+		result, err = uintToRomanNumerals(test.input)
+		msg := "uintToRomanNumerals(" + strconv.FormatUint(uint64(test.input), 10) + ")"
+		assert.ErrIsNil(t, msg, err)
+		assert.Equal(t, msg, test.result, result)
 	}
 }
 
