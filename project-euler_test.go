@@ -75,14 +75,8 @@ func TestBreakpoint(t *testing.T) {
 }
 
 func TestParseTriangle(t *testing.T) {
-	fh := bytes.NewBufferString("1\n2 3")
+	fh := bytes.NewBufferString("x\n")
 	triangle, err := parseTriangle(fh)
-	if err == nil {
-		t.Error("missing newline should have failed")
-	}
-
-	fh = bytes.NewBufferString("x\n")
-	triangle, err = parseTriangle(fh)
 	if err == nil {
 		t.Error("non-number should have failed")
 	}

@@ -141,17 +141,12 @@ func readLinesFromFile(fh io.Reader) ([]string, error) {
 
 // Parse a file containing a triangle of numbers.
 func parseTriangle(fh io.Reader) ([][]int, error) {
-	bfh := bufio.NewReader(fh)
+	lines, err := readLinesFromFile(fh)
+	if err != nil {
+		return nil, err
+	}
 	triangle := make([][]int, 0)
-	for {
-		line, err := bfh.ReadString(byte('\n'))
-		if err != nil && len(line) > 0 {
-			// Incomplete read
-			return nil, err
-		}
-		if err != nil {
-			return triangle, nil
-		}
+	for _, line := range lines {
 		line = strings.TrimRight(line, "\n")
 		numbers := make([]int, 0)
 		for _, ascii_number := range strings.Fields(line) {
@@ -164,6 +159,7 @@ func parseTriangle(fh io.Reader) ([][]int, error) {
 		}
 		triangle = append(triangle, numbers)
 	}
+	return triangle, nil
 }
 
 func projectEuler67() int64 {
