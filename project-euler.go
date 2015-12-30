@@ -102,6 +102,22 @@ func breakpoint() string {
 var _ = fmt.Println
 
 /*
+* Read all the lines from a filehandle.
+* Note that if there isn't a newline on the last line an error will be returned.
+ */
+func readLinesFromFile(fh io.Reader) ([]string, error) {
+	s := bufio.NewScanner(fh)
+	var lines []string
+	for s.Scan() {
+		lines = append(lines, s.Text())
+	}
+	if err := s.Err(); err != nil {
+		return nil, err
+	}
+	return lines, nil
+}
+
+/*
 * By starting at the top of the triangle below and moving to adjacent numbers on
 * the row below, the maximum total from top to bottom is 23.
 *

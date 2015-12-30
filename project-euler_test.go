@@ -392,6 +392,14 @@ func TestUintToRomanNumerals(t *testing.T) {
 	}
 }
 
+func TestReadLinesFromFile(t *testing.T) {
+	fh := bytes.NewBufferString("1\n2 3\n")
+	expected := []string{"1", "2 3"}
+	actual, err := readLinesFromFile(fh)
+	assert.ErrIsNil(t, "readLinesFromFile returned error", err)
+	assert.Equal(t, "readLinesFromFile bad result", expected, actual)
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.
