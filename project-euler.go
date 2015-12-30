@@ -5,6 +5,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/csv"
 	"errors"
 	"flag"
@@ -1656,16 +1657,38 @@ func uintToRomanNumerals(n uint) (string, error) {
 	return strings.Join(numerals, ""), nil
 }
 
-func projectEuler89actual() int64 {
-	return 0
+func projectEuler89actual(fh io.Reader) int64 {
+	lines, err := readLinesFromFile(fh)
+	if err != nil {
+		panic("Reading lines failed!")
+	}
+	saved := 0
+	for _, line := range lines {
+		value, err := romanNumeralsToUint(line)
+		if err != nil {
+			panic(fmt.Sprintf("romanNumeralsToUint(%v) failed: %v", line, err))
+		}
+		numerals, err := uintToRomanNumerals(value)
+		if err != nil {
+			panic(fmt.Sprintf("uintToRomanNumerals(%v) failed: %v", value, err))
+		}
+		saved += (len(line) - len(numerals))
+	}
+	return int64(saved)
 }
 
 func projectEuler89test() int64 {
-	return projectEuler89actual()
+	fh := bytes.NewBufferString("VVIIIIII")
+	return projectEuler89actual(fh)
 }
 
 func projectEuler89() int64 {
-	return projectEuler89actual()
+	fh, err := os.Open("roman.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fh.Close()
+	return projectEuler89actual(fh)
 }
 
 /*
