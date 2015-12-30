@@ -77,6 +77,7 @@ func realMain(args []string) (int64, error) {
 		"78":         projectEuler78,
 		"80":         projectEuler80,
 		"81":         projectEuler81,
+		"85":         projectEuler85,
 		"89":         projectEuler89,
 		"92":         projectEuler92,
 		"test":       test,
@@ -1690,6 +1691,26 @@ func projectEuler89() int64 {
 	}
 	defer fh.Close()
 	return projectEuler89actual(fh)
+}
+
+/*
+* By counting carefully it can be seen that a rectangular grid measuring 3 by 2
+* contains eighteen rectangles:
+* [Diagram missing, see https://projecteuler.net/problem=85]
+* Although there exists no rectangular grid that contains exactly two million
+* rectangles, find the area of the grid with the nearest solution.
+ */
+
+func projectEuler85actual() int64 {
+	return 0
+}
+
+func projectEuler85test() int64 {
+	return projectEuler85actual()
+}
+
+func projectEuler85() int64 {
+	return projectEuler85actual()
 }
 
 /*
