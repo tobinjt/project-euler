@@ -33,7 +33,7 @@ func TestProjectEuler(t *testing.T) {
 		{475, projectEuler80test, "projectEuler80"},
 		{2427, projectEuler81test, "projectEuler81"},
 		{0, projectEuler82test, "projectEuler82"},
-		{0, projectEuler89test, "projectEuler85"},
+		{2770 + 2, projectEuler85test, "projectEuler85"},
 		{5, projectEuler89test, "projectEuler89"},
 		{7, projectEuler92test, "projectEuler92"},
 	}
@@ -393,6 +393,21 @@ func TestReadLinesFromFile(t *testing.T) {
 	actual, err := readLinesFromFile(fh)
 	assert.ErrIsNil(t, "readLinesFromFile returned error", err)
 	assert.Equal(t, "readLinesFromFile bad result", expected, actual)
+}
+
+func TestNumCombinations(t *testing.T) {
+	tests := []struct {
+		n, k, output uint64
+	}{
+		{n: 7, k: 2, output: 21},
+		{n: 9, k: 4, output: 126},
+		{n: 3, k: 1, output: 3},
+		{n: 22, k: 15, output: 170544},
+	}
+	for _, test := range tests {
+		assert.Equal(t, fmt.Sprintf("numCombinations(%v, %v)", test.n, test.k),
+			numCombinations(test.n, test.k), test.output)
+	}
 }
 
 // NOTE BEWARE ACHTUNG!

@@ -26,11 +26,12 @@ var _ = time.Now()
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 var memprofile = flag.String("memprofile", "", "write memory profile to this file")
 
+// A function for ad-hoc code during development.
 func test() int64 {
 	return int64(0)
 }
 
-// A dummy function to be called during testing.
+// A dummy function to be called during testing of realMain.
 func fortesting() int64 {
 	return 0
 }
@@ -1701,8 +1702,48 @@ func projectEuler89() int64 {
 * rectangles, find the area of the grid with the nearest solution.
  */
 
+/*
+* To choose a rectangle from an MxN grid, you choose 2 lines from the M+1
+* horizontal lines, and choose 2 lines from the N+1 vertical lines, so there are
+* C(M+1, 2) * C(N+1, 2) possible rectangles in an MxN grid.  Once the number of
+* possible rectangles exceeds two million there's no point in increasing M or N.
+* M should always be >= N, because any grid where M<N can be rotated 90 degrees
+* so that M>N.
+ */
+
+func numCombinations(n, k uint64) uint64 {
+	// TODO(johntobin): error checking of args?
+	n_fac := big.NewInt(0).MulRange(1, int64(n))
+	k_fac := big.NewInt(0).MulRange(1, int64(k))
+	n_k_fac := big.NewInt(0).MulRange(1, int64(n-k))
+	combs := n_fac.Div(n_fac, k_fac.Mul(k_fac, n_k_fac))
+	return uint64(combs.Int64())
+}
+
+func difference(a, b uint64) uint64 {
+	if a > b {
+		return a - b
+	}
+	return b - a
+}
+
 func projectEuler85actual() int64 {
-	return 0
+	const target uint64 = 2000 * 1000
+	var best_m, best_n, best_combs uint64
+	// TODO(johntobin): hardcoding the upper bound is bad, how do I avoid that?
+	// TODO(johntobin): it would be nicer if the test had a different target.
+	for m := uint64(5); m < 80; m++ {
+		for n := uint64(5); n <= m; n++ {
+			combs := numCombinations(m+1, 2) * numCombinations(n+1, 2)
+			if difference(target, combs) < difference(target, best_combs) {
+				// fmt.Printf("%v %v %v %v better than %v %v %v %v\n", m, n, combs, difference(target, combs), best_m, best_n, best_combs, difference(target, best_combs))
+				best_combs = combs
+				best_m = m
+				best_n = n
+			}
+		}
+	}
+	return int64(best_m * best_n)
 }
 
 func projectEuler85test() int64 {
