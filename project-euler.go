@@ -153,13 +153,13 @@ func parseTriangle(fh io.Reader) ([][]int, error) {
 	for _, line := range lines {
 		line = strings.TrimRight(line, "\n")
 		numbers := make([]int, 0)
-		for _, ascii_number := range strings.Fields(line) {
-			parsed_number, err := strconv.Atoi(ascii_number)
+		for _, asciiNumber := range strings.Fields(line) {
+			parsedNumber, err := strconv.Atoi(asciiNumber)
 			if err != nil {
 				// Parsing error
 				return nil, err
 			}
-			numbers = append(numbers, parsed_number)
+			numbers = append(numbers, parsedNumber)
 		}
 		triangle = append(triangle, numbers)
 	}
@@ -335,11 +335,11 @@ func (gon *NGon) ToInt() (int64, error) {
 * An interface for permutable arrays.
  */
 type Permutable interface {
-	// self.dest[dest_i][dest_j] = self.src[src_i].
-	Copy(src_i, dest_i, dest_j int)
+	// self.dest[destI][destJ] = self.src[srcI].
+	Copy(srcI, destI, destJ int)
 	// len(self.dest)
 	NumPermutations() int
-	// self.permutation_size
+	// self.permutationSize
 	PermutationSize() int
 	// len(self.dest)
 	SetSize() int
@@ -349,36 +349,36 @@ type Permutable interface {
 * Impement Permutable for ints.
  */
 type IntPermutation struct {
-	src              []int
-	dest             [][]int
-	permutation_size int
+	src             []int
+	dest            [][]int
+	permutationSize int
 }
 
-func (self *IntPermutation) Copy(src_i, dest_i, dest_j int) {
-	self.dest[dest_i][dest_j] = self.src[src_i]
+func (self *IntPermutation) Copy(srcI, destI, destJ int) {
+	self.dest[destI][destJ] = self.src[srcI]
 }
 func (self *IntPermutation) NumPermutations() int {
 	return len(self.dest)
 }
 func (self *IntPermutation) PermutationSize() int {
-	return self.permutation_size
+	return self.permutationSize
 }
 func (self *IntPermutation) SetSize() int {
 	return len(self.src)
 }
-func NewIntPermutation(set []int, permutation_size int) IntPermutation {
-	set_size := len(set)
-	num_permutations := NumPermutations(set_size, permutation_size)
+func NewIntPermutation(set []int, permutationSize int) IntPermutation {
+	setSize := len(set)
+	numPermutations := NumPermutations(setSize, permutationSize)
 	result := IntPermutation{
-		permutation_size: permutation_size,
-		src:              make([]int, set_size),
-		dest:             make([][]int, num_permutations),
+		permutationSize: permutationSize,
+		src:             make([]int, setSize),
+		dest:            make([][]int, numPermutations),
 	}
 	for i, value := range set {
 		result.src[i] = value
 	}
 	for i := range result.dest {
-		result.dest[i] = make([]int, permutation_size)
+		result.dest[i] = make([]int, permutationSize)
 	}
 	return result
 }
@@ -386,12 +386,12 @@ func NewIntPermutation(set []int, permutation_size int) IntPermutation {
 /*
 * Calculates the number of permutations that would be generated.
 * Args:
-*  set_size: the number of elements in the set.
-*  permutation_size: the number of elements in each permutation.
+*  setSize: the number of elements in the set.
+*  permutationSize: the number of elements in each permutation.
  */
-func NumPermutations(set_size, permutation_size int) int {
+func NumPermutations(setSize, permutationSize int) int {
 	result := 1
-	for i := set_size; i > set_size-permutation_size; i-- {
+	for i := setSize; i > setSize-permutationSize; i-- {
 		result *= i
 	}
 	return result
@@ -413,11 +413,11 @@ func Permute(set Permutable) {
 *  col: the column in the dest array to operate on.
 *  start: the first index to operate on.
 *  end: the first index NOT to operate on.
-*  num_unused: how many elements are unused.
+*  numUnused: how many elements are unused.
  */
-func permute(set Permutable, used []bool, col, start, end, num_unused int) {
-	reps := (end - start) / num_unused
-	permutation_size := set.PermutationSize()
+func permute(set Permutable, used []bool, col, start, end, numUnused int) {
+	reps := (end - start) / numUnused
+	permutationSize := set.PermutationSize()
 	for i := range used {
 		if used[i] {
 			continue
@@ -425,10 +425,10 @@ func permute(set Permutable, used []bool, col, start, end, num_unused int) {
 		for j := 0; j < reps; j++ {
 			set.Copy(i, start+j, col)
 		}
-		if col+1 < permutation_size {
+		if col+1 < permutationSize {
 			used[i] = true
 			permute(set, used, col+1, start, start+reps,
-				num_unused-1)
+				numUnused-1)
 			used[i] = false
 		}
 		start += reps
@@ -444,15 +444,15 @@ func (p Int64Slice) Less(i, j int) bool { return p[i] < p[j] }
 func (p Int64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 // Recursively fill an NGon, returning an array of filled NGons.
-func fillNGon(gon *NGon, sum, index_to_fill int, used []bool) []NGon {
-	if index_to_fill == len(gon.outers) {
+func fillNGon(gon *NGon, sum, indexToFill int, used []bool) []NGon {
+	if indexToFill == len(gon.outers) {
 		return []NGon{*gon}
 	}
 
 	// We're constructing a triple [X, Y, Z].  Y is already set from the
 	// previous triple.  X + Y + Z == sum.
 	results := make([]NGon, 0)
-	y := gon.Get(index_to_fill - 1)[2]
+	y := gon.Get(indexToFill - 1)[2]
 NUMBER:
 	for x := range used {
 		z := sum - (x + y)
@@ -471,7 +471,7 @@ NUMBER:
 		}
 		// When filling the final triple, z will already have been used.
 		if used[z] {
-			if index_to_fill != len(gon.outers)-1 {
+			if indexToFill != len(gon.outers)-1 {
 				continue NUMBER
 			}
 			// Check that the calculated z equals y from the first
@@ -486,16 +486,16 @@ NUMBER:
 		used[x] = true
 		used[z] = true
 		newgon := gon.Copy()
-		newgon.Set(index_to_fill, []int{x, y, z})
+		newgon.Set(indexToFill, []int{x, y, z})
 		results = append(results, fillNGon(newgon, sum,
-			index_to_fill+1, used)...)
+			indexToFill+1, used)...)
 		used[x] = false
 		// It is incorrect to mark z as unused when filling the last
 		// triple, because it's being used for the second time, and
 		// marking it unused would let it be used in other triples,
 		// resulting in it being used in the first, Nth, and final
 		// triples.
-		if index_to_fill != len(gon.outers)-1 {
+		if indexToFill != len(gon.outers)-1 {
 			used[z] = false
 		}
 	}
@@ -507,11 +507,11 @@ func projectEuler68() int64 {
 	set := NewIntPermutation(numbers, 3)
 	Permute(&set)
 	ngons := make([]NGon, 0)
-	ngon_size := len(numbers) / 2
+	ngonSize := len(numbers) / 2
 	// We won't consider triples whose first value is lower than this;
 	// either the NGon would not be the answer or we would find it from
 	// another starting triple.
-	best_start_digit := 0
+	bestStartDigit := 0
 
 TRIPLE:
 	for i := set.NumPermutations() - 1; i >= 0; i-- {
@@ -520,7 +520,7 @@ TRIPLE:
 			// The NGon would start with a lower number.
 			continue TRIPLE
 		}
-		if triple[0] < best_start_digit {
+		if triple[0] < bestStartDigit {
 			// We have a better answer already.
 			continue TRIPLE
 		}
@@ -529,7 +529,7 @@ TRIPLE:
 			continue TRIPLE
 		}
 
-		newgon := NewNGon(ngon_size)
+		newgon := NewNGon(ngonSize)
 		newgon.Set(0, triple)
 		sum := 0
 		used := make([]bool, len(set.src)+1)
@@ -544,21 +544,21 @@ TRIPLE:
 		ngons = append(ngons, gons...)
 		for _, gon := range gons {
 			i := gon.StartIndex()
-			if gon.outers[i].value > best_start_digit {
-				best_start_digit = gon.outers[i].value
+			if gon.outers[i].value > bestStartDigit {
+				bestStartDigit = gon.outers[i].value
 			}
 		}
 	}
 
-	sort_me := make([]int64, len(ngons))
+	sortMe := make([]int64, len(ngons))
 	for i, gon := range ngons {
 		// It's not good to ignore the error, but I know it cannot
 		// happen, because I generate everything.
 		value, _ := gon.ToInt()
-		sort_me[i] = value
+		sortMe[i] = value
 	}
-	sort.Sort(Int64Slice(sort_me))
-	return sort_me[len(sort_me)-1]
+	sort.Sort(Int64Slice(sortMe))
+	return sortMe[len(sortMe)-1]
 }
 
 /*
@@ -574,7 +574,7 @@ TRIPLE:
  */
 /*
 * You calculate phi(N) with Euler's Totient function:
-* http://en.wikipedia.org/wiki/Totient_function
+* http://en.wikipedia.org/wiki/TotientFunction
 * - phi(N) = N(product of (1-1/p) where p is a prime divisor of N)
 * - N/phi(N) = (product of (1-1/p) where p is a prime divisor of N)
 * Note that to get a larger N/phi(N) does not require a larger N, it requires
@@ -610,11 +610,11 @@ func PrimeFactors(number int, sieve []bool) []int {
 	if number <= 1 {
 		return factors
 	}
-	for divisor, is_prime := range sieve {
+	for divisor, isPrime := range sieve {
 		if remainder == 1 {
 			break
 		}
-		if !is_prime {
+		if !isPrime {
 			continue
 		}
 		if remainder%divisor != 0 {
@@ -632,8 +632,8 @@ func projectEuler69() int64 {
 	bound := 1000000
 	primes := SieveOfEratosthenes(int(math.Ceil(math.Sqrt(float64(bound)))))
 	result := 1
-	for number, is_prime := range primes {
-		if !is_prime {
+	for number, isPrime := range primes {
+		if !isPrime {
 			continue
 		}
 		if result*number > bound {
@@ -696,11 +696,11 @@ func IntsArePermutations(a, b int) bool {
 }
 
 func projectEuler70actual(bound int) int64 {
-	prime_bound := int(1.5 * math.Sqrt(float64(bound)))
-	sieve := SieveOfEratosthenes(prime_bound + 1)
+	primeBound := int(1.5 * math.Sqrt(float64(bound)))
+	sieve := SieveOfEratosthenes(primeBound + 1)
 	primes := make([]int, 0)
-	for prime, is_prime := range sieve {
-		if !is_prime {
+	for prime, isPrime := range sieve {
+		if !isPrime {
 			continue
 		}
 		primes = append(primes, prime)
@@ -715,10 +715,10 @@ func projectEuler70actual(bound int) int64 {
 		if n > bound {
 			continue
 		}
-		phi_n := (pair[0] - 1) * (pair[1] - 1)
-		ratio_n := float64(n) / float64(phi_n)
-		if ratio_n < ratio && IntsArePermutations(n, phi_n) {
-			ratio = ratio_n
+		phiN := (pair[0] - 1) * (pair[1] - 1)
+		ratioN := float64(n) / float64(phiN)
+		if ratioN < ratio && IntsArePermutations(n, phiN) {
+			ratio = ratioN
 			number = n
 		}
 	}
@@ -778,14 +778,14 @@ func projectEuler71test() int64 {
 	return projectEuler71actual(8)
 }
 
-func projectEuler71actual(max_denominator int64) int64 {
-	upper_bound := big.NewRat(3, 7)
+func projectEuler71actual(maxDenominator int64) int64 {
+	upperBound := big.NewRat(3, 7)
 	answer := big.NewRat(1, 5)
 	var denominator int64
-	for denominator = 1; denominator <= max_denominator; denominator++ {
+	for denominator = 1; denominator <= maxDenominator; denominator++ {
 		numerator := answer.Num().Int64()
 		current := big.NewRat(numerator, denominator)
-		for upper_bound.Cmp(current) == 1 {
+		for upperBound.Cmp(current) == 1 {
 			if GreatestCommonDenominator(numerator, denominator) ==
 				1 && answer.Cmp(current) == -1 {
 				answer.Set(current)
@@ -820,7 +820,7 @@ func projectEuler71actual(max_denominator int64) int64 {
 * less than D; this is Euler's Totient function, phi.  To calculate phi for a
 * number, generate all the prime numbers less than the number, and multiply (1 -
 * 1/prime) for all prime numbers (see
-* http://en.wikipedia.org/wiki/Euler's_totient_function#Euler.27s_product_formula).
+* http://en.wikipedia.org/wiki/Euler'sTotientFunction#Euler.27sProductFormula).
 * Rather than calculating all the primes for each denominator, we can use a
 * method similar to the Sieve of Eratosthenes:
 * - initialise an array so that array[i] = i;
@@ -855,14 +855,14 @@ func MakePhiLookupTable(size int) []int64 {
 }
 
 func projectEuler72actual(size int) int64 {
-	phi_table := MakePhiLookupTable(size)
+	phiTable := MakePhiLookupTable(size)
 	var total int64 = 0
-	for _, value := range phi_table {
+	for _, value := range phiTable {
 		total += value
 	}
 	// 1/1 is not a reduced proper fraction, because the numerator must be
 	// less than the denominator.
-	total -= phi_table[1]
+	total -= phiTable[1]
 	return total
 }
 
@@ -894,7 +894,7 @@ func projectEuler73actual(n int64) int64 {
 	count := int64(0)
 	lower := big.NewRat(1, 3)
 	upper := big.NewRat(1, 2)
-	// Use Farey Sequences (http://en.wikipedia.org/wiki/Farey_sequence)
+	// Use Farey Sequences (http://en.wikipedia.org/wiki/FareySequence)
 	// This is taken mostly-unchanged from Wikipedia.
 	// This is complete voodoo and I have no idea how it works :(
 	var a, b, c, d int64
@@ -977,19 +977,19 @@ func CalculateFactorialChainLength(number int) int {
 	chain := make([]int, 62)
 	chain[0] = number
 	chain[1] = sum
-	chain_index := 2
+	chainIndex := 2
 
 	for {
 		sum = CalculateFactorialSum(sum)
 		// Check if we have found a loop.
-		for i := 0; i < chain_index; i++ {
+		for i := 0; i < chainIndex; i++ {
 			if chain[i] == sum {
-				return chain_index
+				return chainIndex
 			}
 		}
 		// Still no loop, extend the chain.
-		chain[chain_index] = sum
-		chain_index++
+		chain[chainIndex] = sum
+		chainIndex++
 	}
 }
 
@@ -1041,7 +1041,7 @@ type PythagoreanTriple struct {
 }
 
 // Generate three child PythagoreanTriple from a parent PythagoreanTriple.
-// http://en.wikipedia.org/wiki/Pythagorean_triple#Parent.2Fchild_relationships
+// http://en.wikipedia.org/wiki/PythagoreanTriple#Parent.2FchildRelationships
 func (parent PythagoreanTriple) MakeChildren() []PythagoreanTriple {
 	child1 := PythagoreanTriple{
 		a: parent.a - (2 * parent.b) + (2 * parent.c),
@@ -1066,15 +1066,15 @@ func (parent PythagoreanTriple) MakeChildren() []PythagoreanTriple {
 }
 
 func projectEuler75() int64 {
-	return projectEuler75_actual(1500000)
+	return projectEuler75Actual(1500000)
 }
 
 func projectEuler75test() int64 {
-	return projectEuler75_actual(100)
+	return projectEuler75Actual(100)
 }
 
-func projectEuler75_actual(upper_bound int) int64 {
-	counts := make([]int, upper_bound+1)
+func projectEuler75Actual(upperBound int) int64 {
+	counts := make([]int, upperBound+1)
 	triples := make([]PythagoreanTriple, 1)
 	triples[0] = PythagoreanTriple{a: 3, b: 4, c: 5}
 
@@ -1083,14 +1083,14 @@ func projectEuler75_actual(upper_bound int) int64 {
 		children := triple.MakeChildren()
 		for _, child := range children {
 			sum := child.a + child.b + child.c
-			if sum <= upper_bound {
+			if sum <= upperBound {
 				triples = append(triples, child)
 			}
 		}
 
 		sum := triple.a + triple.b + triple.c
 		multiple := sum
-		for multiple <= upper_bound {
+		for multiple <= upperBound {
 			counts[multiple]++
 			multiple += sum
 		}
@@ -1127,13 +1127,13 @@ func projectEuler75_actual(upper_bound int) int64 {
  */
 
 type IPArgs struct {
-	number, max_component int
+	number, maxComponent int
 }
 
 var IPResults map[IPArgs]int = make(map[IPArgs]int)
 
-func NumIntegerPartitions(number, max_component int) int {
-	result, exists := IPResults[IPArgs{number, max_component}]
+func NumIntegerPartitions(number, maxComponent int) int {
+	result, exists := IPResults[IPArgs{number, maxComponent}]
 	if exists {
 		return result
 	}
@@ -1141,17 +1141,17 @@ func NumIntegerPartitions(number, max_component int) int {
 		return 1
 	}
 	sum := 0
-	if max_component <= number {
-		sum += NumIntegerPartitions(number-max_component, max_component)
+	if maxComponent <= number {
+		sum += NumIntegerPartitions(number-maxComponent, maxComponent)
 	}
-	if max_component > 1 {
-		if max_component <= number {
-			sum += NumIntegerPartitions(number, max_component-1)
+	if maxComponent > 1 {
+		if maxComponent <= number {
+			sum += NumIntegerPartitions(number, maxComponent-1)
 		} else {
 			sum += NumIntegerPartitions(number, number)
 		}
 	}
-	IPResults[IPArgs{number, max_component}] = sum
+	IPResults[IPArgs{number, maxComponent}] = sum
 	return sum
 }
 
@@ -1189,58 +1189,58 @@ func projectEuler76() int64 {
 func SumOfPrimeFactors(number int, sieve []bool) int {
 	factors := PrimeFactors(number, sieve)
 	sum := 0
-	last_factor := 0
+	lastFactor := 0
 	for _, factor := range factors {
-		if factor != last_factor {
+		if factor != lastFactor {
 			sum += factor
-			last_factor = factor
+			lastFactor = factor
 		}
 	}
 	return sum
 }
 
-func SumOfPrimeFactors_Cached(number int, sieve []bool, sopf_cache map[int]int) int {
-	result, exists := sopf_cache[number]
+func SumOfPrimeFactors_Cached(number int, sieve []bool, sopfCache map[int]int) int {
+	result, exists := sopfCache[number]
 	if !exists {
 		result = SumOfPrimeFactors(number, sieve)
-		sopf_cache[number] = result
+		sopfCache[number] = result
 	}
 	return result
 }
 
-func NumPrimePartitions(number int, sieve []bool, npp_cache map[int]int,
-	sopf_cache map[int]int) int {
+func NumPrimePartitions(number int, sieve []bool, nppCache map[int]int,
+	sopfCache map[int]int) int {
 	if number == 1 {
 		return 0
 	}
-	result, exists := npp_cache[number]
+	result, exists := nppCache[number]
 	if exists {
 		return result
 	}
 
-	sum := SumOfPrimeFactors_Cached(number, sieve, sopf_cache)
+	sum := SumOfPrimeFactors_Cached(number, sieve, sopfCache)
 	for j := 1; j < number; j++ {
-		sopf_j := SumOfPrimeFactors_Cached(j, sieve, sopf_cache)
-		npp_number_minus_j := NumPrimePartitions(number-j, sieve,
-			npp_cache, sopf_cache)
-		sum += npp_number_minus_j * sopf_j
+		sopfJ := SumOfPrimeFactors_Cached(j, sieve, sopfCache)
+		nppNumberMinusJ := NumPrimePartitions(number-j, sieve,
+			nppCache, sopfCache)
+		sum += nppNumberMinusJ * sopfJ
 	}
 	result = sum / number
 	// Without caching, the time taken to calculate NumPrimePartitions(n) is
 	// O(2^n).  n=29 is when it takes longer than 1 minute on my laptop.
-	npp_cache[number] = result
+	nppCache[number] = result
 	return result
 }
 
 func projectEuler77actual(target int) int64 {
 	sieve := SieveOfEratosthenes(100)
-	npp_cache := make(map[int]int)
-	sopf_cache := make(map[int]int)
+	nppCache := make(map[int]int)
+	sopfCache := make(map[int]int)
 
 	number, result := 0, 0
 	for number = 1; result < target; number++ {
-		result = NumPrimePartitions(number, sieve, npp_cache,
-			sopf_cache)
+		result = NumPrimePartitions(number, sieve, nppCache,
+			sopfCache)
 	}
 	return int64(number - 1)
 }
@@ -1297,7 +1297,7 @@ var IPresults2 map[int]*big.Int = map[int]*big.Int{0: big.NewInt(1)}
 
 /*
 * The formula is described in
-* http://en.wikipedia.org/wiki/Partition_(number_theory)#Generating_function
+* http://en.wikipedia.org/wiki/Partition_(numberTheory)#GeneratingFunction
 * but it needs a bit of interpretation to get something that you can implement.
  */
 func NumIntegerPartitions2(number int) *big.Int {
@@ -1312,13 +1312,13 @@ func NumIntegerPartitions2(number int) *big.Int {
 	sum, i := big.NewInt(0), 0
 	for {
 		i++
-		pentagonal_number := GeneralisedPentagonalNumber(i)
-		if pentagonal_number > number {
+		pentagonalNumber := GeneralisedPentagonalNumber(i)
+		if pentagonalNumber > number {
 			break
 		}
-		num_ip := NumIntegerPartitions2(number - pentagonal_number)
+		numIp := NumIntegerPartitions2(number - pentagonalNumber)
 		temp := big.NewInt(0)
-		temp.Mul(signs[i%len(signs)], num_ip)
+		temp.Mul(signs[i%len(signs)], numIp)
 		sum.Add(sum, temp)
 	}
 	IPresults2[number] = sum
@@ -1326,13 +1326,13 @@ func NumIntegerPartitions2(number int) *big.Int {
 }
 
 func projectEuler78actual(multiple int64) int64 {
-	big_multiple := big.NewInt(multiple)
+	bigMultiple := big.NewInt(multiple)
 	modulus := big.NewInt(0)
 	i := 0
 	for {
 		i++
 		nip := NumIntegerPartitions2(i)
-		modulus.Mod(nip, big_multiple)
+		modulus.Mod(nip, bigMultiple)
 		if modulus.Int64() == 0 {
 			return int64(i)
 		}
@@ -1359,22 +1359,22 @@ func projectEuler78() int64 {
 * of the first one hundred decimal digits for all the irrational square roots.
  */
 
-// http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Decimal_.28base_10.29
+// http://en.wikipedia.org/wiki/MethodsOfComputingSquareRoots#Decimal_.28base_10.29
 // The numbered comments in the function refer to the steps in the Wikipedia
 // article.
 func SqrtPE80(number, precision int) []int {
-	digit_stack := []int{}
+	digitStack := []int{}
 	for remainder := number; remainder > 0; remainder /= 10 {
-		digit_stack = append(digit_stack, remainder%10)
+		digitStack = append(digitStack, remainder%10)
 	}
 	// Pad the digit stack so that an odd number of digits is interpreted
 	// as 0A, BC rather than AB, 0C.
-	if len(digit_stack)%2 == 1 {
-		digit_stack = append(digit_stack, 0)
+	if len(digitStack)%2 == 1 {
+		digitStack = append(digitStack, 0)
 	}
-	digit_stack_i := len(digit_stack) - 1
+	digitStackI := len(digitStack) - 1
 
-	remainder, root_so_far := big.NewInt(0), big.NewInt(0)
+	remainder, rootSoFar := big.NewInt(0), big.NewInt(0)
 	zero, one := big.NewInt(0), big.NewInt(1)
 	ten, twenty := big.NewInt(10), big.NewInt(20)
 	result := make([]int, 0)
@@ -1384,46 +1384,46 @@ func SqrtPE80(number, precision int) []int {
 		current.Set(remainder)
 		for j := 0; j < 2; j++ {
 			current = current.Mul(current, ten)
-			if digit_stack_i >= 0 {
+			if digitStackI >= 0 {
 				current.Add(current,
-					big.NewInt(int64(digit_stack[digit_stack_i])))
+					big.NewInt(int64(digitStack[digitStackI])))
 			}
-			digit_stack_i--
+			digitStackI--
 		}
 
 		// Step 2.
-		next_digit, subtract_me := big.NewInt(0), big.NewInt(0)
+		nextDigit, subtractMe := big.NewInt(0), big.NewInt(0)
 		for {
-			next_digit.Add(next_digit, one)
+			nextDigit.Add(nextDigit, one)
 			temp := big.NewInt(0)
-			temp.Set(root_so_far)
+			temp.Set(rootSoFar)
 			temp.Mul(temp, twenty)
-			temp.Add(temp, next_digit)
-			temp.Mul(temp, next_digit)
+			temp.Add(temp, nextDigit)
+			temp.Mul(temp, nextDigit)
 			if temp.Cmp(current) == 1 {
-				next_digit.Sub(next_digit, one)
+				nextDigit.Sub(nextDigit, one)
 				break
 			}
-			subtract_me.Set(temp)
+			subtractMe.Set(temp)
 		}
 
 		// Step 3.
-		remainder.Sub(current, subtract_me)
-		root_so_far.Mul(root_so_far, ten)
-		root_so_far.Add(root_so_far, next_digit)
-		result = append(result, int(next_digit.Int64()))
+		remainder.Sub(current, subtractMe)
+		rootSoFar.Mul(rootSoFar, ten)
+		rootSoFar.Add(rootSoFar, nextDigit)
+		result = append(result, int(nextDigit.Int64()))
 
 		// Step 4.
-		if remainder.Cmp(zero) == 0 && digit_stack_i < 0 {
+		if remainder.Cmp(zero) == 0 && digitStackI < 0 {
 			break
 		}
 	}
 	return result
 }
 
-func projectEuler80actual(upper_bound int) int64 {
+func projectEuler80actual(upperBound int) int64 {
 	result := 0
-	for i := 0; i <= upper_bound; i++ {
+	for i := 0; i <= upperBound; i++ {
 		sqrt := SqrtPE80(i, 100)
 		// Irrational roots will have more than a single digit.  I'm
 		// cheating somewhat because I know this function won't be
@@ -1713,10 +1713,10 @@ func projectEuler89() int64 {
 
 func numCombinations(n, k uint64) uint64 {
 	// TODO(johntobin): error checking of args?
-	n_fac := big.NewInt(0).MulRange(1, int64(n))
-	k_fac := big.NewInt(0).MulRange(1, int64(k))
-	n_k_fac := big.NewInt(0).MulRange(1, int64(n-k))
-	combs := n_fac.Div(n_fac, k_fac.Mul(k_fac, n_k_fac))
+	nFac := big.NewInt(0).MulRange(1, int64(n))
+	kFac := big.NewInt(0).MulRange(1, int64(k))
+	nKFac := big.NewInt(0).MulRange(1, int64(n-k))
+	combs := nFac.Div(nFac, kFac.Mul(kFac, nKFac))
 	return uint64(combs.Int64())
 }
 
@@ -1729,21 +1729,20 @@ func difference(a, b uint64) uint64 {
 
 func projectEuler85actual() int64 {
 	const target uint64 = 2000 * 1000
-	var best_m, best_n, best_combs uint64
+	var bestM, bestN, bestCombs uint64
 	// TODO(johntobin): hardcoding the upper bound is bad, how do I avoid that?
 	// TODO(johntobin): it would be nicer if the test had a different target.
 	for m := uint64(5); m < 80; m++ {
 		for n := uint64(5); n <= m; n++ {
 			combs := numCombinations(m+1, 2) * numCombinations(n+1, 2)
-			if difference(target, combs) < difference(target, best_combs) {
-				// fmt.Printf("%v %v %v %v better than %v %v %v %v\n", m, n, combs, difference(target, combs), best_m, best_n, best_combs, difference(target, best_combs))
-				best_combs = combs
-				best_m = m
-				best_n = n
+			if difference(target, combs) < difference(target, bestCombs) {
+				bestCombs = combs
+				bestM = m
+				bestN = n
 			}
 		}
 	}
-	return int64(best_m * best_n)
+	return int64(bestM * bestN)
 }
 
 func projectEuler85test() int64 {
