@@ -86,7 +86,7 @@ func realMain(args []string) (int64, error) {
 	}
 	if len(args) != 1 || functions[args[0]] == nil {
 		keys := []string{}
-		for key, _ := range functions {
+		for key := range functions {
 			if key != "fortesting" {
 				keys = append(keys, key)
 			}
@@ -149,10 +149,10 @@ func parseTriangle(fh io.Reader) ([][]int, error) {
 	if err != nil {
 		return nil, err
 	}
-	triangle := make([][]int, 0)
+	var triangle [][]int
 	for _, line := range lines {
 		line = strings.TrimRight(line, "\n")
-		numbers := make([]int, 0)
+		var numbers []int
 		for _, asciiNumber := range strings.Fields(line) {
 			parsedNumber, err := strconv.Atoi(asciiNumber)
 			if err != nil {
@@ -247,15 +247,20 @@ func projectEuler67() int64 {
 *   would find it anyway.
  */
 
+// NGonOuter is an external node; see description above.
 type NGonOuter struct {
 	value int
 	inner *NGonInner
 }
+
+// NGonInner is an internal node; see description above.
 type NGonInner struct {
 	value int
 	inner *NGonInner
 	outer *NGonOuter
 }
+
+// NGon holds all the NGonOuter and NGonInner structs; see description above.
 type NGon struct {
 	inners []NGonInner
 	outers []NGonOuter
@@ -266,7 +271,7 @@ func (inner NGonInner) String() string {
 		inner.inner.value)
 }
 func (gon NGon) String() string {
-	results := make([]string, 0)
+	var results []string
 	first := gon.StartIndex()
 	triple := gon.Get(first)
 	sum := triple[0] + triple[1] + triple[2]
@@ -277,6 +282,8 @@ func (gon NGon) String() string {
 	return fmt.Sprintf("sum: %v: first: %v ", sum, first) +
 		strings.Join(results, "; ")
 }
+
+// NewNGon creates a new NGon, creates the necessary NGonInner and NGonOuter structs, and creates the links between them.
 func NewNGon(n int) *NGon {
 	gon := &NGon{
 		inners: make([]NGonInner, n),
@@ -289,6 +296,8 @@ func NewNGon(n int) *NGon {
 	}
 	return gon
 }
+
+// StartIndex returns the first index to use when processing an NGon in ToInt.
 func (gon *NGon) StartIndex() int {
 	first, value := 0, gon.inners[0].outer.value
 	for i := range gon.inners {
@@ -299,11 +308,15 @@ func (gon *NGon) StartIndex() int {
 	}
 	return first
 }
+
+// Set updates the NGon at index using the values in triple.
 func (gon *NGon) Set(index int, triple []int) {
 	gon.outers[index].value = triple[0]
 	gon.outers[index].inner.value = triple[1]
 	gon.outers[index].inner.inner.value = triple[2]
 }
+
+// Get returns the numbers making the NGon at index.
 func (gon *NGon) Get(index int) []int {
 	return []int{
 		gon.outers[index].value,
@@ -311,6 +324,8 @@ func (gon *NGon) Get(index int) []int {
 		gon.outers[index].inner.inner.value,
 	}
 }
+
+// Copy creates a deep copy of an NGon.
 func (gon *NGon) Copy() *NGon {
 	newgon := NewNGon(len(gon.inners))
 	for i := range gon.inners {
@@ -318,6 +333,8 @@ func (gon *NGon) Copy() *NGon {
 	}
 	return newgon
 }
+
+// ToInt produces the integer representation of an NGon.
 func (gon *NGon) ToInt() (int64, error) {
 	number := ""
 	offset := gon.StartIndex()
@@ -331,9 +348,7 @@ func (gon *NGon) ToInt() (int64, error) {
 	return strconv.ParseInt(number, 10, 64)
 }
 
-/*
-* An interface for permutable arrays.
- */
+// Permutable is the interface for permutable arrays.
 type Permutable interface {
 	// self.dest[destI][destJ] = self.src[srcI].
 	Copy(srcI, destI, destJ int)
@@ -345,27 +360,34 @@ type Permutable interface {
 	SetSize() int
 }
 
-/*
-* Impement Permutable for ints.
- */
+// IntPermutation impements Permutable for ints.
 type IntPermutation struct {
 	src             []int
 	dest            [][]int
 	permutationSize int
 }
 
-func (self *IntPermutation) Copy(srcI, destI, destJ int) {
-	self.dest[destI][destJ] = self.src[srcI]
+// Copy from source to destination.
+func (set *IntPermutation) Copy(srcI, destI, destJ int) {
+	set.dest[destI][destJ] = set.src[srcI]
 }
-func (self *IntPermutation) NumPermutations() int {
-	return len(self.dest)
+
+// NumPermutations returns the number of permutations.
+func (set *IntPermutation) NumPermutations() int {
+	return len(set.dest)
 }
-func (self *IntPermutation) PermutationSize() int {
-	return self.permutationSize
+
+// PermutationSize is the size of the permutation to be generated from the inputs.
+func (set *IntPermutation) PermutationSize() int {
+	return set.permutationSize
 }
-func (self *IntPermutation) SetSize() int {
-	return len(self.src)
+
+// SetSize returns the size of the set.
+func (set *IntPermutation) SetSize() int {
+	return len(set.src)
 }
+
+// NewIntPermutation creates a new Int permutation.
 func NewIntPermutation(set []int, permutationSize int) IntPermutation {
 	setSize := len(set)
 	numPermutations := NumPermutations(setSize, permutationSize)
@@ -383,12 +405,10 @@ func NewIntPermutation(set []int, permutationSize int) IntPermutation {
 	return result
 }
 
-/*
-* Calculates the number of permutations that would be generated.
-* Args:
-*  setSize: the number of elements in the set.
-*  permutationSize: the number of elements in each permutation.
- */
+// NumPermutations calculates the number of permutations that would be generated.
+// Args:
+//  setSize: the number of elements in the set.
+//  permutationSize: the number of elements in each permutation.
 func NumPermutations(setSize, permutationSize int) int {
 	result := 1
 	for i := setSize; i > setSize-permutationSize; i-- {
@@ -397,9 +417,7 @@ func NumPermutations(setSize, permutationSize int) int {
 	return result
 }
 
-/*
-* Generate all the permutations.
- */
+// Permute generates all the permutations.
 func Permute(set Permutable) {
 	used := make([]bool, set.SetSize())
 	permute(set, used, 0, 0, set.NumPermutations(), set.SetSize())
@@ -435,8 +453,8 @@ func permute(set Permutable, used []bool, col, start, end, numUnused int) {
 	}
 }
 
-// Go doesn't provide sorting methods for int64.
 // Int64Slice attaches the methods of Interface to []int64, sorting in increasing order.
+// Go doesn't provide sorting methods for int64.
 type Int64Slice []int64
 
 func (p Int64Slice) Len() int           { return len(p) }
@@ -451,7 +469,7 @@ func fillNGon(gon *NGon, sum, indexToFill int, used []bool) []NGon {
 
 	// We're constructing a triple [X, Y, Z].  Y is already set from the
 	// previous triple.  X + Y + Z == sum.
-	results := make([]NGon, 0)
+	var results []NGon
 	y := gon.Get(indexToFill - 1)[2]
 NUMBER:
 	for x := range used {
@@ -506,7 +524,7 @@ func projectEuler68() int64 {
 	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	set := NewIntPermutation(numbers, 3)
 	Permute(&set)
-	ngons := make([]NGon, 0)
+	var ngons []NGon
 	ngonSize := len(numbers) / 2
 	// We won't consider triples whose first value is lower than this;
 	// either the NGon would not be the answer or we would find it from
@@ -584,7 +602,7 @@ TRIPLE:
 * primes less than 1000000.
  */
 
-// Generate a prime table using Sieve of Erastosthenes.
+// SieveOfEratosthenes generates a prime table using Sieve of Erastosthenes.
 func SieveOfEratosthenes(size int) []bool {
 	primes := make([]bool, size+1)
 	for i := range primes {
@@ -603,7 +621,7 @@ func SieveOfEratosthenes(size int) []bool {
 	return primes
 }
 
-// Generate a list of prime factors for a number.  Factors are not deduplicated.
+// PrimeFactors generates a list of prime factors for a number.  Factors are not deduplicated.
 func PrimeFactors(number int, sieve []bool) []int {
 	factors := []int{}
 	remainder := number
@@ -676,7 +694,7 @@ func projectEuler69() int64 {
 * low, increase it; if pairs don't work, try triples.
  */
 
-// Check if the digits in two non-negative ints are permutations.
+// IntsArePermutations checks if the digits in two non-negative ints are permutations.
 func IntsArePermutations(a, b int) bool {
 	exists := make(map[int]int)
 	for a > 0 {
@@ -698,7 +716,7 @@ func IntsArePermutations(a, b int) bool {
 func projectEuler70actual(bound int) int64 {
 	primeBound := int(1.5 * math.Sqrt(float64(bound)))
 	sieve := SieveOfEratosthenes(primeBound + 1)
-	primes := make([]int, 0)
+	var primes []int
 	for prime, isPrime := range sieve {
 		if !isPrime {
 			continue
@@ -763,7 +781,7 @@ func projectEuler70() int64 {
 * we replace the lower bound with that fraction.
  */
 
-// Determine the GCD of two numbers.
+// GreatestCommonDenominator determines the GCD of two numbers.
 func GreatestCommonDenominator(a, b int64) int64 {
 	return big.NewInt(0).GCD(nil, nil, big.NewInt(a), big.NewInt(b)).Int64()
 }
@@ -830,8 +848,7 @@ func projectEuler71actual(maxDenominator int64) int64 {
 * answer to the problem.
  */
 
-// Generate a lookup table for Euler's Totient function, phi.  See description
-// above.
+// MakePhiLookupTable generates a lookup table for Euler's Totient function, phi.  See description above.
 func MakePhiLookupTable(size int) []int64 {
 	table := make([]float64, size+1)
 	for i := range table {
@@ -856,7 +873,7 @@ func MakePhiLookupTable(size int) []int64 {
 
 func projectEuler72actual(size int) int64 {
 	phiTable := MakePhiLookupTable(size)
-	var total int64 = 0
+	var total int64
 	for _, value := range phiTable {
 		total += value
 	}
@@ -956,7 +973,7 @@ func projectEuler73() int64 {
 * clearer.
  */
 
-func CalculateFactorialSum(number int) int {
+func calculateFactorialSum(number int) int {
 	factorials := []int{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880}
 	if number == 0 {
 		return factorials[number]
@@ -970,8 +987,8 @@ func CalculateFactorialSum(number int) int {
 	return sum
 }
 
-func CalculateFactorialChainLength(number int) int {
-	sum := CalculateFactorialSum(number)
+func calculateFactorialChainLength(number int) int {
+	sum := calculateFactorialSum(number)
 	// The problem tells us that the longest non-repeating chain contains 60
 	// elements.
 	chain := make([]int, 62)
@@ -980,7 +997,7 @@ func CalculateFactorialChainLength(number int) int {
 	chainIndex := 2
 
 	for {
-		sum = CalculateFactorialSum(sum)
+		sum = calculateFactorialSum(sum)
 		// Check if we have found a loop.
 		for i := 0; i < chainIndex; i++ {
 			if chain[i] == sum {
@@ -996,7 +1013,7 @@ func CalculateFactorialChainLength(number int) int {
 func projectEuler74() int64 {
 	count := 0
 	for i := 1; i < 1000000; i++ {
-		if CalculateFactorialChainLength(i) == 60 {
+		if calculateFactorialChainLength(i) == 60 {
 			count++
 		}
 	}
@@ -1036,11 +1053,12 @@ func projectEuler74() int64 {
 * the answer.
  */
 
+// PythagoreanTriple stores the components of a Pythagorean triple.
 type PythagoreanTriple struct {
 	a, b, c int
 }
 
-// Generate three child PythagoreanTriple from a parent PythagoreanTriple.
+// MakeChildren generates three child PythagoreanTriple from a parent PythagoreanTriple.
 // http://en.wikipedia.org/wiki/PythagoreanTriple#Parent.2FchildRelationships
 func (parent PythagoreanTriple) MakeChildren() []PythagoreanTriple {
 	child1 := PythagoreanTriple{
@@ -1126,12 +1144,15 @@ func projectEuler75Actual(upperBound int) int64 {
 * caching.
  */
 
+// IPArgs is the struct stored in IPResults.
 type IPArgs struct {
 	number, maxComponent int
 }
 
-var IPResults map[IPArgs]int = make(map[IPArgs]int)
+// IPResults is a cache used by NumIntegerPartitions.
+var IPResults = make(map[IPArgs]int)
 
+// NumIntegerPartitions calculates the number of integer partitions for a number.  It uses IPResults as a cache to speed up processing.
 func NumIntegerPartitions(number, maxComponent int) int {
 	result, exists := IPResults[IPArgs{number, maxComponent}]
 	if exists {
@@ -1176,16 +1197,13 @@ func projectEuler76() int64 {
 * thousand different ways?
  */
 
-/*
-* The [formula for calculating the number of prime
-* partitions](http://oeis.org/A000607) is voodoo, and it's not good for
-* implementing an algorithm.  The formula can be transformed using [Euler's
-* Transform](http://mathworld.wolfram.com/EulerTransform.html) into [something
-* that can be implemented reasonably
-* easily](http://math.stackexchange.com/a/89661).  I admit that I don't
-* understand *why* or *how* either of these formulae work.
- */
-
+// SumOfPrimeFactors The [formula for calculating the number of prime
+// partitions](http://oeis.org/A000607) is voodoo, and it's not good for
+// implementing an algorithm.  The formula can be transformed using [Euler's
+// Transform](http://mathworld.wolfram.com/EulerTransform.html) into [something
+// that can be implemented reasonably
+// easily](http://math.stackexchange.com/a/89661).  I admit that I don't
+// understand *why* or *how* either of these formulae work.
 func SumOfPrimeFactors(number int, sieve []bool) int {
 	factors := PrimeFactors(number, sieve)
 	sum := 0
@@ -1199,7 +1217,8 @@ func SumOfPrimeFactors(number int, sieve []bool) int {
 	return sum
 }
 
-func SumOfPrimeFactors_Cached(number int, sieve []bool, sopfCache map[int]int) int {
+// SumOfPrimeFactorsCached is the cached version of SumOfPrimeFactors.
+func SumOfPrimeFactorsCached(number int, sieve []bool, sopfCache map[int]int) int {
 	result, exists := sopfCache[number]
 	if !exists {
 		result = SumOfPrimeFactors(number, sieve)
@@ -1208,6 +1227,8 @@ func SumOfPrimeFactors_Cached(number int, sieve []bool, sopfCache map[int]int) i
 	return result
 }
 
+// NumPrimePartitions calculates the number of prime partitions for a number.
+// sieve is a prime sieve, nppCache is a cache that is updated in place to speed up processing.
 func NumPrimePartitions(number int, sieve []bool, nppCache map[int]int,
 	sopfCache map[int]int) int {
 	if number == 1 {
@@ -1218,9 +1239,9 @@ func NumPrimePartitions(number int, sieve []bool, nppCache map[int]int,
 		return result
 	}
 
-	sum := SumOfPrimeFactors_Cached(number, sieve, sopfCache)
+	sum := SumOfPrimeFactorsCached(number, sieve, sopfCache)
 	for j := 1; j < number; j++ {
-		sopfJ := SumOfPrimeFactors_Cached(j, sieve, sopfCache)
+		sopfJ := SumOfPrimeFactorsCached(j, sieve, sopfCache)
 		nppNumberMinusJ := NumPrimePartitions(number-j, sieve,
 			nppCache, sopfCache)
 		sum += nppNumberMinusJ * sopfJ
@@ -1279,27 +1300,25 @@ func projectEuler77() int64 {
 * 223.567489ms 6033 => 5975595644718247526
  */
 
-func PentagonalNumber(number int) int {
+func pentagonalNumber(number int) int {
 	return ((3 * number * number) - number) / 2
 }
 
-func GeneralisedPentagonalNumber(number int) int {
+func generalisedPentagonalNumber(number int) int {
 	// input:   0, 1,  2, 3,  4, 5,  6, 7,  8
 	// becomes: 0, 1, -1, 2, -2, 3, -3, 4, -4
 	if number%2 == 0 {
-		return PentagonalNumber(number / -2)
-	} else {
-		return PentagonalNumber((number + 1) / 2)
+		return pentagonalNumber(number / -2)
 	}
+	return pentagonalNumber((number + 1) / 2)
 }
 
-var IPresults2 map[int]*big.Int = map[int]*big.Int{0: big.NewInt(1)}
+// IPresults2 is a cache used in NumIntegerPartitions2.
+var IPresults2 = map[int]*big.Int{0: big.NewInt(1)}
 
-/*
-* The formula is described in
-* http://en.wikipedia.org/wiki/Partition_(numberTheory)#GeneratingFunction
-* but it needs a bit of interpretation to get something that you can implement.
- */
+// NumIntegerPartitions2 implements the formula described in
+// http://en.wikipedia.org/wiki/Partition_(numberTheory)#GeneratingFunction
+// but it needs a bit of interpretation to get something that you can implement.
 func NumIntegerPartitions2(number int) *big.Int {
 	result, exists := IPresults2[number]
 	if exists {
@@ -1312,13 +1331,13 @@ func NumIntegerPartitions2(number int) *big.Int {
 	sum, i := big.NewInt(0), 0
 	for {
 		i++
-		pentagonalNumber := GeneralisedPentagonalNumber(i)
+		pentagonalNumber := generalisedPentagonalNumber(i)
 		if pentagonalNumber > number {
 			break
 		}
-		numIp := NumIntegerPartitions2(number - pentagonalNumber)
+		numIP := NumIntegerPartitions2(number - pentagonalNumber)
 		temp := big.NewInt(0)
-		temp.Mul(signs[i%len(signs)], numIp)
+		temp.Mul(signs[i%len(signs)], numIP)
 		sum.Add(sum, temp)
 	}
 	IPresults2[number] = sum
@@ -1359,7 +1378,7 @@ func projectEuler78() int64 {
 * of the first one hundred decimal digits for all the irrational square roots.
  */
 
-// http://en.wikipedia.org/wiki/MethodsOfComputingSquareRoots#Decimal_.28base_10.29
+// SqrtPE80 implements http://en.wikipedia.org/wiki/MethodsOfComputingSquareRoots#Decimal_.28base_10.29
 // The numbered comments in the function refer to the steps in the Wikipedia
 // article.
 func SqrtPE80(number, precision int) []int {
@@ -1377,7 +1396,7 @@ func SqrtPE80(number, precision int) []int {
 	remainder, rootSoFar := big.NewInt(0), big.NewInt(0)
 	zero, one := big.NewInt(0), big.NewInt(1)
 	ten, twenty := big.NewInt(10), big.NewInt(20)
-	result := make([]int, 0)
+	var result []int
 	for len(result) < precision {
 		// Step 1.
 		current := big.NewInt(0)
@@ -1714,9 +1733,10 @@ func projectEuler89() int64 {
 func numCombinations(n, k uint64) uint64 {
 	// TODO(johntobin): error checking of args?
 	nFac := big.NewInt(0).MulRange(1, int64(n))
-	kFac := big.NewInt(0).MulRange(1, int64(k))
+	// This should be kFac, but starting a variable with k[UPPER] is a hard-coded lint warning in golang.  Sigh.
+	xkFac := big.NewInt(0).MulRange(1, int64(k))
 	nKFac := big.NewInt(0).MulRange(1, int64(n-k))
-	combs := nFac.Div(nFac, kFac.Mul(kFac, nKFac))
+	combs := nFac.Div(nFac, xkFac.Mul(xkFac, nKFac))
 	return uint64(combs.Int64())
 }
 
@@ -1773,14 +1793,14 @@ func projectEuler85() int64 {
  * The biggest possible number to check is 9999999 -> 81*7 -> 567, so we
  * maintain a cache of 568 elements mapping to 1 or 89.
  */
-const _SQUARE_CHAIN_CACHE_SIZE uint = 568
+const squareChainCacheSize uint = 568
 
 /*
 * Return the last element in the square chain for number, either 1 or 89.
 * cache is used to short circuit following the chain and is updated.
  */
 func squareChain(number uint, cache []uint) uint {
-	if number < _SQUARE_CHAIN_CACHE_SIZE && cache[number] != 0 {
+	if number < squareChainCacheSize && cache[number] != 0 {
 		return cache[number]
 	}
 	var sum uint
@@ -1791,26 +1811,26 @@ func squareChain(number uint, cache []uint) uint {
 		sum += digit * digit
 	}
 	result := squareChain(sum, cache)
-	if number < _SQUARE_CHAIN_CACHE_SIZE {
+	if number < squareChainCacheSize {
 		cache[number] = result
 	}
 	return result
 }
 
 func projectEuler92actual(limit uint) int64 {
-	cache := make([]uint, _SQUARE_CHAIN_CACHE_SIZE)
+	cache := make([]uint, squareChainCacheSize)
 	cache[1] = 1
 	cache[89] = 89
-	count_1, count_89 := 0, 0
+	count1, count89 := 0, 0
 	for i := uint(1); i < limit; i++ {
 		result := squareChain(i, cache)
 		if result == 1 {
-			count_1++
+			count1++
 		} else {
-			count_89++
+			count89++
 		}
 	}
-	return int64(count_89)
+	return int64(count89)
 }
 
 func projectEuler92test() int64 {

@@ -3,11 +3,12 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/tobinjt/assert"
 	"sort"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/tobinjt/assert"
 )
 
 // Shut up about unused import.
@@ -176,41 +177,41 @@ func TestMakePhiLookupTablet(t *testing.T) {
 		MakePhiLookupTable(10))
 }
 
-func TestCalculateFactorialSum(t *testing.T) {
+func TestcalculateFactorialSum(t *testing.T) {
 	// The test results are copied from the description of problem 74.
-	assert.Equal(t, "CalculateFactorialSum",
-		1, CalculateFactorialSum(0))
-	assert.Equal(t, "CalculateFactorialSum",
-		720, CalculateFactorialSum(6))
-	assert.Equal(t, "CalculateFactorialSum",
-		363600, CalculateFactorialSum(69))
-	assert.Equal(t, "CalculateFactorialSum",
-		362881, CalculateFactorialSum(90))
-	assert.Equal(t, "CalculateFactorialSum",
-		145, CalculateFactorialSum(145))
-	assert.Equal(t, "CalculateFactorialSum",
-		169, CalculateFactorialSum(1454))
-	assert.Equal(t, "CalculateFactorialSum",
-		363601, CalculateFactorialSum(169))
-	assert.Equal(t, "CalculateFactorialSum",
-		45361, CalculateFactorialSum(871))
-	assert.Equal(t, "CalculateFactorialSum",
-		45360, CalculateFactorialSum(78))
+	assert.Equal(t, "calculateFactorialSum",
+		1, calculateFactorialSum(0))
+	assert.Equal(t, "calculateFactorialSum",
+		720, calculateFactorialSum(6))
+	assert.Equal(t, "calculateFactorialSum",
+		363600, calculateFactorialSum(69))
+	assert.Equal(t, "calculateFactorialSum",
+		362881, calculateFactorialSum(90))
+	assert.Equal(t, "calculateFactorialSum",
+		145, calculateFactorialSum(145))
+	assert.Equal(t, "calculateFactorialSum",
+		169, calculateFactorialSum(1454))
+	assert.Equal(t, "calculateFactorialSum",
+		363601, calculateFactorialSum(169))
+	assert.Equal(t, "calculateFactorialSum",
+		45361, calculateFactorialSum(871))
+	assert.Equal(t, "calculateFactorialSum",
+		45360, calculateFactorialSum(78))
 }
 
-func TestCalculateFactorialChainLength(t *testing.T) {
-	assert.Equal(t, "CalculateFactorialChainLength 169", 3,
-		CalculateFactorialChainLength(169))
-	assert.Equal(t, "CalculateFactorialChainLength 871", 2,
-		CalculateFactorialChainLength(871))
-	assert.Equal(t, "CalculateFactorialChainLength 69", 5,
-		CalculateFactorialChainLength(69))
-	assert.Equal(t, "CalculateFactorialChainLength 78", 4,
-		CalculateFactorialChainLength(78))
-	assert.Equal(t, "CalculateFactorialChainLength 540", 2,
-		CalculateFactorialChainLength(540))
-	assert.Equal(t, "CalculateFactorialChainLength 4197", 60,
-		CalculateFactorialChainLength(4197))
+func TestcalculateFactorialChainLength(t *testing.T) {
+	assert.Equal(t, "calculateFactorialChainLength 169", 3,
+		calculateFactorialChainLength(169))
+	assert.Equal(t, "calculateFactorialChainLength 871", 2,
+		calculateFactorialChainLength(871))
+	assert.Equal(t, "calculateFactorialChainLength 69", 5,
+		calculateFactorialChainLength(69))
+	assert.Equal(t, "calculateFactorialChainLength 78", 4,
+		calculateFactorialChainLength(78))
+	assert.Equal(t, "calculateFactorialChainLength 540", 2,
+		calculateFactorialChainLength(540))
+	assert.Equal(t, "calculateFactorialChainLength 4197", 60,
+		calculateFactorialChainLength(4197))
 }
 
 func TestMakeChildren(t *testing.T) {
@@ -256,18 +257,18 @@ func TestNumPrimePartitions(t *testing.T) {
 		NumPrimePartitions(20, sieve, npp_cache, sopf_cache))
 }
 
-func TestPentagonalNumber(t *testing.T) {
-	assert.Equal(t, "PentagonalNumber", 1, PentagonalNumber(1))
-	assert.Equal(t, "PentagonalNumber", 5, PentagonalNumber(2))
-	assert.Equal(t, "PentagonalNumber", 35, PentagonalNumber(5))
-	assert.Equal(t, "PentagonalNumber", 92, PentagonalNumber(8))
+func TestpentagonalNumber(t *testing.T) {
+	assert.Equal(t, "pentagonalNumber", 1, pentagonalNumber(1))
+	assert.Equal(t, "pentagonalNumber", 5, pentagonalNumber(2))
+	assert.Equal(t, "pentagonalNumber", 35, pentagonalNumber(5))
+	assert.Equal(t, "pentagonalNumber", 92, pentagonalNumber(8))
 }
 
-func TestGeneralisedPentagonalNumber(t *testing.T) {
+func TestGeneralisedpentagonalNumber(t *testing.T) {
 	expected := []int{0, 1, 2, 5, 7, 12, 15, 22, 26, 35, 40}
 	for number, result := range expected {
-		assert.Equal(t, "GeneralisedPentagonalNumber", result,
-			GeneralisedPentagonalNumber(number))
+		assert.Equal(t, "generalisedPentagonalNumber", result,
+			generalisedPentagonalNumber(number))
 	}
 }
 
@@ -320,7 +321,7 @@ func TestReadIntsFromCSVFile(t *testing.T) {
 }
 
 func TestSquareChain(t *testing.T) {
-	cache := make([]uint, _SQUARE_CHAIN_CACHE_SIZE)
+	cache := make([]uint, squareChainCacheSize)
 	cache[1] = 1
 	cache[89] = 89
 	assert.Equal(t, "squareChain(1)", uint(1), squareChain(1, cache))
