@@ -1562,6 +1562,41 @@ func projectEuler81() int64 {
 * the right column.
  */
 
+// TwoDPath represents a path through a two dimensional array.  The Nth step in the path is array[i[N]][j[N]].  cost can be used to track the cost of the path.
+type TwoDPath struct {
+	i, j []int
+	cost int64
+}
+
+// TwoDPathHeap implements the Heap interface for []TwoDPath.
+// https://golang.org/pkg/container/heap/
+type TwoDPathHeap []TwoDPath
+
+// Implement the Heap interface for []TwoDPath, starting with the Sort interface.
+func (h TwoDPathHeap) Len() int           { return len(h) }
+func (h TwoDPathHeap) Less(i, j int) bool { return h[i].cost < h[j].cost }
+func (h TwoDPathHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+// Push appends an element to the array.
+func (h *TwoDPathHeap) Push(x interface{}) {
+	*h = append(*h, x.(TwoDPath))
+}
+
+// Pop removes the last element from the array.
+func (h *TwoDPathHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
+}
+
+// TwoDAStar implements A Star Search for a two dimensional array.
+type TwoDAStar struct {
+	data  [][]uint64
+	nodes TwoDPathHeap
+}
+
 func projectEuler82actual(r io.Reader) int64 {
 	return 0
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"container/heap"
 	"fmt"
 	"sort"
 	"strconv"
@@ -409,6 +410,21 @@ func TestNumCombinations(t *testing.T) {
 		assert.Equal(t, fmt.Sprintf("numCombinations(%v, %v)", test.n, test.k),
 			numCombinations(test.n, test.k), test.output)
 	}
+}
+
+func TestTwoDPathHeap(t *testing.T) {
+	n1 := TwoDPath{cost: 1}
+	n2 := TwoDPath{cost: 2}
+	n3 := TwoDPath{cost: 3}
+	n4 := TwoDPath{cost: 4}
+
+	h := &TwoDPathHeap{n2, n4, n1}
+	heap.Init(h)
+	assert.Equal(t, "Expecting n1", n1, heap.Pop(h))
+	heap.Push(h, n3)
+	assert.Equal(t, "Expecting n2", n2, heap.Pop(h))
+	assert.Equal(t, "Expecting n3", n3, heap.Pop(h))
+	assert.Equal(t, "Expecting n4", n4, heap.Pop(h))
 }
 
 // NOTE BEWARE ACHTUNG!
