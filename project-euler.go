@@ -6,6 +6,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"container/heap"
 	"encoding/csv"
 	"errors"
 	"flag"
@@ -78,6 +79,7 @@ func realMain(args []string) (int64, error) {
 		"78":         projectEuler78,
 		"80":         projectEuler80,
 		"81":         projectEuler81,
+		"82":         projectEuler82,
 		"85":         projectEuler85,
 		"89":         projectEuler89,
 		"92":         projectEuler92,
@@ -1502,10 +1504,10 @@ func readIntsFromCSVFile(r io.Reader) ([][]uint64, error) {
 
 func projectEuler81actual(r io.Reader) int64 {
 	matrix, err := readIntsFromCSVFile(r)
-	size := len(matrix)
 	if err != nil {
 		return -1
 	}
+	size := len(matrix)
 	grid := make([][]uint64, size)
 	// There's only one way to fill the first row or column, so prefill them and make filling the remainder easier.
 	grid[0] = make([]uint64, size)
@@ -1597,8 +1599,97 @@ type TwoDAStar struct {
 	nodes TwoDPathHeap
 }
 
+// AStarNode is a node in an A Star searchable graph.
+type AStarNode interface{}
+
+// AStarSearchable is the interface to implement to make a data structure A Star searchable.
+type AStarSearchable interface {
+	// AddStartNodes adds the starting nodes to the heap.
+	AddStartNodes()
+	// IsEndNode determines if a node is an end node.
+	IsEndNode(node AStarNode) bool
+	// PopNode pops the next node off the heap and returns it.
+	PopNode() AStarNode
+	// AddChildNodes adds the child nodes of node to the heap.
+	AddChildNodes(node AStarNode)
+}
+
+func (a *TwoDAStar) AddStartNodes() {
+	heap.Init(&a.nodes)
+	for i := range a.data {
+		n := TwoDPath{i: []int{i}, j: []int{0}, cost: int64(a.data[i][0])}
+		heap.Push(&a.nodes, n)
+	}
+}
+
+func (a TwoDAStar) IsEndNode(node AStarNode) bool {
+	n := node.(TwoDPath)
+	return n.j[len(n.j)-1] == len(a.data[0])-1
+}
+
+func (a *TwoDAStar) PopNode() AStarNode {
+	return heap.Pop(&a.nodes)
+}
+
+// AlreadyVisited returns true if i,j has already been visited on this path.
+func (n TwoDPath) AlreadyVisited(i, j int) bool {
+	for x := range n.i {
+		if n.i[x] == i && n.j[x] == j {
+			return true
+		}
+	}
+	return false
+}
+
+// ExtendPath adds a new step to n and adds it to the heap.
+func (a *TwoDAStar) ExtendPath(n TwoDPath, i, j int) {
+	if n.AlreadyVisited(i, j) {
+		return
+	}
+	node := TwoDPath{
+		i:    append(n.i, i),
+		j:    append(n.j, j),
+		cost: n.cost + int64(a.data[i][j]),
+	}
+	heap.Push(&a.nodes, node)
+}
+
+func (a *TwoDAStar) AddChildNodes(node AStarNode) {
+	// TODO This will to be be updated for PE83.
+	n := node.(TwoDPath)
+	x := len(n.i) - 1
+	if n.i[x] != 0 {
+		// Add node above.
+		a.ExtendPath(n, n.i[x]-1, n.j[x])
+	}
+	if n.i[x] != len(a.data)-1 {
+		// Add node below.
+		a.ExtendPath(n, n.i[x]+1, n.j[x])
+	}
+	if n.j[x] != len(a.data[0])-1 {
+		// Add node to the right.
+		a.ExtendPath(n, n.i[x], n.j[x]+1)
+	}
+}
+
+func AStarSearch(a AStarSearchable) AStarNode {
+	a.AddStartNodes()
+	n := a.PopNode()
+	for !a.IsEndNode(n) {
+		a.AddChildNodes(n)
+		n = a.PopNode()
+	}
+	return n
+}
+
 func projectEuler82actual(r io.Reader) int64 {
-	return 0
+	data, err := readIntsFromCSVFile(r)
+	if err != nil {
+		return -1
+	}
+	matrix := TwoDAStar{data: data}
+	node := AStarSearch(&matrix).(TwoDPath)
+	return node.cost
 }
 
 func projectEuler82test() int64 {
