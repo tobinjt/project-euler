@@ -1564,9 +1564,11 @@ func projectEuler81() int64 {
 * the right column.
  */
 
-// TwoDPath represents a path through a two dimensional array.  The Nth step in the path is array[i[N]][j[N]].  cost can be used to track the cost of the path.
+// TwoDPath represents a path through a two dimensional array.  The Nth step in the path is array[ipath[N]][jpath[N]].  cost can be used to track the cost of the path. i, j are the last indices used in the path, and are stored so that ipath, jpath can be left out.
 type TwoDPath struct {
-	i, j []int
+	// Uncommenting this line doubles the overall execution time!
+	// ipath, jpath []int
+	i, j int
 	cost int64
 }
 
@@ -1617,38 +1619,25 @@ type AStarSearchable interface {
 func (a *TwoDAStar) AddStartNodes() {
 	heap.Init(&a.nodes)
 	for i := range a.data {
-		n := TwoDPath{i: []int{i}, j: []int{0}, cost: int64(a.data[i][0])}
+		n := TwoDPath{i: i, j: 0, cost: int64(a.data[i][0])}
 		heap.Push(&a.nodes, n)
 	}
 }
 
 func (a TwoDAStar) IsEndNode(node AStarNode) bool {
 	n := node.(TwoDPath)
-	return n.j[len(n.j)-1] == len(a.data[0])-1
+	return n.j == len(a.data[0])-1
 }
 
 func (a *TwoDAStar) PopNode() AStarNode {
 	return heap.Pop(&a.nodes)
 }
 
-// AlreadyVisited returns true if i,j has already been visited on this path.
-func (n TwoDPath) AlreadyVisited(i, j int) bool {
-	for x := range n.i {
-		if n.i[x] == i && n.j[x] == j {
-			return true
-		}
-	}
-	return false
-}
-
 // ExtendPath adds a new step to n and adds it to the heap.
 func (a *TwoDAStar) ExtendPath(n TwoDPath, i, j int) {
-	if n.AlreadyVisited(i, j) {
-		return
-	}
 	node := TwoDPath{
-		i:    append(n.i, i),
-		j:    append(n.j, j),
+		i:    i,
+		j:    j,
 		cost: n.cost + int64(a.data[i][j]),
 	}
 	heap.Push(&a.nodes, node)
@@ -1657,18 +1646,17 @@ func (a *TwoDAStar) ExtendPath(n TwoDPath, i, j int) {
 func (a *TwoDAStar) AddChildNodes(node AStarNode) {
 	// TODO This will to be be updated for PE83.
 	n := node.(TwoDPath)
-	x := len(n.i) - 1
-	if n.i[x] != 0 {
+	if n.i != 0 {
 		// Add node above.
-		a.ExtendPath(n, n.i[x]-1, n.j[x])
+		a.ExtendPath(n, n.i-1, n.j)
 	}
-	if n.i[x] != len(a.data)-1 {
+	if n.i != len(a.data)-1 {
 		// Add node below.
-		a.ExtendPath(n, n.i[x]+1, n.j[x])
+		a.ExtendPath(n, n.i+1, n.j)
 	}
-	if n.j[x] != len(a.data[0])-1 {
+	if n.j != len(a.data[0])-1 {
 		// Add node to the right.
-		a.ExtendPath(n, n.i[x], n.j[x]+1)
+		a.ExtendPath(n, n.i, n.j+1)
 	}
 }
 
@@ -1682,11 +1670,7 @@ func AStarSearch(a AStarSearchable) AStarNode {
 	return n
 }
 
-func projectEuler82actual(r io.Reader) int64 {
-	data, err := readIntsFromCSVFile(r)
-	if err != nil {
-		return -1
-	}
+func projectEuler82actual(data [][]uint64) int64 {
 	matrix := TwoDAStar{data: data}
 	node := AStarSearch(&matrix).(TwoDPath)
 	return node.cost
@@ -1698,7 +1682,11 @@ func projectEuler82test() int64 {
 630,803,746,422,111
 537,699,497,121,956
 805,732,524,37,331`
-	return projectEuler82actual(strings.NewReader(data))
+	matrix, err := readIntsFromCSVFile(strings.NewReader(data))
+	if err != nil {
+		return -1
+	}
+	return projectEuler82actual(matrix)
 }
 
 func projectEuler82() int64 {
@@ -1706,7 +1694,23 @@ func projectEuler82() int64 {
 	if err != nil {
 		return -1
 	}
-	return projectEuler82actual(fd)
+	data, err := readIntsFromCSVFile(fd)
+	if err != nil {
+		return -1
+	}
+	testdata := `131,637,234,103,18
+201,96,342,965,150
+630,803,746,422,111
+537,699,497,121,956
+805,732,524,37,331`
+	data, err = readIntsFromCSVFile(strings.NewReader(testdata))
+	if err != nil {
+		return -1
+	}
+	for i := 0; i < 100000; i++ {
+		_ = projectEuler82actual(data)
+	}
+	return projectEuler82actual(data)
 }
 
 /*
