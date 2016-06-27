@@ -413,13 +413,13 @@ func TestNumCombinations(t *testing.T) {
 	}
 }
 
-func TestTwoDPathHeap(t *testing.T) {
-	n1 := TwoDPath{cost: 1}
-	n2 := TwoDPath{cost: 2}
-	n3 := TwoDPath{cost: 3}
-	n4 := TwoDPath{cost: 4}
+func TestTwoDPointHeap(t *testing.T) {
+	n1 := TwoDPoint{cost: 1}
+	n2 := TwoDPoint{cost: 2}
+	n3 := TwoDPoint{cost: 3}
+	n4 := TwoDPoint{cost: 4}
 
-	h := &TwoDPathHeap{n2, n4, n1}
+	h := &TwoDPointHeap{n2, n4, n1}
 	heap.Init(h)
 	assert.Equal(t, "Expecting n1", n1, heap.Pop(h))
 	heap.Push(h, n3)

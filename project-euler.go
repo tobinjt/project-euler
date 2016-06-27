@@ -1564,30 +1564,28 @@ func projectEuler81() int64 {
 * the right column.
  */
 
-// TwoDPath represents a path through a two dimensional array.  The Nth step in the path is array[ipath[N]][jpath[N]].  cost can be used to track the cost of the path. i, j are the last indices used in the path, and are stored so that ipath, jpath can be left out.
-type TwoDPath struct {
-	// Uncommenting this line doubles the overall execution time!
-	// ipath, jpath []int
-	i, j int
-	cost int64
+// TwoDPoint represents a point in a two dimensional array.  i,j are the indices of the ppoint.  cost is the cost to get to this point, and heuristic is an estimate of the extra cost to get to the end point.
+type TwoDPoint struct {
+	i, j            int
+	cost, heuristic uint64
 }
 
-// TwoDPathHeap implements the Heap interface for []TwoDPath.
+// TwoDPointHeap implements the Heap interface for []TwoDPoint.
 // https://golang.org/pkg/container/heap/
-type TwoDPathHeap []TwoDPath
+type TwoDPointHeap []TwoDPoint
 
-// Implement the Heap interface for []TwoDPath, starting with the Sort interface.
-func (h TwoDPathHeap) Len() int           { return len(h) }
-func (h TwoDPathHeap) Less(i, j int) bool { return h[i].cost < h[j].cost }
-func (h TwoDPathHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+// Implement the Heap interface for []TwoDPoint, starting with the Sort interface.
+func (h TwoDPointHeap) Len() int           { return len(h) }
+func (h TwoDPointHeap) Less(i, j int) bool { return h[i].cost+h[i].heuristic < h[j].cost+h[j].heuristic }
+func (h TwoDPointHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
 
 // Push appends an element to the array.
-func (h *TwoDPathHeap) Push(x interface{}) {
-	*h = append(*h, x.(TwoDPath))
+func (h *TwoDPointHeap) Push(x interface{}) {
+	*h = append(*h, x.(TwoDPoint))
 }
 
 // Pop removes the last element from the array.
-func (h *TwoDPathHeap) Pop() interface{} {
+func (h *TwoDPointHeap) Pop() interface{} {
 	old := *h
 	n := len(old)
 	x := old[n-1]
@@ -1595,10 +1593,16 @@ func (h *TwoDPathHeap) Pop() interface{} {
 	return x
 }
 
-// TwoDAStar implements A Star Search for a two dimensional array.
-type TwoDAStar struct {
-	data  [][]uint64
-	nodes TwoDPathHeap
+// TwoDAStar82 implements A Star Search for a two dimensional array.
+type TwoDAStar82 struct {
+	// The cost of a node in the path.
+	costs [][]uint64
+	// Heuristics for the remaining cost to reach an end node.
+	heuristics []uint64
+	// The best cost we've seen getting to a particular node.  If the cost of the current path is higher we abandon the current path.
+	bestCosts [][]uint64
+	// A heap of nodes to check, sorted by smallest (cost + heuristic).
+	nodes TwoDPointHeap
 }
 
 // AStarNode is a node in an A Star searchable graph.
@@ -1606,6 +1610,8 @@ type AStarNode interface{}
 
 // AStarSearchable is the interface to implement to make a data structure A Star searchable.
 type AStarSearchable interface {
+	// Initialise internal state.
+	Init()
 	// AddStartNodes adds the starting nodes to the heap.
 	AddStartNodes()
 	// IsEndNode determines if a node is an end node.
@@ -1616,51 +1622,84 @@ type AStarSearchable interface {
 	AddChildNodes(node AStarNode)
 }
 
-func (a *TwoDAStar) AddStartNodes() {
+func (a *TwoDAStar82) Init() {
+	// Start by populating heuristics.  Figure out the minimum cost, then set each heuristic to (minimum cost * minimum num squares to end).
+	a.heuristics = make([]uint64, len(a.costs))
+	minCost := a.costs[0][0]
+	for i := range a.costs {
+		for j := range a.costs[0] {
+			if a.costs[i][j] < minCost {
+				minCost = a.costs[i][j]
+			}
+		}
+	}
+	for i := range a.costs {
+		numSquares := uint64(len(a.costs) - i - 1)
+		a.heuristics[i] = minCost * numSquares
+	}
+
+	a.bestCosts = make([][]uint64, len(a.costs))
+	for i := range a.costs {
+		a.bestCosts[i] = make([]uint64, len(a.costs[0]))
+	}
 	heap.Init(&a.nodes)
-	for i := range a.data {
-		n := TwoDPath{i: i, j: 0, cost: int64(a.data[i][0])}
+}
+
+func (a *TwoDAStar82) AddStartNodes() {
+	for i := range a.costs {
+		n := TwoDPoint{
+			i:         i,
+			j:         0,
+			cost:      a.costs[i][0],
+			heuristic: a.heuristics[i],
+		}
 		heap.Push(&a.nodes, n)
 	}
 }
 
-func (a TwoDAStar) IsEndNode(node AStarNode) bool {
-	n := node.(TwoDPath)
-	return n.j == len(a.data[0])-1
+func (a TwoDAStar82) IsEndNode(node AStarNode) bool {
+	n := node.(TwoDPoint)
+	return n.j == len(a.costs[0])-1
 }
 
-func (a *TwoDAStar) PopNode() AStarNode {
+func (a *TwoDAStar82) PopNode() AStarNode {
 	return heap.Pop(&a.nodes)
 }
 
 // ExtendPath adds a new step to n and adds it to the heap.
-func (a *TwoDAStar) ExtendPath(n TwoDPath, i, j int) {
-	node := TwoDPath{
-		i:    i,
-		j:    j,
-		cost: n.cost + int64(a.data[i][j]),
+func (a *TwoDAStar82) ExtendPath(n TwoDPoint, i, j int) {
+	node := TwoDPoint{
+		i:         i,
+		j:         j,
+		cost:      n.cost + a.costs[i][j],
+		heuristic: a.heuristics[i],
 	}
 	heap.Push(&a.nodes, node)
 }
 
-func (a *TwoDAStar) AddChildNodes(node AStarNode) {
-	// TODO This will to be be updated for PE83.
-	n := node.(TwoDPath)
+func (a *TwoDAStar82) AddChildNodes(node AStarNode) {
+	n := node.(TwoDPoint)
+	if a.bestCosts[n.i][n.j] != 0 && a.bestCosts[n.i][n.j] <= n.cost {
+		// We've already seen a better path to this node, discard the current path.
+		return
+	}
+	a.bestCosts[n.i][n.j] = n.cost
 	if n.i != 0 {
 		// Add node above.
 		a.ExtendPath(n, n.i-1, n.j)
 	}
-	if n.i != len(a.data)-1 {
+	if n.i != len(a.costs)-1 {
 		// Add node below.
 		a.ExtendPath(n, n.i+1, n.j)
 	}
-	if n.j != len(a.data[0])-1 {
+	if n.j != len(a.costs[0])-1 {
 		// Add node to the right.
 		a.ExtendPath(n, n.i, n.j+1)
 	}
 }
 
 func AStarSearch(a AStarSearchable) AStarNode {
+	a.Init()
 	a.AddStartNodes()
 	n := a.PopNode()
 	for !a.IsEndNode(n) {
@@ -1670,10 +1709,10 @@ func AStarSearch(a AStarSearchable) AStarNode {
 	return n
 }
 
-func projectEuler82actual(matrix *TwoDAStar) int64 {
-	node := AStarSearch(matrix).(TwoDPath)
+func projectEuler82actual(matrix *TwoDAStar82) int64 {
+	node := AStarSearch(matrix).(TwoDPoint)
 	fmt.Printf("capacity: %v\n", cap(matrix.nodes))
-	return node.cost
+	return int64(node.cost)
 }
 
 func projectEuler82test() int64 {
@@ -1682,11 +1721,11 @@ func projectEuler82test() int64 {
 630,803,746,422,111
 537,699,497,121,956
 805,732,524,37,331`
-	matrix, err := readIntsFromCSVFile(strings.NewReader(data))
+	costs, err := readIntsFromCSVFile(strings.NewReader(data))
 	if err != nil {
 		return -1
 	}
-	return projectEuler82actual(&TwoDAStar{data: matrix})
+	return projectEuler82actual(&TwoDAStar82{costs: costs})
 }
 
 func projectEuler82() int64 {
@@ -1694,11 +1733,11 @@ func projectEuler82() int64 {
 	if err != nil {
 		return -1
 	}
-	data, err := readIntsFromCSVFile(fd)
+	costs, err := readIntsFromCSVFile(fd)
 	if err != nil {
 		return -1
 	}
-	matrix := TwoDAStar{data: data}
+	matrix := TwoDAStar82{costs: costs}
 	return projectEuler82actual(&matrix)
 }
 
@@ -1718,10 +1757,10 @@ func projectEuler82() int64 {
 * the bottom right by moving left, right, up, and down.
  */
 
-func projectEuler83actual(matrix *TwoDAStar) int64 {
-	node := AStarSearch(matrix).(TwoDPath)
+func projectEuler83actual(matrix *TwoDAStar82) int64 {
+	node := AStarSearch(matrix).(TwoDPoint)
 	fmt.Printf("capacity: %v\n", cap(matrix.nodes))
-	return node.cost
+	return int64(node.cost)
 }
 
 func projectEuler83test() int64 {
@@ -1730,11 +1769,11 @@ func projectEuler83test() int64 {
 630,803,746,422,111
 537,699,497,121,956
 805,732,524,37,331`
-	matrix, err := readIntsFromCSVFile(strings.NewReader(data))
+	costs, err := readIntsFromCSVFile(strings.NewReader(data))
 	if err != nil {
 		return -1
 	}
-	return projectEuler83actual(&TwoDAStar{data: matrix})
+	return projectEuler83actual(&TwoDAStar82{costs: costs})
 }
 
 func projectEuler83() int64 {
@@ -1742,11 +1781,11 @@ func projectEuler83() int64 {
 	if err != nil {
 		return -1
 	}
-	data, err := readIntsFromCSVFile(fd)
+	costs, err := readIntsFromCSVFile(fd)
 	if err != nil {
 		return -1
 	}
-	matrix := TwoDAStar{data: data}
+	matrix := TwoDAStar82{costs: costs}
 	return projectEuler82actual(&matrix)
 }
 
