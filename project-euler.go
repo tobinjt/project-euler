@@ -80,6 +80,7 @@ func realMain(args []string) (int64, error) {
 		"80":         projectEuler80,
 		"81":         projectEuler81,
 		"82":         projectEuler82,
+		"83":         projectEuler83,
 		"85":         projectEuler85,
 		"89":         projectEuler89,
 		"92":         projectEuler92,
