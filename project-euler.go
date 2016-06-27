@@ -2154,14 +2154,19 @@ func projectEuler92() int64 {
 * Find the last ten digits of this prime number.
  */
 
-func projectEuler97actual() int64 {
-	return 0
+func projectEuler97actual(exp, mul int64) int64 {
+	prime := big.NewInt(1).Exp(big.NewInt(2), big.NewInt(exp), nil)
+	prime = prime.Mul(prime, big.NewInt(mul)).Add(prime, big.NewInt(1))
+	str := fmt.Sprintf("%v", prime)
+	l := len(str)
+	res, _ := strconv.ParseUint(str[l-10:l], 10, 64)
+	return int64(res)
 }
 
 func projectEuler97test() int64 {
-	return projectEuler97actual()
+	return projectEuler97actual(50, 7)
 }
 
 func projectEuler97() int64 {
-	return projectEuler97actual()
+	return projectEuler97actual(7830457, 28433)
 }
