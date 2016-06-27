@@ -1,0 +1,14 @@
+Useful docs: https://blog.golang.org/profiling-go-programs
+
+## Using pprof
+
+Remember to rebuild the binary after every change, otherwise pprof will give you
+bullshit output.
+
+    problem=82
+    go build project-euler \
+      && ./project-euler \
+           --cpuprofile=/tmp/cpu.prof \
+           --memprofile=/tmp/mem.prof \
+           "${problem?}" \
+      && go tool pprof project-euler /tmp/cpu.prof
