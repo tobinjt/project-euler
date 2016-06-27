@@ -1670,9 +1670,9 @@ func AStarSearch(a AStarSearchable) AStarNode {
 	return n
 }
 
-func projectEuler82actual(data [][]uint64) int64 {
-	matrix := TwoDAStar{data: data}
-	node := AStarSearch(&matrix).(TwoDPath)
+func projectEuler82actual(matrix *TwoDAStar) int64 {
+	node := AStarSearch(matrix).(TwoDPath)
+	fmt.Printf("capacity: %v\n", cap(matrix.nodes))
 	return node.cost
 }
 
@@ -1686,7 +1686,7 @@ func projectEuler82test() int64 {
 	if err != nil {
 		return -1
 	}
-	return projectEuler82actual(matrix)
+	return projectEuler82actual(&TwoDAStar{data: matrix})
 }
 
 func projectEuler82() int64 {
@@ -1698,19 +1698,56 @@ func projectEuler82() int64 {
 	if err != nil {
 		return -1
 	}
-	testdata := `131,637,234,103,18
+	matrix := TwoDAStar{data: data}
+	return projectEuler82actual(&matrix)
+}
+
+/*
+* In the 5 by 5 matrix below, the minimal path sum from the top left to the
+* bottom right, by moving left, right, up, and down, is indicated in bold red
+* and is equal to 2297.
+*
+*   131 673 234 103  18
+*   201  96 342 965 150
+*   630 803 746 422 111
+*   537 699 497 121 956
+*   805 732 524  37 331
+*
+* Find the minimal path sum, in matrix.txt (right click and "Save Link/Target
+* As..."), a 31K text file containing a 80 by 80 matrix, from the top left to
+* the bottom right by moving left, right, up, and down.
+ */
+
+func projectEuler83actual(matrix *TwoDAStar) int64 {
+	node := AStarSearch(matrix).(TwoDPath)
+	fmt.Printf("capacity: %v\n", cap(matrix.nodes))
+	return node.cost
+}
+
+func projectEuler83test() int64 {
+	data := `131,673,234,103,18
 201,96,342,965,150
 630,803,746,422,111
 537,699,497,121,956
 805,732,524,37,331`
-	data, err = readIntsFromCSVFile(strings.NewReader(testdata))
+	matrix, err := readIntsFromCSVFile(strings.NewReader(data))
 	if err != nil {
 		return -1
 	}
-	for i := 0; i < 100000; i++ {
-		_ = projectEuler82actual(data)
+	return projectEuler83actual(&TwoDAStar{data: matrix})
+}
+
+func projectEuler83() int64 {
+	fd, err := os.Open("matrix.txt")
+	if err != nil {
+		return -1
 	}
-	return projectEuler82actual(data)
+	data, err := readIntsFromCSVFile(fd)
+	if err != nil {
+		return -1
+	}
+	matrix := TwoDAStar{data: data}
+	return projectEuler82actual(&matrix)
 }
 
 /*
