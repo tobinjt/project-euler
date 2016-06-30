@@ -85,6 +85,7 @@ func realMain(args []string) (int64, error) {
 		"89":         projectEuler89,
 		"92":         projectEuler92,
 		"97":         projectEuler97,
+		"99":         projectEuler99,
 		"test":       test,
 		"fortesting": fortesting,
 	}
@@ -2169,4 +2170,53 @@ func projectEuler97test() int64 {
 
 func projectEuler97() int64 {
 	return projectEuler97actual(7830457, 28433)
+}
+
+/*
+* Comparing two numbers written in index form like 2^11 and 3^7 is not
+* difficult, as any calculator would confirm that 2^11 = 2048 < 3^7 = 2187.
+*
+* However, confirming that 632382^518061 > 519432^525806 would be much more
+* difficult, as both numbers contain over three million digits.
+*
+* Using base_exp.txt (right click and 'Save Link/Target As...'), a 22K text file
+* containing one thousand lines with a base/exponent pair on each line,
+* determine which line number has the greatest numerical value.
+*
+* NOTE: The first two lines in the file represent the numbers in the example
+* given above.
+ */
+
+func projectEuler99actual(r io.Reader) int64 {
+	pairs, err := readIntsFromCSVFile(r)
+	if err != nil {
+		return -1
+	}
+	biggest := big.NewInt(0)
+	biggestL := 0
+	val := big.NewInt(0)
+	for l, pair := range pairs {
+		fmt.Printf("%v\n", l)
+		val.SetInt64(int64(pair[0]))
+		val.Exp(val, big.NewInt(int64(pair[1])), nil)
+		if biggest.Cmp(val) == -1 {
+			biggest.Set(val)
+			biggestL = l
+		}
+	}
+	return int64(biggestL + 1)
+}
+
+func projectEuler99test() int64 {
+	data := `2,11
+3,7`
+	return projectEuler99actual(strings.NewReader(data))
+}
+
+func projectEuler99() int64 {
+	fd, err := os.Open("base_exp.txt")
+	if err != nil {
+		return -1
+	}
+	return projectEuler99actual(fd)
 }
