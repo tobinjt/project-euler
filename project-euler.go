@@ -1886,6 +1886,22 @@ func projectEuler83() int64 {
 }
 
 /*
+* See https://projecteuler.net/problem=84, it's too hard to put in here.
+ */
+
+func projectEuler84actual() int64 {
+	return 0
+}
+
+func projectEuler84test() int64 {
+	return projectEuler84actual()
+}
+
+func projectEuler84() int64 {
+	return projectEuler84actual()
+}
+
+/*
 * For a number written in Roman numerals to be considered valid there are basic
 * rules which must be followed. Even though the rules allow some numbers to be
 * expressed in more than one way there is always a "best" way of writing a
