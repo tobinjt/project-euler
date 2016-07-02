@@ -1901,11 +1901,11 @@ func projectEuler83() int64 {
 *   - Initialise row 1 of the matrix to {0, 0, 1/36, 2/36, ..., 1/36, 0, ...},
 *     i.e. the probability of rolling dice and reaching square N.
 *   - Row 2 of the matrix is the same as row 1 but shifted right 1, and so on.
+*   - There's a 1/(6^3) chance of rolling 3 doubles, and it's independent of
+*     the squares.  Maybe just subtract 1/(6^3) from each of the squares and
+*     add it to Jail?
 *   - Once that's done, the special squares have to be examined.  Subtract the
 *     chance of moving to another square and add it to the destination square.
-*   - This doesn't handle rolling 3 doubles :(  There's a 1/(6^3) chance of
-*     rolling 3 doubles, and it's independent of the squares.  Maybe just
-*     subtract 1/(6^3) from each of the squares and add it to Jail?
  */
 
 // MarkovMatrixInvarientCheck checks that the sum of probabilities in each row is 1 and panics if not.  Use index=-1 to check all rows, or index=X to check row X only.
@@ -1922,6 +1922,21 @@ func MarkovMatrixInvarientCheck(matrix [][]*big.Rat, index int) {
 			}
 		}
 	}
+}
+
+// MarkovShiftProbability subtracts probability from one element and adds it to another.
+func MarkovShiftProbability(matrix [][]*big.Rat, probability *big.Rat, i, j, k int) {
+	matrix[i][k].Add(matrix[i][k], probability)
+	matrix[i][j].Sub(matrix[i][j], probability)
+}
+
+func firstBiggerElement(c int, l []int) int {
+	for _, e := range l {
+		if e > c {
+			return e
+		}
+	}
+	panic(fmt.Sprintf("firstBiggerElement: %v bigger than %v\n", c, l))
 }
 
 func projectEuler84actual(diceSize int64) int64 {
@@ -1963,13 +1978,64 @@ func projectEuler84actual(diceSize int64) int64 {
 			if rolls[j] > 0 {
 				// Wrap around when we get towards the end of the row.
 				x := (i + j) % numSquares
-				matrix[i][x].Sub(matrix[i][x], doublesRisk)
-				matrix[i][jailSquare].Add(matrix[i][jailSquare], doublesRisk)
+				MarkovShiftProbability(matrix, doublesRisk, i, x, jailSquare)
 			}
 		}
 		MarkovMatrixInvarientCheck(matrix, i)
 	}
 
+	MarkovMatrixInvarientCheck(matrix, -1)
+
+	// Now deal with each of the special squares.
+	oneSixteenth := big.NewRat(1, 16)
+	const goSquare = 0
+
+	// Community Chest.
+	for _, square := range []int{2, 17, 33} {
+		for i := range matrix {
+			// Advance to Go.
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, goSquare)
+			// Go to Jail.
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, jailSquare)
+		}
+	}
+	MarkovMatrixInvarientCheck(matrix, -1)
+
+	// Chance
+	for _, square := range []int{7, 22, 36} {
+		for i := range matrix {
+			// Advance to Go.
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, goSquare)
+			// Go to Jail.
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, jailSquare)
+			// Go to C1.
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, 11)
+			// Go to E3.
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, 24)
+			// Go to H2.
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, 38)
+			// Go to R1.
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, 5)
+			// Go to next R, twice.
+			nextR := firstBiggerElement(square, []int{5, 15, 25, 35, 5 + numSquares})
+			nextR = nextR % numSquares
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, nextR)
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, nextR)
+			// Go to next U.
+			nextU := firstBiggerElement(square, []int{12, 28, 12 + numSquares})
+			nextU = nextU % numSquares
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, nextU)
+			// Go back 3 squares.
+			MarkovShiftProbability(matrix, oneSixteenth, i, square, square-3)
+		}
+	}
+	MarkovMatrixInvarientCheck(matrix, -1)
+
+	// Go to Jail.
+	const goToJailSquare = 30
+	for i := range matrix {
+		MarkovShiftProbability(matrix, matrix[i][goToJailSquare], i, goToJailSquare, jailSquare)
+	}
 	MarkovMatrixInvarientCheck(matrix, -1)
 
 	return 0
