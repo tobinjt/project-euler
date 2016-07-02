@@ -1889,16 +1889,98 @@ func projectEuler83() int64 {
 * See https://projecteuler.net/problem=84, it's too hard to put in here.
  */
 
-func projectEuler84actual() int64 {
+/*
+* Thoughts:
+* - A Markov chain/Markov matrix seems to be the way to go here.
+* - There will be 40 states in the chain.
+* - The initial distribution will be {1, 0, 0, ..., 0} because we always
+*   start at Go.  Though I don't think the initial distribution matters much
+*   because we won't be doing anything with it.
+* - There'll be a 40x40 state transition matrix.
+* - I don't understand yet how to populate the matrix.
+*   - Initialise row 1 of the matrix to {0, 0, 1/36, 2/36, ..., 1/36, 0, ...},
+*     i.e. the probability of rolling dice and reaching square N.
+*   - Row 2 of the matrix is the same as row 1 but shifted right 1, and so on.
+*   - Once that's done, the special squares have to be examined.  Subtract the
+*     chance of moving to another square and add it to the destination square.
+*   - This doesn't handle rolling 3 doubles :(  There's a 1/(6^3) chance of
+*     rolling 3 doubles, and it's independent of the squares.  Maybe just
+*     subtract 1/(6^3) from each of the squares and add it to Jail?
+ */
+
+// MarkovMatrixInvarientCheck checks that the sum of probabilities in each row is 1 and panics if not.  Use index=-1 to check all rows, or index=X to check row X only.
+func MarkovMatrixInvarientCheck(matrix [][]*big.Rat, index int) {
+	expected := big.NewRat(1, 1)
+	for i := range matrix {
+		if index == -1 || index == i {
+			sum := big.NewRat(0, 1)
+			for j := range matrix[i] {
+				sum.Add(sum, matrix[i][j])
+			}
+			if sum.Cmp(expected) != 0 {
+				panic(fmt.Sprintf("sum of row %v: want %v, got %v: %v\n", i, expected, sum, matrix[i]))
+			}
+		}
+	}
+}
+
+func projectEuler84actual(diceSize int64) int64 {
+	const numSquares = 40
+	const jailSquare = 10
+	// Start by working out the number of dice combinations for each offset.
+	rolls := make([]int64, (diceSize*diceSize)+1)
+	for i := int64(1); i <= diceSize; i++ {
+		for j := int64(1); j <= diceSize; j++ {
+			rolls[i+j]++
+		}
+	}
+
+	// Now create the matrix with empty values.
+	matrix := make([][]*big.Rat, numSquares)
+	for i := range matrix {
+		matrix[i] = make([]*big.Rat, numSquares)
+		for j := range matrix[i] {
+			matrix[i][j] = big.NewRat(0, 1)
+		}
+	}
+
+	// Add the data from rolls, offsetting by 1 on each line.
+	// Subtract the chance of rolling 3 doubles from each square we could
+	// land on.
+	denominator := diceSize * diceSize
+	doublesRisk := big.NewRat(1, diceSize*diceSize*diceSize)
+	for i := range matrix {
+		for j := range rolls {
+			if rolls[j] > 0 {
+				// Wrap around when we get towards the end of the row.
+				x := (i + j) % numSquares
+				matrix[i][x].SetFrac64(rolls[j], denominator)
+			}
+		}
+		MarkovMatrixInvarientCheck(matrix, i)
+		// We need to adjust by the probability of rolling doubles *after* initialising from rolls, otherwise initialising jailSquare will clobber the additions we've already made to jailSquare.
+		for j := range rolls {
+			if rolls[j] > 0 {
+				// Wrap around when we get towards the end of the row.
+				x := (i + j) % numSquares
+				matrix[i][x].Sub(matrix[i][x], doublesRisk)
+				matrix[i][jailSquare].Add(matrix[i][jailSquare], doublesRisk)
+			}
+		}
+		MarkovMatrixInvarientCheck(matrix, i)
+	}
+
+	MarkovMatrixInvarientCheck(matrix, -1)
+
 	return 0
 }
 
 func projectEuler84test() int64 {
-	return projectEuler84actual()
+	return projectEuler84actual(6)
 }
 
 func projectEuler84() int64 {
-	return projectEuler84actual()
+	return projectEuler84actual(4)
 }
 
 /*
