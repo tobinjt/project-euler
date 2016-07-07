@@ -431,6 +431,15 @@ func TestTwoDPointHeap(t *testing.T) {
 	assert.Equal(t, "Expecting n4", n4, heap.Pop(h))
 }
 
+func TestFillDiceRolls(t *testing.T) {
+	faces, position, rollsLeft := int64(2), int64(0), int64(2)
+	rolls := make([]int64, faces*rollsLeft*2)
+	fillDiceRolls(rolls, faces, position, rollsLeft)
+
+	expected := []int64{4, 0, 1, 2, 1, 2, 0, 2}
+	assert.Equal(t, "fillDiceRolls", expected, rolls)
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.

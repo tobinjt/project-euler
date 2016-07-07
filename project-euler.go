@@ -1963,16 +1963,36 @@ func (l ratWithIndexSlice) Len() int           { return len(l) }
 func (l ratWithIndexSlice) Less(i, j int) bool { return l[i].r.Cmp(l[j].r) == -1 }
 func (l ratWithIndexSlice) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 
+// fillDiceRolls recursively fills in rolls rollsLeft times, using two dice, starting from position.
+// If rollsLeft is 1 and doubles are rolled, we don't recurse and we increment index 0 rather than the index of the roll; this means that to go to jail after 3 doubles, rollsLeft should start at 3.
+func fillDiceRolls(rolls []int64, faces, position, rollsLeft int64) {
+	for i := int64(1); i <= faces; i++ {
+		for j := int64(1); j <= faces; j++ {
+			if rollsLeft == 1 && i == j {
+				rolls[0]++
+			} else {
+				newPosition := position + i + j
+				rolls[newPosition]++
+				if rollsLeft > 1 && i == j {
+					fillDiceRolls(rolls, faces, newPosition, rollsLeft-1)
+				}
+			}
+		}
+	}
+}
+
 func projectEuler84actual(diceSize int64) int64 {
 	const numSquares = 40
 	const jailSquare = 10
-	// Start by working out the number of dice combinations for each offset.
-	rolls := make([]int64, (diceSize*diceSize)+1)
-	for i := int64(1); i <= diceSize; i++ {
-		for j := int64(1); j <= diceSize; j++ {
-			rolls[i+j]++
-		}
+	// Start by working out the number of dice combinations for each offset, and how often you roll doubles three times and go to jail.
+	rolls := make([]int64, (diceSize * 3 * 2))
+	fillDiceRolls(rolls, diceSize, 0, 3)
+	denominator := int64(0)
+	for i := range rolls {
+		denominator += rolls[i]
 	}
+	rollThreeDoublesChance := big.NewRat(rolls[0], denominator)
+	rolls[0] = 0
 
 	// Now create the matrix with empty values.
 	matrix := make([][]*big.Rat, numSquares)
@@ -1984,27 +2004,15 @@ func projectEuler84actual(diceSize int64) int64 {
 	}
 
 	// Add the data from rolls, offsetting by 1 on each line.
-	// Subtract the chance of rolling 3 doubles from each square we could
-	// land on.
-	denominator := diceSize * diceSize
-	doublesRisk := big.NewRat(1, diceSize*diceSize*diceSize)
 	for i := range matrix {
 		for j := range rolls {
-			if rolls[j] > 0 {
-				// Wrap around when we get towards the end of the row.
-				x := (i + j) % numSquares
-				matrix[i][x].SetFrac64(rolls[j], denominator)
-			}
+			// Wrap around when we get towards the end of the row.
+			x := (i + j) % numSquares
+			matrix[i][x].SetFrac64(rolls[j], denominator)
 		}
-		MarkovMatrixInvarientCheck(matrix, i)
-		// We need to adjust by the probability of rolling doubles *after* initialising from rolls, otherwise initialising jailSquare will clobber the additions we've already made to jailSquare.
-		for j := range rolls {
-			if rolls[j] > 0 {
-				// Wrap around when we get towards the end of the row.
-				x := (i + j) % numSquares
-				MarkovShiftProbability(matrix, RatMul(doublesRisk, matrix[i][x]), i, x, jailSquare)
-			}
-		}
+		// Add the probability of rolling three doubles *after* initialising from rolls, otherwise initialising jailSquare will clobber the additions we've already made to jailSquare.
+
+		matrix[i][jailSquare].Add(matrix[i][jailSquare], rollThreeDoublesChance)
 		MarkovMatrixInvarientCheck(matrix, i)
 	}
 
