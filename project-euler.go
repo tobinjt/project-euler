@@ -21,6 +21,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/skelterjohn/go.matrix"
 )
 
 var _ = time.Now()
@@ -2083,21 +2085,36 @@ func projectEuler84actual(diceSize int64) int64 {
 	}
 	MarkovMatrixInvarientCheck(board, -1)
 
-	// Now sum up the probabilities for each square (the columns) and sort the sums.
-	sums := make([]ratWithIndex, numSquares)
-	for i := range sums {
-		sums[i] = ratWithIndex{i: i, r: big.NewRat(0, 1)}
-		for j := range board {
-			sums[i].r.Add(sums[i].r, board[j][i])
+	// Convert the board to a DenseMatrix of probabilities.
+	floats := make([]float64, numSquares*numSquares)
+	for i := range board {
+		for j := range board[0] {
+			// There's nothing we can do if f is not exact, so ignore the second return value.
+			f, _ := board[i][j].Float64()
+			floats[(i*numSquares)+j] = f
 		}
 	}
-	sort.Sort(ratWithIndexSlice(sums))
-	for i := range sums {
-		fmt.Printf("%v: %v %v\n", sums[i].i, sums[i].r.FloatString(4), sums[i].r)
+	probabilities := matrix.MakeDenseMatrix(floats, numSquares, numSquares)
+
+	// Now apply probability matrix to the starting position 100 times; after about 50 iterations the result of the multiplication doesn't change.
+	state := matrix.MakeDenseMatrix(make([]float64, numSquares), 1, numSquares)
+	state.Set(0, 0, 1)
+	for i := 0; i < 100; i++ {
+		state = matrix.Product(state, probabilities)
+		// fmt.Printf("%v\n", state)
 	}
 
-	x := len(sums) - 1
-	return int64((sums[x].i * 10000) + (sums[x-1].i * 100) + sums[x-2].i)
+	sortMe := make([]floatWithIndex, numSquares)
+	for i := range sortMe {
+		sortMe[i] = floatWithIndex{i: i, f: state.Get(0, i)}
+	}
+	sort.Sort(floatWithIndexSlice(sortMe))
+	for i := range sortMe {
+		fmt.Printf("%v %v\n", sortMe[i].i, sortMe[i].f)
+	}
+
+	x := len(sortMe) - 1
+	return int64((sortMe[x].i * 10000) + (sortMe[x-1].i * 100) + sortMe[x-2].i)
 }
 
 func projectEuler84test() int64 {
