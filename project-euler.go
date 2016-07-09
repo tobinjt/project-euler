@@ -21,6 +21,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/skelterjohn/go.matrix"
 )
 
 var _ = time.Now()
@@ -81,6 +83,7 @@ func realMain(args []string) (int64, error) {
 		"81":         projectEuler81,
 		"82":         projectEuler82,
 		"83":         projectEuler83,
+		"84":         projectEuler84,
 		"85":         projectEuler85,
 		"89":         projectEuler89,
 		"92":         projectEuler92,
@@ -1963,6 +1966,16 @@ func (l ratWithIndexSlice) Len() int           { return len(l) }
 func (l ratWithIndexSlice) Less(i, j int) bool { return l[i].r.Cmp(l[j].r) == -1 }
 func (l ratWithIndexSlice) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 
+type floatWithIndex struct {
+	i int
+	f float64
+}
+type floatWithIndexSlice []floatWithIndex
+
+func (l floatWithIndexSlice) Len() int           { return len(l) }
+func (l floatWithIndexSlice) Less(i, j int) bool { return l[i].f < l[j].f }
+func (l floatWithIndexSlice) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+
 // fillDiceRolls recursively fills in rolls rollsLeft times, using two dice, starting from position.
 // If rollsLeft is 1 and doubles are rolled, we don't recurse and we increment index 0 rather than the index of the roll; this means that to go to jail after 3 doubles, rollsLeft should start at 3.
 func fillDiceRolls(rolls []int64, faces, position, rollsLeft int64) {
@@ -1994,29 +2007,29 @@ func projectEuler84actual(diceSize int64) int64 {
 	rollThreeDoublesChance := big.NewRat(rolls[0], denominator)
 	rolls[0] = 0
 
-	// Now create the matrix with empty values.
-	matrix := make([][]*big.Rat, numSquares)
-	for i := range matrix {
-		matrix[i] = make([]*big.Rat, numSquares)
-		for j := range matrix[i] {
-			matrix[i][j] = big.NewRat(0, 1)
+	// Now create the board with empty values.
+	board := make([][]*big.Rat, numSquares)
+	for i := range board {
+		board[i] = make([]*big.Rat, numSquares)
+		for j := range board[i] {
+			board[i][j] = big.NewRat(0, 1)
 		}
 	}
 
 	// Add the data from rolls, offsetting by 1 on each line.
-	for i := range matrix {
+	for i := range board {
 		for j := range rolls {
 			// Wrap around when we get towards the end of the row.
 			x := (i + j) % numSquares
-			matrix[i][x].SetFrac64(rolls[j], denominator)
+			board[i][x].SetFrac64(rolls[j], denominator)
 		}
 		// Add the probability of rolling three doubles *after* initialising from rolls, otherwise initialising jailSquare will clobber the additions we've already made to jailSquare.
 
-		matrix[i][jailSquare].Add(matrix[i][jailSquare], rollThreeDoublesChance)
-		MarkovMatrixInvarientCheck(matrix, i)
+		board[i][jailSquare].Add(board[i][jailSquare], rollThreeDoublesChance)
+		MarkovMatrixInvarientCheck(board, i)
 	}
 
-	MarkovMatrixInvarientCheck(matrix, -1)
+	MarkovMatrixInvarientCheck(board, -1)
 
 	// Now deal with each of the special squares.
 	oneSixteenth := big.NewRat(1, 16)
@@ -2024,60 +2037,85 @@ func projectEuler84actual(diceSize int64) int64 {
 
 	// Community Chest.
 	for _, square := range []int{2, 17, 33} {
-		for i := range matrix {
-			move := RatMul(oneSixteenth, matrix[i][square])
+		for i := range board {
+			move := RatMul(oneSixteenth, board[i][square])
 			// Advance to Go.
-			MarkovShiftProbability(matrix, move, i, square, goSquare)
+			MarkovShiftProbability(board, move, i, square, goSquare)
 			// Go to Jail.
-			MarkovShiftProbability(matrix, move, i, square, jailSquare)
+			MarkovShiftProbability(board, move, i, square, jailSquare)
 		}
 	}
-	MarkovMatrixInvarientCheck(matrix, -1)
+	MarkovMatrixInvarientCheck(board, -1)
 
 	// Chance
 	for _, square := range []int{7, 22, 36} {
-		for i := range matrix {
-			move := RatMul(oneSixteenth, matrix[i][square])
+		for i := range board {
+			move := RatMul(oneSixteenth, board[i][square])
 			// Advance to Go.
-			MarkovShiftProbability(matrix, move, i, square, goSquare)
+			MarkovShiftProbability(board, move, i, square, goSquare)
 			// Go to Jail.
-			MarkovShiftProbability(matrix, move, i, square, jailSquare)
+			MarkovShiftProbability(board, move, i, square, jailSquare)
 			// Go to C1.
-			MarkovShiftProbability(matrix, move, i, square, 11)
+			MarkovShiftProbability(board, move, i, square, 11)
 			// Go to E3.
-			MarkovShiftProbability(matrix, move, i, square, 24)
+			MarkovShiftProbability(board, move, i, square, 24)
 			// Go to H2.
-			MarkovShiftProbability(matrix, move, i, square, 38)
+			MarkovShiftProbability(board, move, i, square, 38)
 			// Go to R1.
-			MarkovShiftProbability(matrix, move, i, square, 5)
+			MarkovShiftProbability(board, move, i, square, 5)
 			// Go to next R, twice.
 			nextR := firstBiggerElement(square, []int{5, 15, 25, 35, 5 + numSquares})
 			nextR = nextR % numSquares
-			MarkovShiftProbability(matrix, move, i, square, nextR)
-			MarkovShiftProbability(matrix, move, i, square, nextR)
+			MarkovShiftProbability(board, move, i, square, nextR)
+			MarkovShiftProbability(board, move, i, square, nextR)
 			// Go to next U.
 			nextU := firstBiggerElement(square, []int{12, 28, 12 + numSquares})
 			nextU = nextU % numSquares
-			MarkovShiftProbability(matrix, move, i, square, nextU)
+			MarkovShiftProbability(board, move, i, square, nextU)
 			// Go back 3 squares.
-			MarkovShiftProbability(matrix, move, i, square, square-3)
+			MarkovShiftProbability(board, move, i, square, square-3)
 		}
 	}
-	MarkovMatrixInvarientCheck(matrix, -1)
+	MarkovMatrixInvarientCheck(board, -1)
 
 	// Go to Jail.
 	const goToJailSquare = 30
-	for i := range matrix {
-		MarkovShiftProbability(matrix, matrix[i][goToJailSquare], i, goToJailSquare, jailSquare)
+	for i := range board {
+		MarkovShiftProbability(board, board[i][goToJailSquare], i, goToJailSquare, jailSquare)
 	}
-	MarkovMatrixInvarientCheck(matrix, -1)
+	MarkovMatrixInvarientCheck(board, -1)
+
+	// Convert the board to a DenseMatrix.
+	floats := make([]float64, numSquares*numSquares)
+	for i := range board {
+		for j := range board[0] {
+			// There's nothing we can do if f is not exact, so ignore the second return value.
+			f, _ := board[i][j].Float64()
+			floats[(i*numSquares)+j] = f
+		}
+	}
+	denseMatrix := matrix.MakeDenseMatrix(floats, numSquares, numSquares)
+
+	_, eigenVals, err := denseMatrix.Eigen()
+	if err != nil {
+		panic(fmt.Sprintf("Eigen() failed: %v", err))
+	}
+	eigenFloats := eigenVals.DiagonalCopy()
+	sortMe := make([]floatWithIndex, len(eigenFloats))
+	for i, f := range eigenFloats {
+		sortMe[i] = floatWithIndex{i: i, f: f}
+	}
+	sort.Sort(floatWithIndexSlice(sortMe))
+	for i := range sortMe {
+		fmt.Printf("%v: %v\n", sortMe[i].i, sortMe[i].f)
+	}
 
 	// Now sum up the probabilities for each square (the columns) and sort the sums.
 	sums := make([]ratWithIndex, numSquares)
 	for i := range sums {
 		sums[i] = ratWithIndex{i: i, r: big.NewRat(0, 1)}
-		for j := range matrix {
-			sums[i].r.Add(sums[i].r, matrix[j][i])
+		for j := range board {
+			sums[i].r.Add(sums[i].r, board[j][i])
 		}
 	}
 	sort.Sort(ratWithIndexSlice(sums))
