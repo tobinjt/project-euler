@@ -21,8 +21,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/skelterjohn/go.matrix"
 )
 
 var _ = time.Now()
@@ -2084,31 +2082,6 @@ func projectEuler84actual(diceSize int64) int64 {
 		MarkovShiftProbability(board, board[i][goToJailSquare], i, goToJailSquare, jailSquare)
 	}
 	MarkovMatrixInvarientCheck(board, -1)
-
-	// Convert the board to a DenseMatrix.
-	floats := make([]float64, numSquares*numSquares)
-	for i := range board {
-		for j := range board[0] {
-			// There's nothing we can do if f is not exact, so ignore the second return value.
-			f, _ := board[i][j].Float64()
-			floats[(i*numSquares)+j] = f
-		}
-	}
-	denseMatrix := matrix.MakeDenseMatrix(floats, numSquares, numSquares)
-
-	_, eigenVals, err := denseMatrix.Eigen()
-	if err != nil {
-		panic(fmt.Sprintf("Eigen() failed: %v", err))
-	}
-	eigenFloats := eigenVals.DiagonalCopy()
-	sortMe := make([]floatWithIndex, len(eigenFloats))
-	for i, f := range eigenFloats {
-		sortMe[i] = floatWithIndex{i: i, f: f}
-	}
-	sort.Sort(floatWithIndexSlice(sortMe))
-	for i := range sortMe {
-		fmt.Printf("%v: %v\n", sortMe[i].i, sortMe[i].f)
-	}
 
 	// Now sum up the probabilities for each square (the columns) and sort the sums.
 	sums := make([]ratWithIndex, numSquares)
