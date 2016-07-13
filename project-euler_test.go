@@ -65,12 +65,12 @@ func TestGreatestCommonDenominator(t *testing.T) {
 }
 
 func TestRealMain(t *testing.T) {
-	bad_args := [][]string{
+	badArgs := [][]string{
 		[]string{},
 		[]string{"does not exist"},
 		[]string{"a", "b"},
 	}
-	for _, args := range bad_args {
+	for _, args := range badArgs {
 		_, err := realMain(args)
 		assert.ErrContains(t, "realMain()", err,
 			"Only 1 arg accepted from this list")
@@ -110,15 +110,15 @@ func TestNgons(t *testing.T) {
 	assert.Equal(t, "gon.String()", "sum: 11: first: 1 1,6,4; 3,4,9; 2,9,6",
 		gon.String())
 	assert.Equal(t, "gon.Copy()", gon, gon.Copy())
-	actual_int, err := gon.ToInt()
+	actualInt, err := gon.ToInt()
 	assert.ErrIsNil(t, "gon.ToInt()", err)
-	assert.Equal(t, "gon.ToInt()", int64(164349296), actual_int)
+	assert.Equal(t, "gon.ToInt()", int64(164349296), actualInt)
 }
 
 func TestPermutable(t *testing.T) {
 	perm := NewIntPermutation([]int{1, 2, 3}, 2)
 	Permute(&perm)
-	expected_perm := [][]int{
+	expectedPerm := [][]int{
 		[]int{1, 2},
 		[]int{1, 3},
 		[]int{2, 1},
@@ -126,13 +126,13 @@ func TestPermutable(t *testing.T) {
 		[]int{3, 1},
 		[]int{3, 2},
 	}
-	assert.Equal(t, "Permute()", expected_perm, perm.dest)
+	assert.Equal(t, "Permute()", expectedPerm, perm.dest)
 }
 
 func TestInt64Sort(t *testing.T) {
-	sort_me := Int64Slice{6, 3, 8, 1}
-	sort.Sort(sort_me)
-	assert.Equal(t, "Sort()", Int64Slice{1, 3, 6, 8}, sort_me)
+	sortMe := Int64Slice{6, 3, 8, 1}
+	sort.Sort(sortMe)
+	assert.Equal(t, "Sort()", Int64Slice{1, 3, 6, 8}, sortMe)
 }
 
 func TestSieveOfEratosthenes(t *testing.T) {
@@ -223,13 +223,13 @@ func TestcalculateFactorialChainLength(t *testing.T) {
 
 func TestMakeChildren(t *testing.T) {
 	parent := PythagoreanTriple{a: 3, b: 4, c: 5}
-	expected_children := []PythagoreanTriple{
+	expectedChildren := []PythagoreanTriple{
 		PythagoreanTriple{a: 5, b: 12, c: 13},
 		PythagoreanTriple{a: 21, b: 20, c: 29},
 		PythagoreanTriple{a: 15, b: 8, c: 17},
 	}
 	children := parent.MakeChildren()
-	assert.Equal(t, "MakeChildren", expected_children, children)
+	assert.Equal(t, "MakeChildren", expectedChildren, children)
 }
 
 func TestNumIntegerPartitions(t *testing.T) {
@@ -252,16 +252,16 @@ func TestSumOfPrimeFactors(t *testing.T) {
 
 func TestNumPrimePartitions(t *testing.T) {
 	sieve := SieveOfEratosthenes(50)
-	sopf_cache := make(map[int]int)
-	npp_cache := make(map[int]int)
+	sopfCache := make(map[int]int)
+	nppCache := make(map[int]int)
 	assert.Equal(t, "NumPrimePartitions", 1,
-		NumPrimePartitions(2, sieve, npp_cache, sopf_cache))
+		NumPrimePartitions(2, sieve, nppCache, sopfCache))
 	assert.Equal(t, "NumPrimePartitions", 7,
-		NumPrimePartitions(12, sieve, npp_cache, sopf_cache))
+		NumPrimePartitions(12, sieve, nppCache, sopfCache))
 	assert.Equal(t, "NumPrimePartitions", 10,
-		NumPrimePartitions(14, sieve, npp_cache, sopf_cache))
+		NumPrimePartitions(14, sieve, nppCache, sopfCache))
 	assert.Equal(t, "NumPrimePartitions", 26,
-		NumPrimePartitions(20, sieve, npp_cache, sopf_cache))
+		NumPrimePartitions(20, sieve, nppCache, sopfCache))
 }
 
 func TestpentagonalNumber(t *testing.T) {
@@ -338,7 +338,7 @@ func TestSquareChain(t *testing.T) {
 }
 
 func TestRomanNumeralsToUint(t *testing.T) {
-	should_assert := []struct {
+	shouldAssert := []struct {
 		input string
 		msg   string
 	}{
@@ -347,7 +347,7 @@ func TestRomanNumeralsToUint(t *testing.T) {
 		{input: "XIJI", msg: "unrecognised sequence: JI"},
 		{input: "DIXX", msg: "sequence \"X\" followed smaller sequence \"IX\""},
 	}
-	for _, test := range should_assert {
+	for _, test := range shouldAssert {
 		_, err := romanNumeralsToUint(test.input)
 		assert.ErrContains(t, "romanNumeralsToUint(\""+test.input+"\")",
 			err, test.msg)

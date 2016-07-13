@@ -1618,7 +1618,7 @@ type AStarNode interface{}
 
 // AStarSearchable is the interface to implement to make a data structure A Star searchable.
 type AStarSearchable interface {
-	// Initialise internal state.
+	// Init initialises internal state.
 	Init()
 	// AddStartNodes adds the starting nodes to the heap.
 	AddStartNodes()
@@ -1630,6 +1630,7 @@ type AStarSearchable interface {
 	AddChildNodes(node AStarNode)
 }
 
+// Init initialises internal state.
 func (a *TwoDAStar82) Init() {
 	// Start by populating heuristics.  Figure out the minimum cost, then set each heuristic to (minimum cost * minimum num squares to end).
 	a.heuristics = make([]uint64, len(a.costs))
@@ -1653,6 +1654,7 @@ func (a *TwoDAStar82) Init() {
 	heap.Init(&a.nodes)
 }
 
+// AddStartNodes adds the starting nodes to the heap.
 func (a *TwoDAStar82) AddStartNodes() {
 	for i := range a.costs {
 		n := TwoDPoint{
@@ -1665,11 +1667,13 @@ func (a *TwoDAStar82) AddStartNodes() {
 	}
 }
 
+// IsEndNode determines if a node is an end node.
 func (a TwoDAStar82) IsEndNode(node AStarNode) bool {
 	n := node.(TwoDPoint)
 	return n.j == len(a.costs[0])-1
 }
 
+// PopNode pops the next node off the heap and returns it.
 func (a *TwoDAStar82) PopNode() AStarNode {
 	return heap.Pop(&a.nodes)
 }
@@ -1685,6 +1689,7 @@ func (a *TwoDAStar82) ExtendPath(n TwoDPoint, i, j int) {
 	heap.Push(&a.nodes, node)
 }
 
+// AddChildNodes adds the child nodes of node to the heap.
 func (a *TwoDAStar82) AddChildNodes(node AStarNode) {
 	n := node.(TwoDPoint)
 	if a.bestCosts[n.i][n.j] != 0 && a.bestCosts[n.i][n.j] <= n.cost {
@@ -1706,6 +1711,7 @@ func (a *TwoDAStar82) AddChildNodes(node AStarNode) {
 	}
 }
 
+// AStarSearch performs an A* Search on a graph.
 func AStarSearch(a AStarSearchable) AStarNode {
 	a.Init()
 	a.AddStartNodes()
@@ -1776,6 +1782,7 @@ type TwoDAStar83 struct {
 	nodes TwoDPointHeap
 }
 
+// Init initialises internal state.
 func (a *TwoDAStar83) Init() {
 	// Start by populating heuristics.  Figure out the minimum cost, then set each heuristic to (minimum cost * minimum num squares to end).
 	a.heuristics = make([][]uint64, len(a.costs))
@@ -1804,6 +1811,7 @@ func (a *TwoDAStar83) Init() {
 	heap.Init(&a.nodes)
 }
 
+// AddStartNodes adds the starting nodes to the heap.
 func (a *TwoDAStar83) AddStartNodes() {
 	n := TwoDPoint{
 		i:         0,
@@ -1814,11 +1822,13 @@ func (a *TwoDAStar83) AddStartNodes() {
 	heap.Push(&a.nodes, n)
 }
 
+// IsEndNode determines if a node is an end node.
 func (a TwoDAStar83) IsEndNode(node AStarNode) bool {
 	n := node.(TwoDPoint)
 	return n.i == len(a.costs)-1 && n.j == len(a.costs[0])-1
 }
 
+// PopNode pops the next node off the heap and returns it.
 func (a *TwoDAStar83) PopNode() AStarNode {
 	return heap.Pop(&a.nodes)
 }
@@ -1834,6 +1844,7 @@ func (a *TwoDAStar83) ExtendPath(n TwoDPoint, i, j int) {
 	heap.Push(&a.nodes, node)
 }
 
+// AddChildNodes adds the child nodes of node to the heap.
 func (a *TwoDAStar83) AddChildNodes(node AStarNode) {
 	n := node.(TwoDPoint)
 	if a.bestCosts[n.i][n.j] != 0 && a.bestCosts[n.i][n.j] <= n.cost {
