@@ -2150,14 +2150,14 @@ func projectEuler84() int64 {
 *
 * How many numbers below fifty million can be expressed as the sum of a prime
 * square, prime cube, and prime fourth power?
-*/
+ */
 
 /*
 * First idea:
 * - Generate primes up to sqrt(limit).
 * - Triply-nested loop calculating sums.
 * - Store results in a map[int]bool, so we don't double count.
-*/
+ */
 
 func projectEuler87actual(limit int) int64 {
 	// Generate primes up to sqrt(limit) and put them in a slice.
@@ -2183,12 +2183,12 @@ func projectEuler87actual(limit int) int64 {
 	sums := make(map[int]bool)
 	for _, square := range primes {
 		for _, cube := range primes {
-			partialSum := (square*square) + (cube*cube*cube)
+			partialSum := (square * square) + (cube * cube * cube)
 			if partialSum > limit {
 				break
 			}
 			for _, fourth := range primes {
-				sum := partialSum + (fourth*fourth*fourth*fourth)
+				sum := partialSum + (fourth * fourth * fourth * fourth)
 				if sum > limit {
 					break
 				}
@@ -2206,7 +2206,7 @@ func projectEuler87test() int64 {
 }
 
 func projectEuler87() int64 {
-	return projectEuler87actual(50*1000*1000)
+	return projectEuler87actual(50 * 1000 * 1000)
 }
 
 /*
@@ -2233,7 +2233,41 @@ func projectEuler87() int64 {
 * 6, 8, 12, 15, 16}, the sum is 61.
 *
 * What is the sum of all the minimal product-sum numbers for 2≤k≤12000
-*/
+ */
+
+/*
+* Thoughts:
+* - For each k, k is the lower bound for N, because N = k*1 is the lower bound.
+* - Find the factors of N by trial division and cache them.  No point in pre-populating this.
+* - For each k, generate size k subsets of the factors of N.  Increment N until we find an answer for k.
+* - Map tracking N => [k]?  Or just a bool?
+ */
+
+// Uint64Slice attaches the methods of Interface to []int64, sorting in increasing order.
+// Go doesn't provide sorting methods for int64.
+type Uint64Slice []uint64
+
+func (p Uint64Slice) Len() int           { return len(p) }
+func (p Uint64Slice) Less(i, j int) bool { return p[i] < p[j] }
+func (p Uint64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+
+// Factors returns the factors of n, in ascending order, including 1 and n.
+func Factors(n uint64) []uint64 {
+	f := []uint64{1, n}
+	l := uint64(math.Ceil(math.Sqrt(float64(n))))
+	var i uint64
+	for i = 2; i <= l; i++ {
+		// Check that i <= n/i.  If n=42, i=6 will add 6 and 7, but i=7 shouldn't add anything.
+		if n%i == 0 && i <= n/i {
+			f = append(f, i)
+			if i != n/i {
+				f = append(f, n/i)
+			}
+		}
+	}
+	sort.Sort(Uint64Slice(f))
+	return f
+}
 
 func projectEuler88actual() int64 {
 	return 0

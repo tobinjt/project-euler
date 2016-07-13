@@ -442,6 +442,11 @@ func TestFillDiceRolls(t *testing.T) {
 	assert.Equal(t, "fillDiceRolls", expected, rolls)
 }
 
+func TestFactors(t *testing.T) {
+	// Note that 4 should only be in the list once.
+	assert.Equal(t, "Factors", []uint64{1, 2, 4, 8, 16}, Factors(16))
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.
