@@ -2140,16 +2140,61 @@ func projectEuler84() int64 {
 * square, prime cube, and prime fourth power?
 */
 
-func projectEuler87actual() int64 {
-	return 0
+/*
+* First idea:
+* - Generate primes up to sqrt(limit).
+* - Triply-nested loop calculating sums.
+* - Store results in a map[int]bool, so we don't double count.
+*/
+
+func projectEuler87actual(limit int) int64 {
+	// Generate primes up to sqrt(limit) and put them in a slice.
+	// Counting and explicitly allocating should be more efficient that repeatedly reallocating the slice.
+	size := int(math.Sqrt(float64(limit))) + 1
+	sieve := SieveOfEratosthenes(size)
+	numPrimes := 0
+	for _, prime := range sieve {
+		if prime {
+			numPrimes++
+		}
+	}
+	primes := make([]int, numPrimes)
+	j := 0
+	for i, prime := range sieve {
+		if prime {
+			primes[j] = i
+			j++
+		}
+	}
+
+	// Calculate the sums.
+	sums := make(map[int]bool)
+	for _, square := range primes {
+		for _, cube := range primes {
+			partialSum := (square*square) + (cube*cube*cube)
+			if partialSum > limit {
+				break
+			}
+			for _, fourth := range primes {
+				sum := partialSum + (fourth*fourth*fourth*fourth)
+				if sum > limit {
+					break
+				}
+				sums[sum] = true
+			}
+		}
+	}
+
+	// How many did we find?
+	return int64(len(sums))
 }
 
 func projectEuler87test() int64 {
-	return projectEuler87actual()
+	return projectEuler87actual(50)
 }
 
 func projectEuler87() int64 {
-	return projectEuler87actual()
+	return projectEuler87actual(50*1000*1000)
 }
 
 /*
