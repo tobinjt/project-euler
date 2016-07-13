@@ -447,6 +447,21 @@ func TestFactors(t *testing.T) {
 	assert.Equal(t, "Factors", []uint64{1, 2, 4, 8, 16}, Factors(16))
 }
 
+func TestPermuteKOfN(t *testing.T) {
+	p := make([]bool, 4)
+	for _, test := range [][]bool{
+		{false, false, true, true},
+		{false, true, false, true},
+		{false, true, true, false},
+		{true, false, false, true},
+		{true, false, true, false},
+		{true, true, false, false},
+	} {
+		PermuteKOfN(p, 2)
+		assert.Equal(t, "PermuteKOfN", test, p)
+	}
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.

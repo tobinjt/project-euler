@@ -2269,6 +2269,29 @@ func Factors(n uint64) []uint64 {
 	return f
 }
 
+// PermuteKOfN permutes p, ensuring exactly k elements are selected.  Returns true until it runs out of numbers; when false is returned don't use the values in p.
+func PermuteKOfN(p []bool, k int) bool {
+	for {
+		var i int
+		for i = len(p) - 1; i >= 0 && p[i]; i-- {
+			p[i] = false
+		}
+		if i < 0 {
+			return false
+		}
+		p[i] = true
+		c := 0
+		for _, v := range p {
+			if v {
+				c++
+			}
+		}
+		if c == k {
+			return true
+		}
+	}
+}
+
 func projectEuler88actual() int64 {
 	return 0
 }
