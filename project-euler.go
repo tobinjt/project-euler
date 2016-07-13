@@ -85,6 +85,7 @@ func realMain(args []string) (int64, error) {
 		"83":         projectEuler83,
 		"84":         projectEuler84,
 		"85":         projectEuler85,
+		"87":         projectEuler87,
 		"89":         projectEuler89,
 		"92":         projectEuler92,
 		"97":         projectEuler97,
@@ -2123,6 +2124,32 @@ func projectEuler84test() int64 {
 
 func projectEuler84() int64 {
 	return projectEuler84actual(4)
+}
+
+/*
+* The smallest number expressible as the sum of a prime square, prime cube, and
+* prime fourth power is 28. In fact, there are exactly four numbers below fifty
+* that can be expressed in such a way:
+*
+*     28 = 2^2 + 2^3 + 2^4
+*     33 = 3^2 + 2^3 + 2^4
+*     49 = 5^2 + 2^3 + 2^4
+*     47 = 2^2 + 3^3 + 2^4
+*
+* How many numbers below fifty million can be expressed as the sum of a prime
+* square, prime cube, and prime fourth power?
+*/
+
+func projectEuler87actual() int64 {
+	return 0
+}
+
+func projectEuler87test() int64 {
+	return projectEuler87actual()
+}
+
+func projectEuler87() int64 {
+	return projectEuler87actual()
 }
 
 /*
