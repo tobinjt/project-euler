@@ -2272,20 +2272,24 @@ func Factors(n uint64) []uint64 {
 // PermuteKOfN permutes p, ensuring exactly k elements are selected.  Returns true until it runs out of numbers; when false is returned don't use the values in p.
 func PermuteKOfN(p []bool, k int) bool {
 	for {
+		// This is basically p++.
 		var i int
 		for i = len(p) - 1; i >= 0 && p[i]; i-- {
 			p[i] = false
 		}
+		// Stop if everything is true.
 		if i < 0 {
 			return false
 		}
 		p[i] = true
+		// Count the true bits.
 		c := 0
 		for _, v := range p {
 			if v {
 				c++
 			}
 		}
+		// If the right number of bits are set return, otherwise loop.
 		if c == k {
 			return true
 		}
