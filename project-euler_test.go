@@ -39,7 +39,7 @@ func TestProjectEuler(t *testing.T) {
 		// {102400, projectEuler84test, "projectEuler84"},
 		{2770 + 2, projectEuler85test, "projectEuler85"},
 		{4, projectEuler87test, "projectEuler87"},
-		{0, projectEuler88test, "projectEuler88"},
+		{61, projectEuler88test, "projectEuler88"},
 		{5, projectEuler89test, "projectEuler89"},
 		{7, projectEuler92test, "projectEuler92"},
 		{9347898369, projectEuler97test, "projectEuler97"},
