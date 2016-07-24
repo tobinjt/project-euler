@@ -9,14 +9,12 @@ import (
 	"container/heap"
 	"encoding/csv"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"log"
 	"math"
 	"math/big"
 	"os"
-	"runtime/pprof"
 	"sort"
 	"strconv"
 	"strings"
@@ -26,8 +24,6 @@ import (
 )
 
 var _ = time.Now()
-var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
-var memprofile = flag.String("memprofile", "", "write memory profile to this file")
 
 // A function for ad-hoc code during development.
 func test() int64 {
@@ -37,32 +33,6 @@ func test() int64 {
 // A dummy function to be called during testing of realMain.
 func fortesting() int64 {
 	return 0
-}
-
-func main() {
-	flag.Parse()
-	if *cpuprofile != "" {
-		f, err := os.Create(*cpuprofile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
-	}
-	result, err := realMain(flag.Args())
-	if err != nil {
-		log.Fatalln(err)
-	}
-	fmt.Println(result)
-	// TODO(johntobin): is this too late?  Have we cleaned up the memory we allocated?
-	if *memprofile != "" {
-		f, err := os.Create(*memprofile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		pprof.WriteHeapProfile(f)
-		f.Close()
-	}
 }
 
 func realMain(args []string) (int64, error) {
@@ -752,10 +722,6 @@ func projectEuler70test() int64 {
 	return projectEuler70actual(10 * 1000)
 }
 
-func projectEuler70() int64 {
-	return projectEuler70actual(10 * 1000 * 1000)
-}
-
 /*
 * Consider the fraction, n/d, where n and d are positive integers. If n<d and
 * HCF(n,d)=1, it is called a reduced proper fraction.
@@ -788,10 +754,6 @@ func projectEuler70() int64 {
 // GreatestCommonDenominator determines the GCD of two numbers.
 func GreatestCommonDenominator(a, b int64) int64 {
 	return big.NewInt(0).GCD(nil, nil, big.NewInt(a), big.NewInt(b)).Int64()
-}
-
-func projectEuler71() int64 {
-	return projectEuler71actual(1000000)
 }
 
 func projectEuler71test() int64 {
@@ -891,10 +853,6 @@ func projectEuler72test() int64 {
 	return projectEuler72actual(8)
 }
 
-func projectEuler72() int64 {
-	return projectEuler72actual(1000000)
-}
-
 /*
 * Consider the fraction, n/d, where n and d are positive integers. If n < d and
 * HCF(n,d)=1, it is called a reduced proper fraction.
@@ -935,10 +893,6 @@ func projectEuler73actual(n int64) int64 {
 
 func projectEuler73test() int64 {
 	return projectEuler73actual(8)
-}
-
-func projectEuler73() int64 {
-	return projectEuler73actual(12000)
 }
 
 /*
@@ -1028,10 +982,6 @@ func projectEuler74test() int64 {
 	return projectEuler74actual(10000)
 }
 
-func projectEuler74() int64 {
-	return projectEuler74actual(1000000)
-}
-
 /*
 * It turns out that 12 cm is the smallest length of wire that can be bent to
 * form an integer sided right angle triangle in exactly one way, but there are
@@ -1093,10 +1043,6 @@ func (parent PythagoreanTriple) MakeChildren() []PythagoreanTriple {
 		child2,
 		child3,
 	}
-}
-
-func projectEuler75() int64 {
-	return projectEuler75Actual(1500000)
 }
 
 func projectEuler75test() int64 {
@@ -1191,9 +1137,6 @@ func NumIntegerPartitions(number, maxComponent int) int {
 func projectEuler76test() int64 {
 	return int64(NumIntegerPartitions(20, 19))
 }
-func projectEuler76() int64 {
-	return int64(NumIntegerPartitions(100, 99))
-}
 
 /*
 * It is possible to write ten as the sum of primes in exactly five different
@@ -1282,10 +1225,6 @@ func projectEuler77test() int64 {
 	return projectEuler77actual(26)
 }
 
-func projectEuler77() int64 {
-	return projectEuler77actual(5000)
-}
-
 /*
 * Let p(n) represent the number of different ways in which n coins can be
 * separated into piles. For example, five coins can separated into piles in
@@ -1372,10 +1311,6 @@ func projectEuler78actual(multiple int64) int64 {
 
 func projectEuler78test() int64 {
 	return projectEuler78actual(7)
-}
-
-func projectEuler78() int64 {
-	return projectEuler78actual(1000 * 1000)
 }
 
 /*
@@ -1472,10 +1407,6 @@ func projectEuler80test() int64 {
 	return projectEuler80actual(2)
 }
 
-func projectEuler80() int64 {
-	return projectEuler80actual(99)
-}
-
 /*
 * In the 5 by 5 matrix below, the minimal path sum from the top left to the
 * bottom right, by only moving to the right and down, is indicated in bold red
@@ -1548,14 +1479,6 @@ func projectEuler81test() int64 {
 537,699,497,121,956
 805,732,524,37,331`
 	return projectEuler81actual(strings.NewReader(data))
-}
-
-func projectEuler81() int64 {
-	fd, err := os.Open("matrix.txt")
-	if err != nil {
-		return -1
-	}
-	return projectEuler81actual(fd)
 }
 
 /*
@@ -1743,19 +1666,6 @@ func projectEuler82test() int64 {
 	return projectEuler82actual(&TwoDAStar82{costs: costs})
 }
 
-func projectEuler82() int64 {
-	fd, err := os.Open("matrix.txt")
-	if err != nil {
-		return -1
-	}
-	costs, err := readIntsFromCSVFile(fd)
-	if err != nil {
-		return -1
-	}
-	matrix := TwoDAStar82{costs: costs}
-	return projectEuler82actual(&matrix)
-}
-
 /*
 * In the 5 by 5 matrix below, the minimal path sum from the top left to the
 * bottom right, by moving left, right, up, and down, is indicated in bold red
@@ -1888,19 +1798,6 @@ func projectEuler83test() int64 {
 		return -1
 	}
 	return projectEuler83actual(&TwoDAStar83{costs: costs})
-}
-
-func projectEuler83() int64 {
-	fd, err := os.Open("matrix.txt")
-	if err != nil {
-		return -1
-	}
-	costs, err := readIntsFromCSVFile(fd)
-	if err != nil {
-		return -1
-	}
-	matrix := TwoDAStar83{costs: costs}
-	return projectEuler83actual(&matrix)
 }
 
 /*
@@ -2136,10 +2033,6 @@ func projectEuler84test() int64 {
 	return projectEuler84actual(6)
 }
 
-func projectEuler84() int64 {
-	return projectEuler84actual(4)
-}
-
 /*
 * The smallest number expressible as the sum of a prime square, prime cube, and
 * prime fourth power is 28. In fact, there are exactly four numbers below fifty
@@ -2205,10 +2098,6 @@ func projectEuler87actual(limit int) int64 {
 
 func projectEuler87test() int64 {
 	return projectEuler87actual(50)
-}
-
-func projectEuler87() int64 {
-	return projectEuler87actual(50 * 1000 * 1000)
 }
 
 /*
@@ -2376,10 +2265,6 @@ func projectEuler88test() int64 {
 	return projectEuler88actual(12)
 }
 
-func projectEuler88() int64 {
-	return projectEuler88actual(12000)
-}
-
 /*
 * For a number written in Roman numerals to be considered valid there are basic
 * rules which must be followed. Even though the rules allow some numbers to be
@@ -2498,15 +2383,6 @@ func projectEuler89test() int64 {
 	return projectEuler89actual(fh)
 }
 
-func projectEuler89() int64 {
-	fh, err := os.Open("roman.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fh.Close()
-	return projectEuler89actual(fh)
-}
-
 /*
 * By counting carefully it can be seen that a rectangular grid measuring 3 by 2
 * contains eighteen rectangles:
@@ -2560,10 +2436,6 @@ func projectEuler85actual() int64 {
 }
 
 func projectEuler85test() int64 {
-	return projectEuler85actual()
-}
-
-func projectEuler85() int64 {
 	return projectEuler85actual()
 }
 
@@ -2631,10 +2503,6 @@ func projectEuler92test() int64 {
 	return projectEuler92actual(10)
 }
 
-func projectEuler92() int64 {
-	return projectEuler92actual(10 * 1000 * 1000)
-}
-
 /*
 * The first known prime found to exceed one million digits was discovered in
 * 1999, and is a Mersenne prime of the form 26972593−1; it contains exactly
@@ -2658,10 +2526,6 @@ func projectEuler97actual(exp, mul int64) int64 {
 
 func projectEuler97test() int64 {
 	return projectEuler97actual(50, 7)
-}
-
-func projectEuler97() int64 {
-	return projectEuler97actual(7830457, 28433)
 }
 
 /*
@@ -2702,12 +2566,4 @@ func projectEuler99test() int64 {
 	data := `2,11
 3,7`
 	return projectEuler99actual(strings.NewReader(data))
-}
-
-func projectEuler99() int64 {
-	fd, err := os.Open("base_exp.txt")
-	if err != nil {
-		return -1
-	}
-	return projectEuler99actual(fd)
 }
