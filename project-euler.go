@@ -117,18 +117,18 @@ var _ = fmt.Println
 
 /*
 * Read all the lines from a filehandle.
-* Note that if there isn't a newline on the last line an error will be returned.
+* Note that if there isn't a newline on the last line an error will be raised.
  */
-func readLinesFromFile(fh io.Reader) ([]string, error) {
+func readLinesFromFile(fh io.Reader) []string {
 	s := bufio.NewScanner(fh)
 	var lines []string
 	for s.Scan() {
 		lines = append(lines, s.Text())
 	}
 	if err := s.Err(); err != nil {
-		return nil, err
+		panic(fmt.Sprintf("Reading lines failed: %v", err))
 	}
-	return lines, nil
+	return lines
 }
 
 /*
@@ -154,11 +154,8 @@ func readLinesFromFile(fh io.Reader) ([]string, error) {
  */
 
 // Parse a file containing a triangle of numbers.
-func parseTriangle(fh io.Reader) ([][]int, error) {
-	lines, err := readLinesFromFile(fh)
-	if err != nil {
-		return nil, err
-	}
+func parseTriangle(fh io.Reader) [][]int {
+	lines := readLinesFromFile(fh)
 	var triangle [][]int
 	for _, line := range lines {
 		line = strings.TrimRight(line, "\n")
@@ -167,13 +164,13 @@ func parseTriangle(fh io.Reader) ([][]int, error) {
 			parsedNumber, err := strconv.Atoi(asciiNumber)
 			if err != nil {
 				// Parsing error
-				return nil, err
+				panic(fmt.Sprintf("Parse error: %v; line: \"%v\"", err, line))
 			}
 			numbers = append(numbers, parsedNumber)
 		}
 		triangle = append(triangle, numbers)
 	}
-	return triangle, nil
+	return triangle
 }
 
 func projectEuler67() int64 {
@@ -182,10 +179,7 @@ func projectEuler67() int64 {
 		log.Fatal(err)
 	}
 	defer fh.Close()
-	triangle, err := parseTriangle(fh)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	triangle := parseTriangle(fh)
 	// Start at the second last row and work upwards.
 	for i := len(triangle) - 2; i >= 0; i-- {
 		for j := 0; j <= i; j++ {
@@ -1020,14 +1014,22 @@ func calculateFactorialChainLength(number int) int {
 	}
 }
 
-func projectEuler74() int64 {
+func projectEuler74actual(limit int) int64 {
 	count := 0
-	for i := 1; i < 1000000; i++ {
+	for i := 1; i < 100000; i++ {
 		if calculateFactorialChainLength(i) == 60 {
 			count++
 		}
 	}
 	return int64(count)
+}
+
+func projectEuler74test() int64 {
+	return projectEuler74actual(10000)
+}
+
+func projectEuler74() int64 {
+	return projectEuler74actual(1000000)
 }
 
 /*
@@ -2475,10 +2477,7 @@ func uintToRomanNumerals(n uint) (string, error) {
 }
 
 func projectEuler89actual(fh io.Reader) int64 {
-	lines, err := readLinesFromFile(fh)
-	if err != nil {
-		panic("Reading lines failed!")
-	}
+	lines := readLinesFromFile(fh)
 	saved := 0
 	for _, line := range lines {
 		value, err := romanNumeralsToUint(line)

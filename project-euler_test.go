@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"container/heap"
+	"errors"
 	"fmt"
 	"sort"
 	"strconv"
@@ -28,6 +29,7 @@ func TestProjectEuler(t *testing.T) {
 		{2, projectEuler71test, "projectEuler71"},
 		{21, projectEuler72test, "projectEuler72"},
 		{3, projectEuler73test, "projectEuler73"},
+		{42, projectEuler74test, "projectEuler74"},
 		{11, projectEuler75test, "projectEuler75"},
 		{626, projectEuler76test, "projectEuler76"},
 		{20, projectEuler77test, "projectEuler77"},
@@ -84,21 +86,25 @@ func TestBreakpoint(t *testing.T) {
 }
 
 func TestParseTriangle(t *testing.T) {
-	fh := bytes.NewBufferString("x\n")
-	triangle, err := parseTriangle(fh)
-	if err == nil {
-		t.Error("non-number should have failed")
+	fh := bytes.NewBufferString("1\n2 3\n")
+	triangle := parseTriangle(fh)
+	expected := [][]int{
+		[]int{1},
+		[]int{2, 3},
 	}
+	assert.Equal(t, "parseTriangle()", expected, triangle)
 
-	fh = bytes.NewBufferString("1\n2 3\n")
-	triangle, err = parseTriangle(fh)
-	if assert.ErrIsNil(t, "parseTriangle()", err) {
-		expected := [][]int{
-			[]int{1},
-			[]int{2, 3},
+	defer func(t *testing.T) {
+		r := recover()
+		if str, ok := r.(string); ok {
+			err := errors.New(str)
+			assert.ErrContains(t, "parseTriangle should have called panic()", err, "Parse error")
+		} else {
+			panic("Return value from recover() wasn't a string?")
 		}
-		assert.Equal(t, "parseTriangle()", expected, triangle)
-	}
+	}(t)
+	fh = bytes.NewBufferString("x\n")
+	triangle = parseTriangle(fh)
 }
 
 func TestNgons(t *testing.T) {
@@ -398,9 +404,9 @@ func TestUintToRomanNumerals(t *testing.T) {
 func TestReadLinesFromFile(t *testing.T) {
 	fh := bytes.NewBufferString("1\n2 3\n")
 	expected := []string{"1", "2 3"}
-	actual, err := readLinesFromFile(fh)
-	assert.ErrIsNil(t, "readLinesFromFile returned error", err)
+	actual := readLinesFromFile(fh)
 	assert.Equal(t, "readLinesFromFile bad result", expected, actual)
+	// TODO(johntobin): test failure handling.
 }
 
 func TestNumCombinations(t *testing.T) {
