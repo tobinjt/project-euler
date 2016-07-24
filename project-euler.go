@@ -2269,8 +2269,9 @@ func Factors(n uint64) []uint64 {
 	return f
 }
 
-// PermuteKOfN permutes p, ensuring exactly k elements are selected.  Returns true until it runs out of numbers; when false is returned don't use the values in p.
-func PermuteKOfN(p []bool, k int) bool {
+// PermuteUpToKOfN permutes p, ensuring up to k elements are selected.  Returns true until it runs out of numbers; when false is returned don't use the values in p.
+// Note that you'll need to use the initial permutation yourself, it won't be returned.
+func PermuteUpToKOfN(p []bool, k int) bool {
 	for {
 		// This is basically p++.
 		var i int
@@ -2290,7 +2291,7 @@ func PermuteKOfN(p []bool, k int) bool {
 			}
 		}
 		// If the right number of bits are set return, otherwise loop.
-		if c == k {
+		if c <= k {
 			return true
 		}
 	}

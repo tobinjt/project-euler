@@ -450,15 +450,19 @@ func TestFactors(t *testing.T) {
 func TestPermuteKOfN(t *testing.T) {
 	p := make([]bool, 4)
 	for _, test := range [][]bool{
+		{false, false, false, true},
+		{false, false, true, false},
 		{false, false, true, true},
+		{false, true, false, false},
 		{false, true, false, true},
 		{false, true, true, false},
+		{true, false, false, false},
 		{true, false, false, true},
 		{true, false, true, false},
 		{true, true, false, false},
 	} {
-		PermuteKOfN(p, 2)
-		assert.Equal(t, "PermuteKOfN", test, p)
+		PermuteUpToKOfN(p, 2)
+		assert.Equal(t, "PermuteUpToKOfN", test, p)
 	}
 }
 
