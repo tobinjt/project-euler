@@ -2251,9 +2251,13 @@ func (p Uint64Slice) Len() int           { return len(p) }
 func (p Uint64Slice) Less(i, j int) bool { return p[i] < p[j] }
 func (p Uint64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
-// Factors returns the factors of n, in ascending order, including 1 and n.
-func Factors(n uint64) []uint64 {
-	f := []uint64{1, n}
+// Factors returns the factors of n, in ascending order.  If inc is true include 1 and n.
+func Factors(n uint64, inc bool) []uint64 {
+	f := []uint64{}
+	if inc {
+		f = append(f, 1)
+		f = append(f, n)
+	}
 	l := uint64(math.Ceil(math.Sqrt(float64(n))))
 	var i uint64
 	for i = 2; i <= l; i++ {
@@ -2344,7 +2348,7 @@ func projectEuler88actual(upperBound uint64) int64 {
 		for n := k; true; n++ {
 			factors, e := factorsCache[n]
 			if !e {
-				factors = Factors(n)
+				factors = Factors(n, false)
 				factorsCache[n] = factors
 			}
 			if FindProductSum(k, n, factors) {
