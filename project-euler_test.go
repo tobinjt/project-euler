@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"container/heap"
-	"errors"
 	"fmt"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -52,6 +52,14 @@ func TestProjectEuler(t *testing.T) {
 	}
 }
 
+func TestOpenOrDie(t *testing.T) {
+	// Should work.
+	_ = openOrDie(os.DevNull)
+	path := "/qwertyuiop/asdfghjkl"
+	defer assert.Panics(t, "openOrDie() should panic", path)
+	_ = openOrDie(path)
+}
+
 func TestGreatestCommonDenominator(t *testing.T) {
 	tests := []struct {
 		a, b, expected int64
@@ -94,15 +102,7 @@ func TestParseTriangle(t *testing.T) {
 	}
 	assert.Equal(t, "parseTriangle()", expected, triangle)
 
-	defer func(t *testing.T) {
-		r := recover()
-		if str, ok := r.(string); ok {
-			err := errors.New(str)
-			assert.ErrContains(t, "parseTriangle should have called panic()", err, "Parse error")
-		} else {
-			panic("Return value from recover() wasn't a string?")
-		}
-	}(t)
+	defer assert.Panics(t, "parseTriangle() should panic", "invalid syntax")
 	fh = bytes.NewBufferString("x\n")
 	triangle = parseTriangle(fh)
 }

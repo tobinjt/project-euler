@@ -83,19 +83,11 @@ func projectEuler80() int64 {
 }
 
 func projectEuler81() int64 {
-	fd, err := os.Open("matrix.txt")
-	if err != nil {
-		return -1
-	}
-	return projectEuler81actual(fd)
+	return projectEuler81actual(openOrDie("matrix.txt"))
 }
 
 func projectEuler82() int64 {
-	fd, err := os.Open("matrix.txt")
-	if err != nil {
-		return -1
-	}
-	costs, err := readIntsFromCSVFile(fd)
+	costs, err := readIntsFromCSVFile(openOrDie("matrix.txt"))
 	if err != nil {
 		return -1
 	}
@@ -104,11 +96,7 @@ func projectEuler82() int64 {
 }
 
 func projectEuler83() int64 {
-	fd, err := os.Open("matrix.txt")
-	if err != nil {
-		return -1
-	}
-	costs, err := readIntsFromCSVFile(fd)
+	costs, err := readIntsFromCSVFile(openOrDie("matrix.txt"))
 	if err != nil {
 		return -1
 	}
@@ -133,12 +121,7 @@ func projectEuler88() int64 {
 }
 
 func projectEuler89() int64 {
-	fh, err := os.Open("roman.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fh.Close()
-	return projectEuler89actual(fh)
+	return projectEuler89actual(openOrDie("roman.txt"))
 }
 
 func projectEuler92() int64 {
@@ -150,9 +133,5 @@ func projectEuler97() int64 {
 }
 
 func projectEuler99() int64 {
-	fd, err := os.Open("base_exp.txt")
-	if err != nil {
-		return -1
-	}
-	return projectEuler99actual(fd)
+	return projectEuler99actual(openOrDie("base_exp.txt"))
 }

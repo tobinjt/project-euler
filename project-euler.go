@@ -85,6 +85,14 @@ func breakpoint() string {
 // Shut up about unused import.
 var _ = fmt.Println
 
+func openOrDie(file string) io.Reader {
+	fh, err := os.Open(file)
+	if err != nil {
+		panic(fmt.Sprintf("openOrDie(): %v", err))
+	}
+	return fh
+}
+
 /*
 * Read all the lines from a filehandle.
 * Note that if there isn't a newline on the last line an error will be raised.
