@@ -1849,6 +1849,7 @@ func MarkovShiftProbability(matrix [][]*big.Rat, probability *big.Rat, i, j, k i
 	matrix[i][j].Sub(matrix[i][j], probability)
 }
 
+// firstBiggerElement finds the first element in l that is bigger than c.  The caller needs to ensure that l is sorted.
 func firstBiggerElement(c int, l []int) int {
 	for _, e := range l {
 		if e > c {
@@ -1857,16 +1858,6 @@ func firstBiggerElement(c int, l []int) int {
 	}
 	panic(fmt.Sprintf("firstBiggerElement: %v bigger than %v\n", c, l))
 }
-
-type ratWithIndex struct {
-	i int
-	r *big.Rat
-}
-type ratWithIndexSlice []ratWithIndex
-
-func (l ratWithIndexSlice) Len() int           { return len(l) }
-func (l ratWithIndexSlice) Less(i, j int) bool { return l[i].r.Cmp(l[j].r) == -1 }
-func (l ratWithIndexSlice) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 
 type floatWithIndex struct {
 	i int
@@ -2011,9 +2002,6 @@ func projectEuler84actual(diceSize int64) int64 {
 		sortMe[i] = floatWithIndex{i: i, f: state.Get(0, i)}
 	}
 	sort.Sort(floatWithIndexSlice(sortMe))
-	for i := range sortMe {
-		fmt.Printf("%v %v\n", sortMe[i].i, sortMe[i].f)
-	}
 
 	x := len(sortMe) - 1
 	return int64((sortMe[x].i * 10000) + (sortMe[x-1].i * 100) + sortMe[x-2].i)
