@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"testing/iotest"
 
 	"github.com/tobinjt/assert"
 )
@@ -22,6 +23,7 @@ func TestProjectEuler(t *testing.T) {
 		function func() int64
 		name     string
 	}{
+		{0, test, "test"},
 		{7273, projectEuler67, "projectEuler67"},
 		{6531031914842725, projectEuler68, "projectEuler68"},
 		{510510, projectEuler69, "projectEuler69"},
@@ -322,14 +324,15 @@ func TestReadIntsFromCSVFile(t *testing.T) {
 		{csv: "1,7,42,qwe\"rty", err: "non-quoted-field"},
 	}
 	for _, test := range tests {
-		actual, err := readIntsFromCSVFile(strings.NewReader(test.csv))
-		desc := fmt.Sprintf("readIntsFromCSVFile(%q)", test.csv)
-		if test.err == "" {
-			assert.ErrIsNil(t, "gon.ToInt()", err)
+		func() {
+			desc := fmt.Sprintf("readIntsFromCSVFile(%q)", test.csv)
+			if test.err != "" {
+				defer assert.Panics(t, desc, test.err)
+			}
+			actual := readIntsFromCSVFile(strings.NewReader(test.csv))
+			// This will be skipped for the error cases.
 			assert.Equal(t, desc, test.expected, actual)
-		} else {
-			assert.ErrContains(t, desc, err, test.err)
-		}
+		}()
 	}
 }
 
@@ -354,9 +357,11 @@ func TestRomanNumeralsToUint(t *testing.T) {
 		{input: "DIXX", msg: "sequence \"X\" followed smaller sequence \"IX\""},
 	}
 	for _, test := range shouldAssert {
-		_, err := romanNumeralsToUint(test.input)
-		assert.ErrContains(t, "romanNumeralsToUint(\""+test.input+"\")",
-			err, test.msg)
+		func() {
+			defer assert.Panics(t, "romanNumeralsToUint(\""+test.input+"\")",
+				test.msg)
+			_ = romanNumeralsToUint(test.input)
+		}()
 	}
 
 	valid := []struct {
@@ -372,15 +377,17 @@ func TestRomanNumeralsToUint(t *testing.T) {
 		{input: "MCMXCVII", result: 1997},
 	}
 	for _, test := range valid {
-		result, err := romanNumeralsToUint(test.input)
-		assert.ErrIsNil(t, "romanNumeralsToUint(\""+test.input+"\")", err)
+		result := romanNumeralsToUint(test.input)
 		assert.Equal(t, "romanNumeralsToUint(\""+test.input+"\")", test.result, result)
 	}
 }
 
 func TestUintToRomanNumerals(t *testing.T) {
-	result, err := uintToRomanNumerals(0)
-	assert.ErrContains(t, "uintToRomanNumerals(0)", err, "0 is invalid")
+	func() {
+		defer assert.Panics(t, "uintToRomanNumerals(0)", "0 is invalid")
+		_ = uintToRomanNumerals(0)
+	}()
+
 	valid := []struct {
 		input  uint
 		result string
@@ -394,9 +401,8 @@ func TestUintToRomanNumerals(t *testing.T) {
 		{input: 1997, result: "MCMXCVII"},
 	}
 	for _, test := range valid {
-		result, err = uintToRomanNumerals(test.input)
+		result := uintToRomanNumerals(test.input)
 		msg := "uintToRomanNumerals(" + strconv.FormatUint(uint64(test.input), 10) + ")"
-		assert.ErrIsNil(t, msg, err)
 		assert.Equal(t, msg, test.result, result)
 	}
 }
@@ -406,7 +412,10 @@ func TestReadLinesFromFile(t *testing.T) {
 	expected := []string{"1", "2 3"}
 	actual := readLinesFromFile(fh)
 	assert.Equal(t, "readLinesFromFile bad result", expected, actual)
-	// TODO(johntobin): test failure handling.
+
+	fh2 := iotest.TimeoutReader(bytes.NewBufferString("1\n2 3\n"))
+	defer assert.Panics(t, "readLinesFromFile() should panic on failure", "Reading lines failed")
+	_ = readLinesFromFile(fh2)
 }
 
 func TestNumCombinations(t *testing.T) {
@@ -468,9 +477,12 @@ func TestPermuteKOfN(t *testing.T) {
 		{true, false, true, false},
 		{true, true, false, false},
 	} {
-		PermuteUpToKOfN(p, 2)
+		r := PermuteUpToKOfN(p, 2)
+		assert.Equal(t, "PermuteUpToKOfN", true, r)
 		assert.Equal(t, "PermuteUpToKOfN", test, p)
 	}
+	r := PermuteUpToKOfN(p, 2)
+	assert.Equal(t, "PermuteUpToKOfN", false, r)
 }
 
 // NOTE BEWARE ACHTUNG!

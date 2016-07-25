@@ -87,20 +87,12 @@ func projectEuler81() int64 {
 }
 
 func projectEuler82() int64 {
-	costs, err := readIntsFromCSVFile(openOrDie("matrix.txt"))
-	if err != nil {
-		return -1
-	}
-	matrix := TwoDAStar82{costs: costs}
+	matrix := TwoDAStar82{costs: readIntsFromCSVFile(openOrDie("matrix.txt"))}
 	return projectEuler82actual(&matrix)
 }
 
 func projectEuler83() int64 {
-	costs, err := readIntsFromCSVFile(openOrDie("matrix.txt"))
-	if err != nil {
-		return -1
-	}
-	matrix := TwoDAStar83{costs: costs}
+	matrix := TwoDAStar83{costs: readIntsFromCSVFile(openOrDie("matrix.txt"))}
 	return projectEuler83actual(&matrix)
 }
 

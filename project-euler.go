@@ -11,7 +11,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"math"
 	"math/big"
 	"os"
@@ -152,12 +151,7 @@ func parseTriangle(fh io.Reader) [][]int {
 }
 
 func projectEuler67() int64 {
-	fh, err := os.Open("triangle.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fh.Close()
-	triangle := parseTriangle(fh)
+	triangle := parseTriangle(openOrDie("triangle.txt"))
 	// Start at the second last row and work upwards.
 	for i := len(triangle) - 2; i >= 0; i-- {
 		for j := 0; j <= i; j++ {
@@ -941,9 +935,6 @@ func projectEuler73test() int64 {
 
 func calculateFactorialSum(number int) int {
 	factorials := []int{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880}
-	if number == 0 {
-		return factorials[number]
-	}
 	sum := 0
 	for number > 0 {
 		digit := number % 10
@@ -1431,12 +1422,12 @@ func projectEuler80test() int64 {
 * the bottom right by only moving right and down.
  */
 
-func readIntsFromCSVFile(r io.Reader) ([][]uint64, error) {
+func readIntsFromCSVFile(r io.Reader) [][]uint64 {
 	csvr := csv.NewReader(r)
 	ints := [][]uint64{}
 	rows, err := csvr.ReadAll()
 	if err != nil {
-		return nil, err
+		panic(fmt.Sprintf("ReadAll failed: %v", err))
 	}
 
 	for i, row := range rows {
@@ -1444,18 +1435,15 @@ func readIntsFromCSVFile(r io.Reader) ([][]uint64, error) {
 		for j, s := range row {
 			ints[i][j], err = strconv.ParseUint(s, 10, 64)
 			if err != nil {
-				return nil, err
+				panic(fmt.Sprintf("ParseUint(%q) failed: %v", s, err))
 			}
 		}
 	}
-	return ints, nil
+	return ints
 }
 
 func projectEuler81actual(r io.Reader) int64 {
-	matrix, err := readIntsFromCSVFile(r)
-	if err != nil {
-		return -1
-	}
+	matrix := readIntsFromCSVFile(r)
 	size := len(matrix)
 	grid := make([][]uint64, size)
 	// There's only one way to fill the first row or column, so prefill them and make filling the remainder easier.
@@ -1667,10 +1655,7 @@ func projectEuler82test() int64 {
 630,803,746,422,111
 537,699,497,121,956
 805,732,524,37,331`
-	costs, err := readIntsFromCSVFile(strings.NewReader(data))
-	if err != nil {
-		return -1
-	}
+	costs := readIntsFromCSVFile(strings.NewReader(data))
 	return projectEuler82actual(&TwoDAStar82{costs: costs})
 }
 
@@ -1801,10 +1786,7 @@ func projectEuler83test() int64 {
 630,803,746,422,111
 537,699,497,121,956
 805,732,524,37,331`
-	costs, err := readIntsFromCSVFile(strings.NewReader(data))
-	if err != nil {
-		return -1
-	}
+	costs := readIntsFromCSVFile(strings.NewReader(data))
 	return projectEuler83actual(&TwoDAStar83{costs: costs})
 }
 
@@ -2326,9 +2308,9 @@ var allRomanNumerals = []romanNumeral{
 	{"I", 1},
 }
 
-func romanNumeralsToUint(s string) (uint, error) {
+func romanNumeralsToUint(s string) uint {
 	if len(s) == 0 {
-		return 0, errors.New("empty string is invalid")
+		panic("empty string is invalid")
 	}
 	var result uint
 	pointer := s
@@ -2340,7 +2322,7 @@ func romanNumeralsToUint(s string) (uint, error) {
 				continue
 			}
 			if r.value > smallest.value {
-				return 0, errors.New("sequence \"" + r.numerals + "\" followed smaller sequence \"" + smallest.numerals + "\"")
+				panic("sequence \"" + r.numerals + "\" followed smaller sequence \"" + smallest.numerals + "\"")
 			}
 			result += r.value
 			pointer = pointer[len(r.numerals):]
@@ -2349,15 +2331,15 @@ func romanNumeralsToUint(s string) (uint, error) {
 			break
 		}
 		if !matched {
-			return 0, errors.New("unrecognised sequence: " + pointer)
+			panic("unrecognised sequence: " + pointer)
 		}
 	}
-	return result, nil
+	return result
 }
 
-func uintToRomanNumerals(n uint) (string, error) {
+func uintToRomanNumerals(n uint) string {
 	if n == 0 {
-		return "", errors.New("0 is invalid")
+		panic("0 is invalid")
 	}
 	var numerals []string
 	for _, r := range allRomanNumerals {
@@ -2366,21 +2348,15 @@ func uintToRomanNumerals(n uint) (string, error) {
 			numerals = append(numerals, r.numerals)
 		}
 	}
-	return strings.Join(numerals, ""), nil
+	return strings.Join(numerals, "")
 }
 
 func projectEuler89actual(fh io.Reader) int64 {
 	lines := readLinesFromFile(fh)
 	saved := 0
 	for _, line := range lines {
-		value, err := romanNumeralsToUint(line)
-		if err != nil {
-			panic(fmt.Sprintf("romanNumeralsToUint(%v) failed: %v", line, err))
-		}
-		numerals, err := uintToRomanNumerals(value)
-		if err != nil {
-			panic(fmt.Sprintf("uintToRomanNumerals(%v) failed: %v", value, err))
-		}
+		value := romanNumeralsToUint(line)
+		numerals := uintToRomanNumerals(value)
 		saved += (len(line) - len(numerals))
 	}
 	return int64(saved)
@@ -2552,10 +2528,7 @@ func projectEuler97test() int64 {
  */
 
 func projectEuler99actual(r io.Reader) int64 {
-	pairs, err := readIntsFromCSVFile(r)
-	if err != nil {
-		return -1
-	}
+	pairs := readIntsFromCSVFile(r)
 	biggest := big.NewInt(0)
 	biggestL := 0
 	val := big.NewInt(0)
