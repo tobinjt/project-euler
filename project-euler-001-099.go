@@ -61,6 +61,7 @@ func realMain(args []string) (int64, error) {
 		"97":         projectEuler97,
 		"99":         projectEuler99,
 		"206":        projectEuler206,
+		"357":        projectEuler357,
 		"test":       test,
 		"fortesting": fortesting,
 	}
