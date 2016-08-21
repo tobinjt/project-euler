@@ -494,8 +494,9 @@ func TestFillDiceRolls(t *testing.T) {
 
 func TestFactors(t *testing.T) {
 	// Note that 4 should only be in the list once.
-	assert.Equal(t, "Factors", []uint64{1, 2, 4, 8, 16}, Factors(16, true))
-	assert.Equal(t, "Factors", []uint64{2, 4, 8}, Factors(16, false))
+	assert.Equal(t, "Factors", []uint64{1, 2, 4, 8, 16}, Factors(16, true, true))
+	assert.Equal(t, "Factors", []uint64{2, 4, 8}, Factors(16, false, true))
+	assert.Equal(t, "Factors", []uint64{1, 16, 2, 8, 4}, Factors(16, true, false))
 }
 
 func TestPermuteKOfN(t *testing.T) {
