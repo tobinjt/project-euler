@@ -17,12 +17,12 @@ import "math"
  */
 
 func projectEuler206() int64 {
-	lower := int64(math.Sqrt(1121314151617181910))
-	upper := int64(math.Sqrt(1929394959697989990))
 	digits := []int64{0, 9, 8, 7, 6, 5, 4, 3, 2}
+	i := int64(math.Sqrt(1929394959697989990)) + 1
 
 Loop:
-	for i := upper; i >= lower; i-- {
+	for {
+		i--
 		v := i * i
 		for _, digit := range digits {
 			if v%10 != digit {
@@ -32,5 +32,4 @@ Loop:
 		}
 		return i
 	}
-	return 0
 }
