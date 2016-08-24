@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"runtime/pprof"
 )
 
@@ -25,6 +26,10 @@ func main() {
 		}
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
+	}
+	if *memprofile != "" {
+		// Collect stats on all allocations.  This will be slow.
+		runtime.MemProfileRate = 1
 	}
 	result, err := realMain(flag.Args())
 	if err != nil {
@@ -126,4 +131,8 @@ func projectEuler97() int64 {
 
 func projectEuler99() int64 {
 	return projectEuler99actual(openOrDie("base_exp.txt"))
+}
+
+func projectEuler357() int64 {
+	return projectEuler357actual(100 * 1000 * 1000)
 }

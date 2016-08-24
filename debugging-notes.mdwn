@@ -1,14 +1,26 @@
 Useful docs: https://blog.golang.org/profiling-go-programs
+https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs
 
 ## Using pprof
 
 Remember to rebuild the binary after every change, otherwise pprof will give you
-bullshit output.
+bullshit output.  Note that profiling both CPU and memory will probably work
+badly.
+
+### CPU
 
     problem=82
     go build project-euler \
       && ./project-euler \
            --cpuprofile=/tmp/cpu.prof \
-           --memprofile=/tmp/mem.prof \
            "${problem?}" \
       && go tool pprof project-euler /tmp/cpu.prof
+
+### Memory
+
+    problem=82
+    go build project-euler \
+      && ./project-euler \
+           --memprofile=/tmp/mem.prof \
+           "${problem?}" \
+      && go tool pprof --alloc_space project-euler /tmp/mem.prof
