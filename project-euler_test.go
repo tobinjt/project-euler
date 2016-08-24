@@ -52,7 +52,7 @@ func TestProjectEuler(t *testing.T) {
 		{9347898369, projectEuler97test, "projectEuler97"},
 		{2, projectEuler99test, "projectEuler99"},
 		{1389019170, projectEuler206, "projectEuler206"},
-		{0, projectEuler357test, "projectEuler357"},
+		{71, projectEuler357test, "projectEuler357"},
 	}
 	for _, test := range table {
 		assert.Equal(t, test.name, test.result, test.function())
@@ -519,6 +519,21 @@ func TestPermuteKOfN(t *testing.T) {
 	}
 	r := PermuteUpToKOfN(p, 2)
 	assert.Equal(t, "PermuteUpToKOfN", false, r)
+}
+
+func TestMeetsPE357Criteria(t *testing.T) {
+	sieve := SieveOfEratosthenes(32)
+	tests := []struct {
+		n int
+		e bool
+	}{
+		{30, true},
+		{5, false},
+		{16, false},
+	}
+	for _, test := range tests {
+		assert.Equal(t, fmt.Sprintf("meetsPE357Criteria(%v)", test.n), test.e, meetsPE357Criteria(test.n, sieve))
+	}
 }
 
 // NOTE BEWARE ACHTUNG!
