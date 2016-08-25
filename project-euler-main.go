@@ -6,12 +6,15 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"runtime"
 	"runtime/pprof"
+	"sort"
+	"strings"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -45,6 +48,67 @@ func main() {
 		pprof.WriteHeapProfile(f)
 		f.Close()
 	}
+}
+
+// A function for ad-hoc code during development.
+func test() int64 {
+	return int64(0)
+}
+
+// A dummy function to be called during testing of realMain.
+func fortesting() int64 {
+	return 0
+}
+
+func realMain(args []string) (int64, error) {
+	functions := map[string]func() int64{
+		"fortesting": fortesting,
+		"test":       test,
+		"67":         projectEuler67,
+		"68":         projectEuler68,
+		"69":         projectEuler69,
+		"70":         projectEuler70,
+		"71":         projectEuler71,
+		"72":         projectEuler72,
+		"73":         projectEuler73,
+		"74":         projectEuler74,
+		"75":         projectEuler75,
+		"76":         projectEuler76,
+		"77":         projectEuler77,
+		"78":         projectEuler78,
+		"80":         projectEuler80,
+		"81":         projectEuler81,
+		"82":         projectEuler82,
+		"83":         projectEuler83,
+		"84":         projectEuler84,
+		"85":         projectEuler85,
+		"87":         projectEuler87,
+		"88":         projectEuler88,
+		"89":         projectEuler89,
+		"92":         projectEuler92,
+		"97":         projectEuler97,
+		"99":         projectEuler99,
+		"206":        projectEuler206,
+		"357":        projectEuler357,
+		"387":        projectEuler387,
+		// newPE - this is where the next main entry will go.
+	}
+	if len(args) != 1 || functions[args[0]] == nil {
+		keys := []string{}
+		for key := range functions {
+			if key != "fortesting" {
+				keys = append(keys, key)
+			}
+		}
+		sort.Strings(keys)
+		return 0, errors.New("Only 1 arg accepted from this list: " +
+			strings.Join(keys, " "))
+	}
+	return functions[args[0]](), nil
+}
+
+func breakpoint() string {
+	return fmt.Sprint("breakpoint reached")
 }
 
 func projectEuler70() int64 {
