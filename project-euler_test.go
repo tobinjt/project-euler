@@ -53,6 +53,8 @@ func TestProjectEuler(t *testing.T) {
 		{2, projectEuler99test, "projectEuler99"},
 		{1389019170, projectEuler206, "projectEuler206"},
 		{71, projectEuler357test, "projectEuler357"},
+		{0, projectEuler387test, "projectEuler387"},
+		// newPE - this is where the next test entry will go.
 	}
 	for _, test := range table {
 		assert.Equal(t, test.name, test.result, test.function())

@@ -36,6 +36,8 @@ func fortesting() int64 {
 
 func realMain(args []string) (int64, error) {
 	functions := map[string]func() int64{
+		"fortesting": fortesting,
+		"test":       test,
 		"67":         projectEuler67,
 		"68":         projectEuler68,
 		"69":         projectEuler69,
@@ -62,8 +64,8 @@ func realMain(args []string) (int64, error) {
 		"99":         projectEuler99,
 		"206":        projectEuler206,
 		"357":        projectEuler357,
-		"test":       test,
-		"fortesting": fortesting,
+		"387":        projectEuler387,
+		// newPE - this is where the next main entry will go.
 	}
 	if len(args) != 1 || functions[args[0]] == nil {
 		keys := []string{}
