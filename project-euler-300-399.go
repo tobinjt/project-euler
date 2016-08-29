@@ -64,13 +64,88 @@ func projectEuler357test() int64 {
 * You are given that the sum of the strong, right truncatable Harshad primes
 * less than 10000 is 90619.
 *
-* Find the sum of the strong, right truncatable Harshad primes less than 1014.
+* Find the sum of the strong, right truncatable Harshad primes less than 10^14.
  */
 
-func projectEuler387actual() int64 {
-	return 0
+/*
+* Thoughts:
+* - I can't brute force this, 10^14 is huge.
+* - I think generating Harshad numbers is the way to go.
+*  - 1-9 are Harshad numbers, and those will be my initial numbers.
+*  - For every Harshad number I have, append the digits 1-9 and check if it's a
+*    Harshad number.
+*  - If it's not a Harshad number, check if it's prime, and if
+*    it/sum-of-digits is prime.
+*  - I should store the sum of the digits alongside each Harshad number.
+ */
+
+func growInt64Slice(s []int64, i int) []int64 {
+	sn := make([]int64, len(s)+i)
+	copy(sn, s)
+	return sn
+}
+
+// isInt64Prime checks is n is prime through trial division, returning true if it is.
+func isInt64Prime(n int64) bool {
+	// Special-case the numbers that the loop doesn't work for.
+	if n < 2 {
+		return false
+	}
+	if n == 2 {
+		return true
+	}
+	u := int64(math.Sqrt(float64(n))) + 1
+	for i := int64(2); i <= u; i++ {
+		if n%i == 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func projectEuler387actual(upper int64) int64 {
+	// Every number in this slice is a right-truncatable Harshad number.
+	harshads := []int64{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	sums := make([]int64, len(harshads))
+	copy(sums, harshads)
+	// Index of the next number to process.
+	index := len(harshads) - 1
+	// How much to grow slices by.  This turns out to be an unnecessary optimisation.
+	inc := 10
+	var result int64
+
+Outer:
+	for index >= 0 {
+		h := harshads[index]
+		s := sums[index]
+		index--
+		for i := int64(0); i <= 9; i++ {
+			h1 := (h * 10) + i
+			s1 := s + i
+			if h1 > upper {
+				continue Outer
+			}
+			if h1%s1 == 0 {
+				index++
+				if index == len(harshads) {
+					// fmt.Printf("Growing harshads from %v to %v\n", len(harshads), len(harshads)+inc)
+					harshads = growInt64Slice(harshads, inc)
+					sums = growInt64Slice(sums, inc)
+				}
+				harshads[index] = h1
+				sums[index] = s1
+				continue
+			}
+			// Is the new number prime, and the Harshad number it came from a strong Harshad number?
+			if isInt64Prime(h1) && isInt64Prime(h/s) {
+				// fmt.Printf("%v is good\n", h1)
+				result += h1
+			}
+		}
+	}
+	return result
 }
 
 func projectEuler387test() int64 {
-	return projectEuler387actual()
+	return projectEuler387actual(10000)
 }

@@ -202,5 +202,5 @@ func projectEuler357() int64 {
 }
 
 func projectEuler387() int64 {
-	return projectEuler387actual()
+	return projectEuler387actual(100 * 1000 * 1000 * 1000 * 1000)
 }

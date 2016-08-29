@@ -53,7 +53,7 @@ func TestProjectEuler(t *testing.T) {
 		{2, projectEuler99test, "projectEuler99"},
 		{1389019170, projectEuler206, "projectEuler206"},
 		{71, projectEuler357test, "projectEuler357"},
-		{0, projectEuler387test, "projectEuler387"},
+		{90619, projectEuler387test, "projectEuler387"},
 		// newPE - this is where the next test entry will go.
 	}
 	for _, test := range table {
@@ -535,6 +535,25 @@ func TestMeetsPE357Criteria(t *testing.T) {
 	}
 	for _, test := range tests {
 		assert.Equal(t, fmt.Sprintf("meetsPE357Criteria(%v)", test.n), test.e, meetsPE357Criteria(test.n, sieve))
+	}
+}
+
+func TestIsInt64Prime(t *testing.T) {
+	tests := []struct {
+		n int64
+		e bool
+	}{
+		{1, false},
+		{2, true},
+		{3, true},
+		{4, false},
+		{5, true},
+		{16, false},
+		{73, true},
+		{77, false},
+	}
+	for _, test := range tests {
+		assert.Equal(t, fmt.Sprintf("isInt64Prime(%v)", test.n), test.e, isInt64Prime(test.n))
 	}
 }
 
