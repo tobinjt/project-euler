@@ -94,8 +94,11 @@ func isInt64Prime(n int64) bool {
 	if n == 2 {
 		return true
 	}
+	if n%2 == 0 {
+		return false
+	}
 	u := int64(math.Sqrt(float64(n))) + 1
-	for i := int64(2); i <= u; i++ {
+	for i := int64(3); i <= u; i += 2 {
 		if n%i == 0 {
 			return false
 		}
