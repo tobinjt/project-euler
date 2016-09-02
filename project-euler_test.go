@@ -54,7 +54,7 @@ func TestProjectEuler(t *testing.T) {
 		{1389019170, projectEuler206, "projectEuler206"},
 		{71, projectEuler357test, "projectEuler357"},
 		{90619, projectEuler387test, "projectEuler387"},
-		{0, projectEuler493test, "projectEuler493"},
+		{6818741802, projectEuler493, "projectEuler493"},
 		// newPE - this is where the next test entry will go.
 	}
 	for _, test := range table {
@@ -555,6 +555,60 @@ func TestIsInt64Prime(t *testing.T) {
 	}
 	for _, test := range tests {
 		assert.Equal(t, fmt.Sprintf("isInt64Prime(%v)", test.n), test.e, isInt64Prime(test.n))
+	}
+}
+
+func TestFactorialInt64(t *testing.T) {
+	tests := []struct {
+		n, e int64
+	}{
+		{1, 1},
+		{4, 24},
+		{7, 5040},
+	}
+	for _, test := range tests {
+		assert.Equal(t, fmt.Sprintf("factorialInt64(%v)", test.n), test.e, factorialInt64(test.n))
+	}
+}
+
+func TestFactorialBigInt(t *testing.T) {
+	tests := []struct {
+		n, e int64
+	}{
+		{1, 1},
+		{4, 24},
+		{7, 5040},
+	}
+	for _, test := range tests {
+		r := factorialBigInt(test.n)
+		assert.Equal(t, fmt.Sprintf("factorialBigInt(%v)", test.n), 0, r.Cmp(big.NewInt(test.e)))
+	}
+}
+
+func TestNCRInt64(t *testing.T) {
+	tests := []struct {
+		n, r, e int64
+	}{
+		{1, 1, 1},
+		{4, 2, 6},
+		{7, 4, 35},
+	}
+	for _, test := range tests {
+		assert.Equal(t, fmt.Sprintf("nCrInt64(%v)", test.n), test.e, nCrInt64(test.n, test.r))
+	}
+}
+
+func TestNCRBigInt(t *testing.T) {
+	tests := []struct {
+		n, r, e int64
+	}{
+		{1, 1, 1},
+		{4, 2, 6},
+		{7, 4, 35},
+	}
+	for _, test := range tests {
+		r := nCrBigInt(test.n, test.r)
+		assert.Equal(t, fmt.Sprintf("nCrBigInt(%v)", test.n), 0, r.Cmp(big.NewInt(test.e)))
 	}
 }
 
