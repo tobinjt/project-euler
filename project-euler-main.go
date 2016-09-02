@@ -92,6 +92,7 @@ func realMain(args []string) (int64, error) {
 		"357":        projectEuler357,
 		"387":        projectEuler387,
 		"493":        projectEuler493,
+		"549":        projectEuler549,
 		// newPE - this is where the next main entry will go.
 	}
 	if len(args) != 1 || functions[args[0]] == nil {
@@ -204,4 +205,8 @@ func projectEuler357() int64 {
 
 func projectEuler387() int64 {
 	return projectEuler387actual(100 * 1000 * 1000 * 1000 * 1000)
+}
+
+func projectEuler549() int64 {
+	return projectEuler549actual()
 }
