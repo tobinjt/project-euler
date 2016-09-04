@@ -201,7 +201,7 @@ func TestMakePhiLookupTablet(t *testing.T) {
 		MakePhiLookupTable(10))
 }
 
-func TestcalculateFactorialSum(t *testing.T) {
+func TestCalculateFactorialSum(t *testing.T) {
 	// The test results are copied from the description of problem 74.
 	assert.Equal(t, "calculateFactorialSum",
 		1, calculateFactorialSum(0))
@@ -223,7 +223,7 @@ func TestcalculateFactorialSum(t *testing.T) {
 		45360, calculateFactorialSum(78))
 }
 
-func TestcalculateFactorialChainLength(t *testing.T) {
+func TestCalculateFactorialChainLength(t *testing.T) {
 	assert.Equal(t, "calculateFactorialChainLength 169", 3,
 		calculateFactorialChainLength(169))
 	assert.Equal(t, "calculateFactorialChainLength 871", 2,
@@ -281,7 +281,7 @@ func TestNumPrimePartitions(t *testing.T) {
 		NumPrimePartitions(20, sieve, nppCache, sopfCache))
 }
 
-func TestpentagonalNumber(t *testing.T) {
+func TestPentagonalNumber(t *testing.T) {
 	assert.Equal(t, "pentagonalNumber", 1, pentagonalNumber(1))
 	assert.Equal(t, "pentagonalNumber", 5, pentagonalNumber(2))
 	assert.Equal(t, "pentagonalNumber", 35, pentagonalNumber(5))

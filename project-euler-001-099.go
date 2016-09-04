@@ -870,6 +870,9 @@ func projectEuler73test() int64 {
  */
 
 func calculateFactorialSum(number int) int {
+	if number == 0 {
+		return 1
+	}
 	factorials := []int{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880}
 	sum := 0
 	for number > 0 {
