@@ -1,6 +1,7 @@
 /*
 * This file contains Project Euler code that I can't test.  The sole purpose is
-* to keep coverage of project-euler.go high.
+* to keep coverage of other project-euler-*.go files high, so I don't let their
+* coverage slip.
  */
 
 package main

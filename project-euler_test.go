@@ -570,6 +570,9 @@ func TestFactorialInt64(t *testing.T) {
 	for _, test := range tests {
 		assert.Equal(t, fmt.Sprintf("factorialInt64(%v)", test.n), test.e, factorialInt64(test.n))
 	}
+
+	defer assert.Panics(t, "factorialInt64 should have called panic", "n too big")
+	_ = factorialInt64(25)
 }
 
 func TestFactorialBigInt(t *testing.T) {

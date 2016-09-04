@@ -1,6 +1,9 @@
 package main
 
-import "math/big"
+import (
+	"fmt"
+	"math/big"
+)
 
 /*
 * 70 colored balls are placed in an urn, 10 for each of the seven rainbow colors.
@@ -33,6 +36,9 @@ import "math/big"
  */
 
 func factorialInt64(n int64) int64 {
+	if n > 20 {
+		panic(fmt.Sprintf("factorialInt64: n too big: %v > 20; use factorialBigInt", n))
+	}
 	r := int64(1)
 	for n > 1 {
 		r *= n
