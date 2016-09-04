@@ -6,3 +6,5 @@ if grep 'Test[[:lower:]]' project-euler_test.go; then
   echo "Bad test name, it won't be run" >&2
   exit 1
 fi
+
+go test
