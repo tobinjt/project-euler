@@ -8,3 +8,9 @@ if grep 'Test[[:lower:]]' *_test.go; then
 fi
 
 go test
+files="$(gofmt -l *.go)"
+if [[ -n "${files}" ]]; then
+  echo "Badly-formatted files: ${files}" >&2
+  echo "Run gofmt on them." >&2
+  exit 1
+fi
