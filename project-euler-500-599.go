@@ -21,45 +21,33 @@ import "math/big"
 * - But every approach I think of feels expensive, so I'll start with trial division and see how far I get.  The distribution of factorials will help me figure out where to optimise.
  */
 
-func growBigIntSlice(s []*big.Int, i int) []*big.Int {
-	sn := make([]*big.Int, len(s)+i)
-	copy(sn, s)
-	return sn
-}
-
 func projectEuler549actual(upper int64) int64 {
-	fCache := []*big.Int{big.NewInt(1), big.NewInt(1), big.NewInt(2)}
-	lastFC := 2
+	sieve := SieveOfEratosthenes(int(upper))
+	fCache := make([]*big.Int, upper)
+	fCache[0] = big.NewInt(1)
+	fCache[1] = big.NewInt(1)
+	zero := big.NewInt(0)
+	div := big.NewInt(0)
+	mod := big.NewInt(0)
 	var sum int64
 
 Outer:
 	for i := int64(2); i <= upper; i++ {
-		zero := big.NewInt(0)
-		div := big.NewInt(i)
-		// Search the cache first.
-		tmp := big.NewInt(0)
-		for m := 0; m <= lastFC; m++ {
-			tmp.Mod(fCache[m], div)
-			if zero.Cmp(tmp) == 0 {
-				// fmt.Printf("%v => %v => %v\n", i, m, fCache[m])
-				sum += int64(m)
-				continue Outer
-			}
-		}
-
+		// The lowest number we should even consider is the biggest prime factor of i.
+		factors := PrimeFactors(int(i), sieve)
+		j := factors[len(factors)-1]
+		div.SetInt64(i)
 		for {
-			lastFC++
-			if lastFC == len(fCache) {
-				fCache = growBigIntSlice(fCache, 10)
+			if fCache[j] == nil {
+				fCache[j] = factorialBigInt(int64(j))
 			}
-			fCache[lastFC] = factorialBigInt(int64(lastFC))
-			mod := big.NewInt(0)
-			mod.Mod(fCache[lastFC], div)
+			mod.Mod(fCache[j], div)
 			if mod.Cmp(zero) == 0 {
-				// fmt.Printf("%v => %v => %v\n", i, lastFC, fCache[lastFC])
-				sum += int64(lastFC)
+				// fmt.Printf("%v => %v => %v\n", i, j, fCache[lastFC])
+				sum += int64(j)
 				continue Outer
 			}
+			j++
 		}
 	}
 	return sum
