@@ -589,6 +589,40 @@ func TestFactorialBigInt(t *testing.T) {
 	}
 }
 
+func TestFactorialBigIntCached(t *testing.T) {
+	cache := []*big.Int{big.NewInt(1), big.NewInt(1), big.NewInt(2), big.NewInt(6), nil, nil}
+	factorialBigIntCached(5, cache)
+	assert.Equal(t, "factorialBigIntCached(5, cache)", int64(120), cache[5].Int64())
+	p := cache[5]
+	factorialBigIntCached(5, cache)
+	assert.Equal(t, "do not overwrite", p, cache[5])
+	if cache[4] != nil {
+		t.Errorf("factorialBigIntCached(5, cache): cache[4]: got %v, want nil", cache[4])
+	}
+}
+
+func TestFactorialBigIntCompareImplementations(t *testing.T) {
+	size := 7
+	cached := make([]*big.Int, size)
+	uncached := make([]*big.Int, size)
+	expected := make([]*big.Int, size)
+	expected[0] = big.NewInt(1)
+	expected[1] = big.NewInt(1)
+	expected[2] = big.NewInt(2)
+	expected[3] = big.NewInt(6)
+	expected[4] = big.NewInt(24)
+	expected[5] = big.NewInt(120)
+	expected[6] = big.NewInt(720)
+
+	for i := 0; i < size; i++ {
+		uncached[i] = factorialBigInt(int64(i))
+		factorialBigIntCached(int64(i), cached)
+	}
+
+	assert.Equal(t, "cached", expected, cached)
+	assert.Equal(t, "uncached", expected, uncached)
+}
+
 func TestNCRInt64(t *testing.T) {
 	tests := []struct {
 		n, r, e int64

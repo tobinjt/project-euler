@@ -21,6 +21,33 @@ import "math/big"
 * - But every approach I think of feels expensive, so I'll start with trial division and see how far I get.  The distribution of factorials will help me figure out where to optimise.
  */
 
+// factorialBigIntCached calculates n!, using the existing data in cache, and updates cache[n].
+func factorialBigIntCached(n int64, cache []*big.Int) {
+	if cache[n] != nil {
+		return
+	}
+	if n == 0 {
+		// 0 is the only number that the algorithm doesn't work for.
+		cache[0] = big.NewInt(1)
+		return
+	}
+
+	i := int(n - 1)
+	r := big.NewInt(n)
+	bn := big.NewInt(n)
+	one := big.NewInt(1)
+	for bn.Cmp(one) == 1 {
+		if cache[i] != nil {
+			r.Mul(r, cache[i])
+			break
+		}
+		i--
+		bn.Sub(bn, one)
+		r.Mul(r, bn)
+	}
+	cache[n] = r
+}
+
 func projectEuler549actual(upper int64) int64 {
 	sieve := SieveOfEratosthenes(int(upper))
 	fCache := make([]*big.Int, upper)
@@ -39,17 +66,18 @@ Outer:
 		div.SetInt64(i)
 		for {
 			if fCache[j] == nil {
-				fCache[j] = factorialBigInt(int64(j))
+				factorialBigIntCached(int64(j), fCache)
 			}
 			mod.Mod(fCache[j], div)
 			if mod.Cmp(zero) == 0 {
-				// fmt.Printf("%v => %v => %v\n", i, j, fCache[lastFC])
+				// fmt.Printf("%v => %v => %v\n", i, j, fCache[j])
 				sum += int64(j)
 				continue Outer
 			}
 			j++
 		}
 	}
+	// fmt.Printf("%v\n", fCache)
 	return sum
 }
 
