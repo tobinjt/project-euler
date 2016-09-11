@@ -61,8 +61,17 @@ func projectEuler549actual(upper int64) int64 {
 Outer:
 	for i := int64(2); i <= upper; i++ {
 		// The lowest number we should even consider is the biggest prime factor of i.
+		// This is inefficient for 97969 (313 * 313), we need to go to 626, i.e. 313 + 313.
+		// At first I thought that I'd multiply the highest factor by the number of times it appears, but that doesn't work for 8.
+		// 8 is 2 * 2 * 2.  4! is the answer we're looking for, but 2 + 2 + 2 = 6.
+		// So if the second highest prime factor == the highest prime factor, start with 2 * highest prime factor.
 		factors := PrimeFactors(int(i), sieve)
-		j := factors[len(factors)-1]
+		k := len(factors) - 1
+		j := factors[k]
+		if k > 0 && factors[k] == factors[k-1] {
+			j += factors[k]
+		}
+
 		div.SetInt64(i)
 		for {
 			if fCache[j] == nil {
@@ -70,14 +79,12 @@ Outer:
 			}
 			mod.Mod(fCache[j], div)
 			if mod.Cmp(zero) == 0 {
-				// fmt.Printf("%v => %v => %v\n", i, j, fCache[j])
 				sum += int64(j)
 				continue Outer
 			}
 			j++
 		}
 	}
-	// fmt.Printf("%v\n", fCache)
 	return sum
 }
 
