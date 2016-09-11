@@ -541,18 +541,15 @@ func PrimeFactors(number int, sieve []bool) []int {
 		return factors
 	}
 	for divisor, isPrime := range sieve {
-		if remainder == 1 {
-			break
-		}
 		if !isPrime {
-			continue
-		}
-		if remainder%divisor != 0 {
 			continue
 		}
 		for remainder%divisor == 0 {
 			factors = append(factors, divisor)
 			remainder /= divisor
+		}
+		if remainder == 1 {
+			break
 		}
 	}
 	return factors
