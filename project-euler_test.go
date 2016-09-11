@@ -24,7 +24,6 @@ func TestProjectEuler(t *testing.T) {
 		function func() int64
 		name     string
 	}{
-		{0, test, "test"},
 		{7273, projectEuler67, "projectEuler67"},
 		{6531031914842725, projectEuler68, "projectEuler68"},
 		{510510, projectEuler69, "projectEuler69"},
