@@ -91,3 +91,68 @@ Outer:
 func projectEuler549test() int64 {
 	return projectEuler549actual(100)
 }
+
+func projectEuler549_2actual(upper int) int64 {
+	sieve := SieveOfEratosthenes(upper)
+	// factors is a map of all the factors in i!, where i is the index of factorials.
+	// It is built up incrementally; some of the entries will only be used to create later entries, but that's OK.
+	factors := make([]map[int]int, upper)
+	factors[2] = make(map[int]int)
+	factors[2][2] = 1
+	sum, lastFactor := 0, 2
+
+Outer:
+	for n := 2; n <= upper; n++ {
+		// The lowest number we should even consider is the biggest prime factor of n.
+		// This is inefficient for 97969 (313 * 313), we need to go to 626, i.e. 313 + 313.
+		// At first I thought that I'd multiply the highest factor by the number of times it appears, but that doesn't work for 8.
+		// 8 is 2 * 2 * 2.  4! is the answer we're looking for, but 2 + 2 + 2 = 6.
+		// So if the second highest prime factor == the highest prime factor, start with 2 * highest prime factor.
+		fn := PrimeFactors(n, sieve)
+		fnm := make(map[int]int)
+		for _, f := range fn {
+			fnm[f]++
+		}
+		j := fn[len(fn)-1]
+		if fnm[j] > 1 {
+			j *= 2
+		}
+
+		for {
+			// Fill factors as far as necessary.
+			for lastFactor <= j {
+				x := lastFactor + 1
+				factors[x] = make(map[int]int)
+				for f, v := range factors[lastFactor] {
+					factors[x][f] = v
+				}
+				fx := PrimeFactors(x, sieve)
+				for _, f := range fx {
+					factors[x][f]++
+				}
+				lastFactor++
+			}
+
+			// Check if we've found a match.
+			found := true
+			for f, v := range fnm {
+				if factors[j][f] < v {
+					found = false
+					break
+				}
+			}
+
+			if found {
+				sum += j
+				continue Outer
+			} else {
+				j++
+			}
+		}
+	}
+	return int64(sum)
+}
+
+func projectEuler549_2test() int64 {
+	return projectEuler549_2actual(100)
+}
