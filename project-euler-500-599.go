@@ -114,6 +114,12 @@ func PrimeFactors2(number int, sieve []int) []int {
 
 func projectEuler549_2actual(upper int) int64 {
 	sieve := SieveOfEratosthenes(upper)
+	var primes []int
+	for d, p := range sieve {
+		if p {
+			primes = append(primes, d)
+		}
+	}
 	// factors tracks the lowest n where n! contains a given number of a certain prime factor.
 	// E.g. factors[2][2] = 4, because 4! is the first factorial to contain 2 * 2.
 	factors := make([][]int, upper)
@@ -123,7 +129,7 @@ func projectEuler549_2actual(upper int) int64 {
 
 Outer:
 	for n := 2; n <= upper; n++ {
-		fn := PrimeFactors(n, sieve)
+		fn := PrimeFactors2(n, primes)
 		// Fill factors for the current number.  This results in some
 		// unnecessary work towards the end of the outer loop, but is
 		// overall more efficient because PrimeFactors is only called
