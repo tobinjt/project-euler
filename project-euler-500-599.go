@@ -92,6 +92,26 @@ func projectEuler549test() int64 {
 	return projectEuler549actual(100)
 }
 
+// PrimeFactors2 generates a list of prime factors for a number.  Factors are not deduplicated.
+// slice is a list of prime numbers.
+func PrimeFactors2(number int, sieve []int) []int {
+	factors := []int{}
+	remainder := number
+	if number <= 1 {
+		return factors
+	}
+	for _, divisor := range sieve {
+		for remainder%divisor == 0 {
+			factors = append(factors, divisor)
+			remainder /= divisor
+		}
+		if remainder == 1 {
+			break
+		}
+	}
+	return factors
+}
+
 func projectEuler549_2actual(upper int) int64 {
 	sieve := SieveOfEratosthenes(upper)
 	// factors tracks the lowest n where n! contains a given number of a certain prime factor.

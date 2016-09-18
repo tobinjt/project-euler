@@ -195,6 +195,28 @@ func TestPrimeFactors(t *testing.T) {
 	}
 }
 
+func TestPrimeFactors2(t *testing.T) {
+	primes := SieveOfEratosthenes(10)
+	var sieve []int
+	for divisor, isPrime := range primes {
+		if isPrime {
+			sieve = append(sieve, divisor)
+		}
+	}
+	tests := []struct {
+		number   int
+		expected []int
+	}{
+		{15, []int{3, 5}},
+		{0, []int{}},
+		{9, []int{3, 3}},
+	}
+	for _, test := range tests {
+		assert.Equal(t, "PrimeFactors2", test.expected,
+			PrimeFactors2(test.number, sieve))
+	}
+}
+
 func TestMakePhiLookupTablet(t *testing.T) {
 	assert.Equal(t, "MakePhiLookupTable",
 		[]int64{0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4},

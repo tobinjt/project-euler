@@ -534,6 +534,7 @@ func SieveOfEratosthenes(size int) []bool {
 }
 
 // PrimeFactors generates a list of prime factors for a number.  Factors are not deduplicated.
+// sieve is a slice of bools: if sieve[x] is true, x is prime.
 func PrimeFactors(number int, sieve []bool) []int {
 	factors := []int{}
 	remainder := number
