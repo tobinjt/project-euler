@@ -94,12 +94,12 @@ func projectEuler549test() int64 {
 
 func projectEuler549_2actual(upper int) int64 {
 	sieve := SieveOfEratosthenes(upper)
-	// factors is a map of all the factors in i!, where i is the index of factorials.
-	// It is built up incrementally; some of the entries will only be used to create later entries, but that's OK.
-	factors := make([]map[int]int, upper)
-	factors[2] = make(map[int]int)
-	factors[2][2] = 1
-	sum, lastFactor := 0, 2
+	// factors tracks the lowest n where n! contains a given number of a certain prime factor.
+	// E.g. factors[2][2] = 4, because 4! is the first factorial to contain 2 * 2.
+	factors := make([][]int, upper)
+	sum, lastF := 0, 1
+	// cumF tracks the cumulative prime factors of lastF.
+	cumF := make(map[int]int)
 
 Outer:
 	for n := 2; n <= upper; n++ {
@@ -120,23 +120,27 @@ Outer:
 
 		for {
 			// Fill factors as far as necessary.
-			for lastFactor <= j {
-				x := lastFactor + 1
-				factors[x] = make(map[int]int)
-				for f, v := range factors[lastFactor] {
-					factors[x][f] = v
-				}
+			for lastF <= j {
+				x := lastF + 1
 				fx := PrimeFactors(x, sieve)
 				for _, f := range fx {
-					factors[x][f]++
+					cumF[f]++
 				}
-				lastFactor++
+				for f, v := range cumF {
+					if factors[f] == nil {
+						factors[f] = make([]int, 0)
+					}
+					for k := len(factors[f]); k <= v; k++ {
+						factors[f] = append(factors[f], x)
+					}
+				}
+				lastF++
 			}
 
 			// Check if we've found a match.
 			found := true
 			for f, v := range fnm {
-				if factors[j][f] < v {
+				if len(factors[f]) < v+1 || factors[f][v] > j {
 					found = false
 					break
 				}
