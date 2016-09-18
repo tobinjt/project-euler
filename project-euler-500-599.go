@@ -97,18 +97,34 @@ func projectEuler549_2actual(upper int) int64 {
 	// factors tracks the lowest n where n! contains a given number of a certain prime factor.
 	// E.g. factors[2][2] = 4, because 4! is the first factorial to contain 2 * 2.
 	factors := make([][]int, upper)
-	sum, lastF := 0, 1
+	sum := 0
 	// cumF tracks the cumulative prime factors of lastF.
 	cumF := make(map[int]int)
 
 Outer:
 	for n := 2; n <= upper; n++ {
-		// The lowest number we should even consider is the biggest prime factor of n.
-		// This is inefficient for 97969 (313 * 313), we need to go to 626, i.e. 313 + 313.
-		// At first I thought that I'd multiply the highest factor by the number of times it appears, but that doesn't work for 8.
-		// 8 is 2 * 2 * 2.  4! is the answer we're looking for, but 2 + 2 + 2 = 6.
-		// So if the second highest prime factor == the highest prime factor, start with 2 * highest prime factor.
 		fn := PrimeFactors(n, sieve)
+		// Fill factors for the current number.  This results in some
+		// unnecessary work towards the end of the outer loop, but is
+		// overall more efficient because PrimeFactors is only called
+		// once for each number.
+		for _, f := range fn {
+			cumF[f]++
+		}
+		for _, f := range fn {
+			for k := len(factors[f]); k <= cumF[f]; k++ {
+				factors[f] = append(factors[f], n)
+			}
+		}
+
+		// The lowest number we should even consider is the biggest
+		// prime factor of n.  This is inefficient for 97969 (313 *
+		// 313), we should start with 626 instead, i.e. 313 + 313.  At
+		// first I thought that I'd multiply the highest factor by the
+		// number of times it appears, but that doesn't work for 8.  8
+		// is 2 * 2 * 2.  4! is the answer we're looking for, but 2 * 3
+		// = 6.  So if the second highest prime factor == the highest
+		// prime factor, start with 2 * highest prime factor.
 		fnm := make(map[int]int)
 		for _, f := range fn {
 			fnm[f]++
@@ -118,40 +134,17 @@ Outer:
 			j *= 2
 		}
 
+	Inner:
 		for {
-			// Fill factors as far as necessary.
-			for lastF <= j {
-				x := lastF + 1
-				fx := PrimeFactors(x, sieve)
-				for _, f := range fx {
-					cumF[f]++
-				}
-				for f, v := range cumF {
-					if factors[f] == nil {
-						factors[f] = make([]int, 0)
-					}
-					for k := len(factors[f]); k <= v; k++ {
-						factors[f] = append(factors[f], x)
-					}
-				}
-				lastF++
-			}
-
 			// Check if we've found a match.
-			found := true
 			for f, v := range fnm {
 				if len(factors[f]) < v+1 || factors[f][v] > j {
-					found = false
-					break
+					j++
+					continue Inner
 				}
 			}
-
-			if found {
-				sum += j
-				continue Outer
-			} else {
-				j++
-			}
+			sum += j
+			continue Outer
 		}
 	}
 	return int64(sum)
