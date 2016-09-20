@@ -124,8 +124,8 @@ func projectEuler549_2actual(upper int) int64 {
 	// E.g. factors[2][2] = 4, because 4! is the first factorial to contain 2 * 2.
 	factors := make([][]int, upper)
 	sum := 0
-	// cumF tracks the cumulative prime factors of lastF.
-	cumF := make(map[int]int)
+	// cumF tracks the cumulative prime factors of n.
+	cumF := make(map[int]int, len(primes))
 
 Outer:
 	for n := 2; n <= upper; n++ {
