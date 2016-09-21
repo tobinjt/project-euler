@@ -129,7 +129,13 @@ func projectEuler549_2actual(upper int) int64 {
 
 Outer:
 	for n := 2; n <= upper; n++ {
-		fn := PrimeFactors2(n, primes)
+		// Calculate prime factors if we n is not prime.
+		var fn []int
+		if sieve[n] {
+			fn = []int{n}
+		} else {
+			fn = PrimeFactors2(n, primes)
+		}
 		// Fill factors for the current number.  This results in some
 		// unnecessary work towards the end of the outer loop, but is
 		// overall more efficient because PrimeFactors is only called
