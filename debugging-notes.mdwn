@@ -10,19 +10,19 @@ badly.
 ### CPU
 
     problem=82
-    file="/tmp/cpu_${problem?}.prof"
+    cpu_file="/tmp/cpu_${problem?}.prof"
     go build project-euler \
       && time ./project-euler \
-           --cpuprofile="${file?}" \
+           --cpuprofile="${cpu_file?}" \
            "${problem?}" \
-      && go tool pprof project-euler "${file?}"
+      && go tool pprof project-euler "${cpu_file?}"
 
 ### Memory
 
     problem=82
-    file="/tmp/mem_${problem?}.prof"
+    mem_file="/tmp/mem_${problem?}.prof"
     go build project-euler \
       && time ./project-euler \
-           --memprofile="${file?}" \
+           --memprofile="${mem_file?}" \
            "${problem?}" \
-      && go tool pprof --alloc_space project-euler "${file?}"
+      && go tool pprof --alloc_space project-euler "${mem_file?}"
