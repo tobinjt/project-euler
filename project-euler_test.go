@@ -672,6 +672,20 @@ func TestNCRBigInt(t *testing.T) {
 	}
 }
 
+func TestLogEveryN(t *testing.T) {
+	c := 0
+	o := logEveryNPrintFunc
+	logEveryNPrintFunc = func(format string, a ...interface{}) (n int, err error) {
+		c++
+		return 0, nil
+	}
+	for i := 0; i < 8; i++ {
+		logEveryN(3, "", 1)
+	}
+	assert.Equal(t, "logEveryN", 2, c)
+	logEveryNPrintFunc = o
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.

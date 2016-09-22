@@ -1,6 +1,11 @@
 package main
 
-import "math/big"
+import (
+	"fmt"
+	"math/big"
+	"strings"
+	"time"
+)
 
 /*
 * The smallest number m such that 10 divides m! is m=5.
@@ -92,6 +97,24 @@ func projectEuler549test() int64 {
 	return projectEuler549actual(100)
 }
 
+var logEveryNCounter int
+var logEveryNPrintFunc = fmt.Printf
+var logEveryNTimestamp = time.Now()
+
+// logEveryN prints every nth call; it doesn't reset and it doesn't track call location or anything clever.
+// The first
+func logEveryN(n int, format string, a ...interface{}) {
+	logEveryNCounter++
+	if logEveryNCounter%n == 0 {
+		t := time.Now()
+		d := t.Sub(logEveryNTimestamp)
+		logEveryNTimestamp = t
+		str := fmt.Sprintf(format, a...)
+		ps := strings.Split(fmt.Sprintf("%v", t), "+")
+		logEveryNPrintFunc("%-30v%.5f   %v", ps[0], d.Seconds(), str)
+	}
+}
+
 // PrimeFactors2 generates a list of prime factors for a number.  Factors are not deduplicated.
 // slice is a list of prime numbers.
 func PrimeFactors2(number int, sieve []int) []int {
@@ -129,6 +152,7 @@ func projectEuler549_2actual(upper int) int64 {
 
 Outer:
 	for n := 2; n <= upper; n++ {
+		logEveryN(10000, "%v / %v %.2f%%\n", n, upper, float64(n)*100/float64(upper))
 		// Calculate prime factors if we n is not prime.
 		var fn []int
 		if sieve[n] {
