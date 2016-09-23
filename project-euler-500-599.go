@@ -135,14 +135,27 @@ func PrimeFactors2(number int, sieve []int) []int {
 	return factors
 }
 
-func projectEuler549_2actual(upper int) int64 {
-	sieve := SieveOfEratosthenes(upper)
-	var primes []int
-	for d, p := range sieve {
+func sieveToPF2(sieve []bool) []int {
+	c := 0
+	for _, p := range sieve {
 		if p {
-			primes = append(primes, d)
+			c++
 		}
 	}
+	primes := make([]int, c)
+	c = 0
+	for d, p := range sieve {
+		if p {
+			primes[c] = d
+			c++
+		}
+	}
+	return primes
+}
+
+func projectEuler549_2actual(upper int) int64 {
+	sieve := SieveOfEratosthenes(upper)
+	primes := sieveToPF2(sieve)
 	// factors tracks the lowest n where n! contains a given number of a certain prime factor.
 	// E.g. factors[2][2] = 4, because 4! is the first factorial to contain 2 * 2.
 	factors := make([][]int, upper)

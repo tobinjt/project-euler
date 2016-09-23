@@ -217,6 +217,12 @@ func TestPrimeFactors2(t *testing.T) {
 	}
 }
 
+func TestSieveToPF2(t *testing.T) {
+	sieve := SieveOfEratosthenes(10)
+	primes := sieveToPF2(sieve)
+	assert.Equal(t, "sieveToPF2", []int{2, 3, 5, 7}, primes)
+}
+
 func TestMakePhiLookupTablet(t *testing.T) {
 	assert.Equal(t, "MakePhiLookupTable",
 		[]int64{0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4},
