@@ -12,7 +12,7 @@ badly.
     problem=82
     cpu_file="/tmp/cpu_${problem?}.prof"
     go build project-euler \
-      && time ./project-euler \
+      && command time -l ./project-euler \
            --cpuprofile="${cpu_file?}" \
            "${problem?}" \
       && go tool pprof project-euler "${cpu_file?}"
@@ -22,7 +22,7 @@ badly.
     problem=82
     mem_file="/tmp/mem_${problem?}.prof"
     go build project-euler \
-      && time ./project-euler \
+      && command time -l ./project-euler \
            --memprofile="${mem_file?}" \
            "${problem?}" \
       && go tool pprof --alloc_space project-euler "${mem_file?}"
