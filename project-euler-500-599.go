@@ -159,7 +159,7 @@ func projectEuler549_2actual(upper int) int64 {
 	// factors tracks the lowest n where n! contains a given number of a certain prime factor.
 	// E.g. factors[2][2] = 4, because 4! is the first factorial to contain 2 * 2.
 	factors := make([][]int, upper)
-	sum := 0
+	sum := int64(0)
 	// cumF tracks the cumulative prime factors of n.
 	cumF := make(map[int]int, len(primes))
 
@@ -212,7 +212,7 @@ Outer:
 					continue Inner
 				}
 			}
-			sum += j
+			sum += int64(j)
 			continue Outer
 		}
 	}
