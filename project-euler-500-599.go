@@ -222,3 +222,11 @@ Outer:
 func projectEuler549_2test() int64 {
 	return projectEuler549_2actual(100)
 }
+
+func projectEuler549_3actual() int64 {
+	return 0
+}
+
+func projectEuler549_3test() int64 {
+	return projectEuler549_3actual()
+}

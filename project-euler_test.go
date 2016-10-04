@@ -56,6 +56,7 @@ func TestProjectEuler(t *testing.T) {
 		{6818741802, projectEuler493, "projectEuler493"},
 		{2012, projectEuler549test, "projectEuler549"},
 		{2012, projectEuler549_2test, "projectEuler549_2"},
+		{0, projectEuler549_3test, "projectEuler549_3"},
 		// newPE - this is where the next test entry will go.
 	}
 	for _, test := range table {
