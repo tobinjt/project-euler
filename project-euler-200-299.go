@@ -8,6 +8,25 @@ package main
 import "math"
 
 /*
+* Peter has nine four-sided (pyramidal) dice, each with faces numbered 1, 2, 3, 4.
+* Colin has six six-sided (cubic) dice, each with faces numbered 1, 2, 3, 4, 5, 6.
+
+* Peter and Colin roll their dice and compare totals: the highest total wins.
+* The result is a draw if the totals are equal.
+
+* What is the probability that Pyramidal Pete beats Cubic Colin? Give your
+* answer rounded to seven decimal places in the form 0.abcdefg
+ */
+
+func projectEuler205actual() int64 {
+	return 0
+}
+
+func projectEuler205test() int64 {
+	return projectEuler205actual()
+}
+
+/*
 * The answer lies between 1121314151617181910 and 1929394959697989990, so we
 * have upper and lower bounds for the integers to square.
 *
