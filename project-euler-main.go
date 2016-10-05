@@ -219,5 +219,5 @@ func projectEuler549_2() int64 {
 }
 
 func projectEuler549_3() int64 {
-	return projectEuler549_3actual()
+	return projectEuler549_3actual(100 * 1000 * 1000)
 }

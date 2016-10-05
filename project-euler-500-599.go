@@ -223,10 +223,72 @@ func projectEuler549_2test() int64 {
 	return projectEuler549_2actual(100)
 }
 
-func projectEuler549_3actual() int64 {
-	return 0
+func projectEuler549_3actual(upper int) int64 {
+	// This is your basic prime sieve.
+	sieve := SieveOfEratosthenes(upper)
+	// This is a sieve for this problem, calculating future values of s(n).
+	sSieve := make([]int, upper+1)
+	sum := int64(0)
+
+	for n := 2; n <= upper; n++ {
+		logEveryN(10000, "%v / %v %.2f%%\n", n, upper, float64(n)*100/float64(upper))
+		// http://mathworld.wolfram.com/SmarandacheFunction.html
+		// explains this in detail.
+
+		if sieve[n] {
+			sum += int64(n)
+			// n divides m! for every m=i*n for 1 <= i < n.
+			nPow := 1
+			for i := 1; i < n && i*n <= upper; i++ {
+				sSieve[n*i] = n
+				nPow *= n
+				// nPow gets large enough to overflow and become negative.
+				if nPow > 0 && nPow < upper {
+					// s(p^x) == px
+					sSieve[nPow] = n * i
+				}
+			}
+			continue
+		}
+		if sSieve[n] != 0 {
+			sum += int64(sSieve[n])
+			continue
+		}
+
+		// Need to figure it out from factors.
+		// We generate the prime factors for n.
+		// We start with m=2, divide m by each factor, and zero out
+		// factors that divide m, incrementing m until we have zero
+		// factors left.
+		facN := PrimeFactors(n, sieve)
+		numFac, m := len(facN), 1
+		for numFac > 0 {
+			m++
+			x := m
+			for i, f := range facN {
+				if f > x {
+					break
+				}
+				if f != 0 && x%f == 0 {
+					x /= f
+					facN[i] = 0
+					numFac--
+					if numFac == 0 {
+						break
+					}
+				}
+			}
+		}
+		sum += int64(m)
+		sSieve[n] = m
+
+		// Ideally I'd fill up the sieve and save some calculations,
+		// but it doesn't work, I get the wrong values for 32, 64, and
+		// 96 :(
+	}
+	return sum
 }
 
 func projectEuler549_3test() int64 {
-	return projectEuler549_3actual()
+	return projectEuler549_3actual(100)
 }
