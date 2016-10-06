@@ -18,6 +18,18 @@ import "math"
 * answer rounded to seven decimal places in the form 0.abcdefg
  */
 
+/*
+* 4^9 = 262144
+* 6^6 = 46656
+* Idea:
+*  - generate and count the totals of the permutations of 6^6
+*  - iterate over the permutations of 4^9.
+*    - 1) calculate the fraction of times the current 4^9 total comes up.
+*    - 2) calculate the fraction of 6^6 rolls that are less and the fraction
+*      that are equal.
+*    - 3) multiply 1 by 2 and add it to a running total.
+ */
+
 func projectEuler205actual() int64 {
 	return 0
 }
