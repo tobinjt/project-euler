@@ -28,6 +28,9 @@ import "math"
 *    - 2) calculate the fraction of 6^6 rolls that are less and the fraction
 *      that are equal.
 *    - 3) multiply 1 by 2 and add it to a running total.
+*
+* It would be nice to calculate the number of ways to achieve each roll
+* rather than brute forcing it.
  */
 
 // incrementDice increments the values in dice, returning false when there
@@ -52,12 +55,53 @@ func sumIntSlice(s []int) int {
 	return sum
 }
 
-func projectEuler205actual() int64 {
-	return 0
+// IntPair represents a key, value pair where both are ints.
+type IntPair struct {
+	key, value int
 }
 
-func projectEuler205test() int64 {
-	return projectEuler205actual()
+func projectEuler205() int64 {
+	// Deliberately start off at 0 so that the first loop iteration brings
+	// it to the first valid combination.
+	cubicDice := []int{1, 1, 1, 1, 1, 0}
+	cubicCounts := make([]int, 37)
+	for incrementDice(cubicDice, 6) {
+		sum := sumIntSlice(cubicDice)
+		cubicCounts[sum]++
+	}
+	cubicNumRolls := sumIntSlice(cubicCounts)
+	cubicIncCounts := make([]int, len(cubicCounts))
+	for i, v := range cubicCounts {
+		if i != 0 {
+			cubicIncCounts[i] = cubicIncCounts[i-1] + v
+		}
+	}
+
+	pyramidalDice := []int{1, 1, 1, 1, 1, 1, 1, 1, 0}
+	pyramidalCounts := make([]int, 37)
+	for incrementDice(pyramidalDice, 4) {
+		sum := sumIntSlice(pyramidalDice)
+		pyramidalCounts[sum]++
+	}
+	pyramidalNumRolls := sumIntSlice(pyramidalCounts)
+
+	var pWinSum float64
+	for roll, rollCount := range pyramidalCounts {
+		if rollCount == 0 {
+			continue
+		}
+		// Probability of pyramidal rolling roll.
+		pRoll := float64(rollCount) / float64(pyramidalNumRolls)
+		// Probability of cubic rolling less than roll.
+		pLess := float64(cubicIncCounts[roll-1]) / float64(cubicNumRolls)
+		// Probability of roll winning for pyramidal.
+		pWin := pRoll * pLess
+		pWinSum += pWin
+	}
+
+	// Scale up by many orders of magnitude so we can convert to int64.
+	// Add 1 because the conversion rounds down.
+	return int64(pWinSum*10*1000*1000) + 1
 }
 
 /*

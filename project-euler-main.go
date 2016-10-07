@@ -203,10 +203,6 @@ func projectEuler99() int64 {
 	return projectEuler99actual(openOrDie("base_exp.txt"))
 }
 
-func projectEuler205() int64 {
-	return projectEuler205actual()
-}
-
 func projectEuler357() int64 {
 	return projectEuler357actual(100 * 1000 * 1000)
 }
