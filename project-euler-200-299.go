@@ -30,6 +30,20 @@ import "math"
 *    - 3) multiply 1 by 2 and add it to a running total.
  */
 
+// incrementDice increments the values in dice, returning false when there
+// aren't any more values to use.
+func incrementDice(dice []int, sides int) bool {
+	for i := len(dice) - 1; i >= 0; i-- {
+		if dice[i] == sides {
+			dice[i] = 1
+		} else {
+			dice[i]++
+			return true
+		}
+	}
+	return false
+}
+
 func projectEuler205actual() int64 {
 	return 0
 }

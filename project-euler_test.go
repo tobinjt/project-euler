@@ -694,6 +694,17 @@ func TestLogEveryN(t *testing.T) {
 	logEveryNPrintFunc = o
 }
 
+func TestIncrementDice(t *testing.T) {
+	dice := []int{1, 3, 2, 5}
+	assert.Equal(t, "incrementDice first test true", true, incrementDice(dice, 6))
+	assert.Equal(t, "incrementDice first test values", []int{1, 3, 2, 6}, dice)
+	assert.Equal(t, "incrementDice second test true", true, incrementDice(dice, 6))
+	assert.Equal(t, "incrementDice second test values", []int{1, 3, 3, 1}, dice)
+	dice = []int{6, 6, 6, 6}
+	assert.Equal(t, "incrementDice third test false", false, incrementDice(dice, 6))
+	assert.Equal(t, "incrementDice third test values", []int{1, 1, 1, 1}, dice)
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.
