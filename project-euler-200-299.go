@@ -44,6 +44,14 @@ func incrementDice(dice []int, sides int) bool {
 	return false
 }
 
+func sumIntSlice(s []int) int {
+	sum := 0
+	for _, v := range s {
+		sum += v
+	}
+	return sum
+}
+
 func projectEuler205actual() int64 {
 	return 0
 }

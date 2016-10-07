@@ -705,6 +705,10 @@ func TestIncrementDice(t *testing.T) {
 	assert.Equal(t, "incrementDice third test values", []int{1, 1, 1, 1}, dice)
 }
 
+func TestSumIntSlice(t *testing.T) {
+	assert.Equal(t, "sumIntSlice", 17, sumIntSlice([]int{1, 9, 3, 4}))
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.
