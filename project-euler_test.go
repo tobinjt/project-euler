@@ -357,10 +357,10 @@ func TestSqrt(t *testing.T) {
 func TestReadIntsFromCSVFile(t *testing.T) {
 	tests := []struct {
 		csv, err string
-		expected [][]uint64
+		expected [][]int64
 	}{
-		{csv: "1,7,42", expected: [][]uint64{{1, 7, 42}}},
-		{csv: "1,7,42,qwerty", err: "strconv.ParseUint"},
+		{csv: "1,7,42", expected: [][]int64{{1, 7, 42}}},
+		{csv: "1,7,42,qwerty", err: "strconv.ParseInt"},
 		{csv: "1,7,42,qwe\"rty", err: "non-quoted-field"},
 	}
 	for _, test := range tests {

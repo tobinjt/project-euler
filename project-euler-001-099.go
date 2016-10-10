@@ -1359,28 +1359,44 @@ func projectEuler80test() int64 {
 * the bottom right by only moving right and down.
  */
 
-func readIntsFromCSVFile(r io.Reader) [][]uint64 {
+func readIntsFromCSVFile(r io.Reader) [][]int64 {
 	csvr := csv.NewReader(r)
-	ints := [][]uint64{}
+	ints := [][]int64{}
 	rows, err := csvr.ReadAll()
 	if err != nil {
 		panic(fmt.Sprintf("ReadAll failed: %v", err))
 	}
 
 	for i, row := range rows {
-		ints = append(ints, make([]uint64, len(row)))
+		ints = append(ints, make([]int64, len(row)))
 		for j, s := range row {
-			ints[i][j], err = strconv.ParseUint(s, 10, 64)
+			ints[i][j], err = strconv.ParseInt(s, 10, 64)
 			if err != nil {
-				panic(fmt.Sprintf("ParseUint(%q) failed: %v", s, err))
+				panic(fmt.Sprintf("ParseInt(%q) failed: %v", s, err))
 			}
 		}
 	}
 	return ints
 }
 
+func int64SliceToUint64Slice(s []int64) []uint64 {
+	r := make([]uint64, len(s))
+	for i, v := range s {
+		r[i] = uint64(v)
+	}
+	return r
+}
+
+func int64TwoDSliceToUint64TwoDSlice(s [][]int64) [][]uint64 {
+	r := make([][]uint64, len(s))
+	for i, v := range s {
+		r[i] = int64SliceToUint64Slice(v)
+	}
+	return r
+}
+
 func projectEuler81actual(r io.Reader) int64 {
-	matrix := readIntsFromCSVFile(r)
+	matrix := int64TwoDSliceToUint64TwoDSlice(readIntsFromCSVFile(r))
 	size := len(matrix)
 	grid := make([][]uint64, size)
 	// There's only one way to fill the first row or column, so prefill them and make filling the remainder easier.
@@ -1592,7 +1608,7 @@ func projectEuler82test() int64 {
 630,803,746,422,111
 537,699,497,121,956
 805,732,524,37,331`
-	costs := readIntsFromCSVFile(strings.NewReader(data))
+	costs := int64TwoDSliceToUint64TwoDSlice(readIntsFromCSVFile(strings.NewReader(data)))
 	return projectEuler82actual(&TwoDAStar82{costs: costs})
 }
 
@@ -1723,7 +1739,7 @@ func projectEuler83test() int64 {
 630,803,746,422,111
 537,699,497,121,956
 805,732,524,37,331`
-	costs := readIntsFromCSVFile(strings.NewReader(data))
+	costs := int64TwoDSliceToUint64TwoDSlice(readIntsFromCSVFile(strings.NewReader(data)))
 	return projectEuler83actual(&TwoDAStar83{costs: costs})
 }
 
