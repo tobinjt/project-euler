@@ -51,6 +51,7 @@ func TestProjectEuler(t *testing.T) {
 		{9347898369, projectEuler97test, "projectEuler97"},
 		{2, projectEuler99test, "projectEuler99"},
 		{1, projectEuler102test, "projectEuler102"},
+		{0, projectEuler112test, "projectEuler112"},
 		{5731441, projectEuler205, "projectEuler205"},
 		{1389019170, projectEuler206, "projectEuler206"},
 		{71, projectEuler357test, "projectEuler357"},

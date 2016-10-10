@@ -90,6 +90,7 @@ func realMain(args []string) (int64, error) {
 		"97":         projectEuler97,
 		"99":         projectEuler99,
 		"102":        projectEuler102,
+		"112":        projectEuler112,
 		"205":        projectEuler205,
 		"206":        projectEuler206,
 		"357":        projectEuler357,
@@ -206,6 +207,10 @@ func projectEuler99() int64 {
 
 func projectEuler102() int64 {
 	return projectEuler102actual(openOrDie("p102_triangles.txt"))
+}
+
+func projectEuler112() int64 {
+	return projectEuler112actual()
 }
 
 func projectEuler357() int64 {
