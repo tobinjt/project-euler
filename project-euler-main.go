@@ -205,7 +205,7 @@ func projectEuler99() int64 {
 }
 
 func projectEuler102() int64 {
-	return projectEuler102actual()
+	return projectEuler102actual(openOrDie("p102_triangles.txt"))
 }
 
 func projectEuler357() int64 {

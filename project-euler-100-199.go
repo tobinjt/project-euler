@@ -1,5 +1,10 @@
 package main
 
+import (
+	"io"
+	"strings"
+)
+
 /*
 * Three distinct points are plotted at random on a Cartesian plane, for which
 * -1000 ≤ x, y ≤ 1000, such that a triangle is formed.
@@ -21,10 +26,34 @@ package main
 * example given above.
  */
 
-func projectEuler102actual() int64 {
-	return 0
+// pointWithinTriangle determines if a point is within a triangle, as described in
+// http://www.gamedev.net/topic/295943-is-this-a-better-point-in-triangle-test-2d/
+func pointWithinTriangle(x, y, x1, y1, x2, y2, x3, y3 int64) bool {
+	b1 := pointToLineCrossProduct(x, y, x1, y1, x2, y2) < 0
+	b2 := pointToLineCrossProduct(x, y, x2, y2, x3, y3) < 0
+	b3 := pointToLineCrossProduct(x, y, x3, y3, x1, y1) < 0
+	return (b1 == b2) && (b2 == b3)
+}
+
+// pointToLineCrossProduct is called Sign in
+// http://www.gamedev.net/topic/295943-is-this-a-better-point-in-triangle-test-2d/
+func pointToLineCrossProduct(x, y, x1, y1, x2, y2 int64) int64 {
+	return (x-x2)*(y1-y2) - (x1-x2)*(y-y2)
+}
+
+func projectEuler102actual(r io.Reader) int64 {
+	triangles := readIntsFromCSVFile(r)
+	res := 0
+	for _, t := range triangles {
+		if pointWithinTriangle(0, 0, t[0], t[1], t[2], t[3], t[4], t[5]) {
+			res++
+		}
+	}
+	return int64(res)
 }
 
 func projectEuler102test() int64 {
-	return projectEuler102actual()
+	data := `-340,495,-153,-910,835,-947
+-175,41,-421,-714,574,-645`
+	return projectEuler102actual(strings.NewReader(data))
 }
