@@ -2,15 +2,16 @@
 
 set -e -u -o pipefail
 
-if grep 'Test[[:lower:]]' *_test.go; then
+if grep 'Test[[:lower:]]' ./*_test.go; then
   echo "Bad test name, it won't be run" >&2
   exit 1
 fi
 
-files="$(gofmt -l *.go)"
+files="$(gofmt -l ./*.go)"
 if [[ -n "${files}" ]]; then
   echo "Badly-formatted files: ${files}" >&2
-  echo "Run gofmt on them." >&2
+  echo "Fix with:" >&2
+  echo "$ gofmt -w ${files}" >&2
   exit 1
 fi
 
