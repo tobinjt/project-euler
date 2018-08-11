@@ -145,6 +145,13 @@ Loop:
 * Find the smallest denominator d, having a resilience R(d) < 15499/94744.
  */
 
+/*
+* What makes a fraction n/d resilient?  It's resilient when n and d are
+* relatively prime, viz gcd(n, d) == 1.  Euler's function phi(d) calculates the
+* number of integers 0 < n <= d that are relatively prime to d.  So I can
+* probably loop until I find phi(d-1)/d < 15499/94744.
+ */
+
 func projectEuler243actual() int64 {
 	return 0
 }
