@@ -761,8 +761,8 @@ func MakePhiLookupTable(size int) []int64 {
 			// i is not prime.
 			continue
 		}
+		tmp := float64(i)
 		for j := i; j <= size; j += i {
-			tmp := float64(i)
 			table[j] *= (1 - 1/tmp)
 		}
 	}
