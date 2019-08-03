@@ -691,7 +691,7 @@ func TestLogEveryN(t *testing.T) {
 		return 0, nil
 	}
 	for i := 0; i < 8; i++ {
-		logEveryN(3, "", 1)
+		logEveryN(3, "%d", 1)
 	}
 	assert.Equal(t, "logEveryN", 2, c)
 	logEveryNPrintFunc = o
