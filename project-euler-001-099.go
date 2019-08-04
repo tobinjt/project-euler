@@ -17,7 +17,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/skelterjohn/go.matrix"
+	matrix "github.com/skelterjohn/go.matrix"
 )
 
 func openOrDie(file string) io.Reader {
@@ -504,7 +504,7 @@ TRIPLE:
  */
 /*
 * You calculate phi(N) with Euler's Totient function:
-* http://en.wikipedia.org/wiki/TotientFunction
+* https://en.wikipedia.org/wiki/Euler%27s_totient_function
 * - phi(N) = N(product of (1-1/p) where p is a prime divisor of N)
 * - N/phi(N) = (product of (1-1/p) where p is a prime divisor of N)
 * Note that to get a larger N/phi(N) does not require a larger N, it requires
