@@ -5,7 +5,9 @@
 
 package main
 
-import "math"
+import (
+	"math"
+)
 
 /*
 * Peter has nine four-sided (pyramidal) dice, each with faces numbered 1, 2, 3, 4.
@@ -152,10 +154,24 @@ Loop:
 * probably loop until I find phi(d-1)/d < 15499/94744.
  */
 
-func projectEuler243actual() int64 {
-	return 0
+func projectEuler243actual(n int, d int) int64 {
+	target := float64(n) / float64(d)
+	phiTable := MakePhiLookupTable(d * 2)
+	for i, phi := range phiTable {
+		if i < 3 {
+			continue
+		}
+		ratio := float64(phi) / float64(i-1)
+		if ratio < target {
+			return int64(i)
+		}
+	}
+	return -1
 }
 
 func projectEuler243test() int64 {
-	return projectEuler243actual()
+	return projectEuler243actual(4, 10)
+}
+func projectEuler243test2() int64 {
+	return projectEuler243actual(1, 1)
 }
