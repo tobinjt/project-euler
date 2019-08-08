@@ -215,7 +215,7 @@ func projectEuler112() int64 {
 }
 
 func projectEuler243() int64 {
-	return projectEuler243actual(15499, 94744)
+	return projectEuler243actual(15499, 94744, 14)
 }
 
 func projectEuler357() int64 {

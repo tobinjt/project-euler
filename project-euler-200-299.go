@@ -154,11 +154,10 @@ Loop:
 * probably loop until I find phi(d-1)/d < 15499/94744.
  */
 
-func projectEuler243actual(n int, d int) int64 {
+func projectEuler243actual(n int, d int, m int) int64 {
 	target := float64(n) / float64(d)
-	tableMultiplier := 1
 	for {
-		phiTable := MakePhiLookupTable(d * tableMultiplier)
+		phiTable := MakePhiLookupTable(d * m)
 		for i, phi := range phiTable {
 			if i < 3 {
 				continue
@@ -168,10 +167,10 @@ func projectEuler243actual(n int, d int) int64 {
 				return int64(i)
 			}
 		}
-		tableMultiplier *= 2
+		m *= 2
 	}
 }
 
 func projectEuler243test() int64 {
-	return projectEuler243actual(4, 10)
+	return projectEuler243actual(4, 10, 1)
 }
