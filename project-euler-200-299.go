@@ -156,22 +156,22 @@ Loop:
 
 func projectEuler243actual(n int, d int) int64 {
 	target := float64(n) / float64(d)
-	phiTable := MakePhiLookupTable(d * 2)
-	for i, phi := range phiTable {
-		if i < 3 {
-			continue
+	tableMultiplier := 1
+	for {
+		phiTable := MakePhiLookupTable(d * tableMultiplier)
+		for i, phi := range phiTable {
+			if i < 3 {
+				continue
+			}
+			ratio := float64(phi) / float64(i-1)
+			if ratio < target {
+				return int64(i)
+			}
 		}
-		ratio := float64(phi) / float64(i-1)
-		if ratio < target {
-			return int64(i)
-		}
+		tableMultiplier *= 2
 	}
-	return -1
 }
 
 func projectEuler243test() int64 {
 	return projectEuler243actual(4, 10)
-}
-func projectEuler243test2() int64 {
-	return projectEuler243actual(1, 1)
 }
