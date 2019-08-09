@@ -152,7 +152,26 @@ Loop:
 * relatively prime, viz gcd(n, d) == 1.  Euler's function phi(d) calculates the
 * number of integers 0 < n <= d that are relatively prime to d.  So I can
 * probably loop until I find phi(d-1)/d < 15499/94744.
+*
+* That approach works for the example, but it doesn't work for the real
+* question because the lookup table is too large.
  */
+
+// Phi returns the number of positive integers < n that are relatively prime
+// to n; primes is a slice of prime numbers.
+func Phi(n int, primes []int) int {
+	// 1 should be counted but will not be included in primes.
+	count := 1
+	for _, prime := range primes {
+		if prime > n {
+			return count
+		}
+		if n%prime != 0 {
+			count++
+		}
+	}
+	return -1
+}
 
 func projectEuler243actual(n int, d int, m int) int64 {
 	target := float64(n) / float64(d)

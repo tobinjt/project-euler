@@ -533,6 +533,25 @@ func SieveOfEratosthenes(size int) []bool {
 	return primes
 }
 
+// SieveToPrimes converts a slice of bools returned by SieveOfEratosthenes to a slice of ints only containing primes.
+func SieveToPrimes(sieve []bool) []int {
+	numPrimes := 0
+	for _, prime := range sieve {
+		if prime {
+			numPrimes++
+		}
+	}
+	primes := make([]int, numPrimes)
+	j := 0
+	for i, prime := range sieve {
+		if prime {
+			primes[j] = i
+			j++
+		}
+	}
+	return primes
+}
+
 // PrimeFactors generates a list of prime factors for a number.  Factors are not deduplicated.
 // sieve is a slice of bools: if sieve[x] is true, x is prime.
 func PrimeFactors(number int, sieve []bool) []int {
@@ -1990,20 +2009,7 @@ func projectEuler87actual(limit int) int64 {
 	// Counting and explicitly allocating should be more efficient that repeatedly reallocating the slice.
 	size := int(math.Sqrt(float64(limit))) + 1
 	sieve := SieveOfEratosthenes(size)
-	numPrimes := 0
-	for _, prime := range sieve {
-		if prime {
-			numPrimes++
-		}
-	}
-	primes := make([]int, numPrimes)
-	j := 0
-	for i, prime := range sieve {
-		if prime {
-			primes[j] = i
-			j++
-		}
-	}
+	primes := SieveToPrimes(sieve)
 
 	// Calculate the sums.
 	sums := make(map[int]bool)

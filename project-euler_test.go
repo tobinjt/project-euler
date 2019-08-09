@@ -164,6 +164,12 @@ func TestSieveOfEratosthenes(t *testing.T) {
 		SieveOfEratosthenes(10))
 }
 
+func TestSieveToPrimes(t *testing.T) {
+	sieve := SieveOfEratosthenes(10)
+	expected := []int{2, 3, 5, 7}
+	assert.Equal(t, "SieveToPrimes()", expected, SieveToPrimes(sieve))
+}
+
 func TestIntsArePermutations(t *testing.T) {
 	tests := []struct {
 		a, b   int
@@ -710,6 +716,13 @@ func TestIncrementDice(t *testing.T) {
 
 func TestSumIntSlice(t *testing.T) {
 	assert.Equal(t, "sumIntSlice", 17, sumIntSlice([]int{1, 9, 3, 4}))
+}
+
+func TestPhi(t *testing.T) {
+	assert.Equal(t, "running out of primes failed", -1, Phi(12, []int{2, 3}))
+	sieve := SieveOfEratosthenes(100)
+	primes := SieveToPrimes(sieve)
+	assert.Equal(t, "Phi(12)", 4, Phi(12, primes))
 }
 
 // NOTE BEWARE ACHTUNG!
