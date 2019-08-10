@@ -155,6 +155,27 @@ Loop:
 *
 * That approach works for the example, but it doesn't work for the real
 * question because the lookup table is too large.
+*
+* Calculating R(n) for 2 <= n < 100,000 and tracking which n results in a lower
+* R, I see a pattern: 4 6 12 18 24 30 60 90 120 150 180 - they're all a prime+1.
+* Some primes are skipped, e.g. 7+1, 13+1, 19+1.
+*
+* Another pattern is revealed by expressing n as a product of primes: R(n) gets
+* smaller by adding primes, and once a prime is present it is never removed -
+* the number of times each prime is present increases and decreases, but
+* they're always present at least once.  Why is this?  R(n) is low when there
+* are few numbers that are relatively prime to n; the best way to reduce the
+* count of numbers relatively prime to n is for n to be composed of many
+* primes, because then all the other multiples of each prime are not relatively
+* prime to n.
+*
+* How does that help?  We can figure out the set of primes that the answer must
+* be a multiple of.  Multiply consecutive primes together (2*3, 2*3*5, ...) and
+* calculate R(n) for each answer.  When R(n) is < 15499/94744 we've gone too
+* far, so remove the last prime (a*...*m*m => a*...*m), and the answer must be a
+* multiple of that product (thereafter called P).  I can calculate R(n) for all
+* n=i*P for increasing i until I find the answer, which will be a lot fewer
+* numbers to check than brute force.
  */
 
 // Phi returns the number of positive integers < n that are relatively prime
