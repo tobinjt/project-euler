@@ -28,7 +28,9 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		pprof.StartCPUProfile(f)
+		if err := pprof.StartCPUProfile(f); err != nil {
+			log.Fatal("could not start CPU profile: ", err)
+		}
 		defer pprof.StopCPUProfile()
 	}
 	if *memprofile != "" {
@@ -46,8 +48,12 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		pprof.WriteHeapProfile(f)
-		f.Close()
+		if err := pprof.WriteHeapProfile(f); err != nil {
+			log.Fatal("could not write memory profile: ", err)
+		}
+		if err := f.Close(); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 

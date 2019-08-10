@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"container/heap"
+	"errors"
 	"fmt"
 	"math/big"
 	"os"
@@ -700,7 +701,13 @@ func TestLogEveryN(t *testing.T) {
 		logEveryN(3, "%d", 1)
 	}
 	assert.Equal(t, "logEveryN", 2, c)
-	logEveryNPrintFunc = o
+
+	defer assert.Panics(t, "logEveryN() should panic", "Checking error handling")
+	defer func() { logEveryNPrintFunc = o }()
+	logEveryNPrintFunc = func(format string, a ...interface{}) (n int, err error) {
+		return 0, errors.New("Checking error handling")
+	}
+	logEveryN(1, "%d", 2)
 }
 
 func TestIncrementDice(t *testing.T) {

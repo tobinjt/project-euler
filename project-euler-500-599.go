@@ -102,7 +102,6 @@ var logEveryNPrintFunc = fmt.Printf
 var logEveryNTimestamp = time.Now()
 
 // logEveryN prints every nth call; it doesn't reset and it doesn't track call location or anything clever.
-// The first
 func logEveryN(n int, format string, a ...interface{}) {
 	logEveryNCounter++
 	if logEveryNCounter%n == 0 {
@@ -111,7 +110,10 @@ func logEveryN(n int, format string, a ...interface{}) {
 		logEveryNTimestamp = t
 		str := fmt.Sprintf(format, a...)
 		ps := strings.Split(fmt.Sprintf("%v", t), "+")
-		logEveryNPrintFunc("%-30v%.5f   %v", ps[0], d.Seconds(), str)
+		_, err := logEveryNPrintFunc("%-30v%.5f   %v", ps[0], d.Seconds(), str)
+		if err != nil {
+			panic(fmt.Sprintf("logging failed: %v", err))
+		}
 	}
 }
 
