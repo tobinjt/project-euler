@@ -2451,12 +2451,17 @@ func projectEuler92test() int64 {
 * Find the last ten digits of this prime number.
  */
 
+var stringToUintParser = strconv.ParseUint
+
 func projectEuler97actual(exp, mul int64) int64 {
 	prime := big.NewInt(1).Exp(big.NewInt(2), big.NewInt(exp), nil)
 	prime = prime.Mul(prime, big.NewInt(mul)).Add(prime, big.NewInt(1))
 	str := fmt.Sprintf("%v", prime)
 	l := len(str)
-	res, _ := strconv.ParseUint(str[l-10:l], 10, 64)
+	res, err := stringToUintParser(str[l-10:l], 10, 64)
+	if err != nil {
+		panic(fmt.Sprintf("ParseUint failed: %v", err))
+	}
 	return int64(res)
 }
 

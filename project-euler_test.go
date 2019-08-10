@@ -743,6 +743,16 @@ func TestPhi(t *testing.T) {
 	}
 }
 
+func TestProjectEuler97actualPanic(t *testing.T) {
+	o := stringToUintParser
+	defer func() { stringToUintParser = o }()
+	defer assert.Panics(t, "projectEuler97actual should panic", "Checking error handling")
+	stringToUintParser = func(s string, base int, bitSize int) (uint64, error) {
+		return 0, errors.New("Checking error handling")
+	}
+	projectEuler97actual(50, 7)
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.
