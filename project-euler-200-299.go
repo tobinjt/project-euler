@@ -160,14 +160,13 @@ Loop:
 // Phi returns the number of positive integers < n that are relatively prime
 // to n; primes is a slice of prime numbers.
 func Phi(n int, primes []int) int {
-	// 1 should be counted but will not be included in primes.
-	count := 1
+	phi := float64(n)
 	for _, prime := range primes {
 		if prime > n {
-			return count
+			return int(phi)
 		}
-		if n%prime != 0 {
-			count++
+		if n%prime == 0 {
+			phi *= (float64(1) - (float64(1) / float64(prime)))
 		}
 	}
 	return -1
