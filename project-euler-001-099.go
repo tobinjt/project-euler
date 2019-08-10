@@ -246,8 +246,10 @@ func (gon *NGon) Copy() *NGon {
 	return newgon
 }
 
+var stringToIntParser = strconv.ParseInt
+
 // ToInt produces the integer representation of an NGon.
-func (gon *NGon) ToInt() (int64, error) {
+func (gon *NGon) ToInt() int64 {
 	number := ""
 	offset := gon.StartIndex()
 	for i := range gon.inners {
@@ -257,7 +259,11 @@ func (gon *NGon) ToInt() (int64, error) {
 			gon.outers[j].inner.value,
 			gon.outers[j].inner.inner.value)
 	}
-	return strconv.ParseInt(number, 10, 64)
+	num, err := stringToIntParser(number, 10, 64)
+	if err != nil {
+		panic(fmt.Sprintf("%v", err))
+	}
+	return num
 }
 
 // Permutable is the interface for permutable arrays.
@@ -482,10 +488,7 @@ TRIPLE:
 
 	sortMe := make([]int64, len(ngons))
 	for i, gon := range ngons {
-		// It's not good to ignore the error, but I know it cannot
-		// happen, because I generate everything.
-		value, _ := gon.ToInt()
-		sortMe[i] = value
+		sortMe[i] = gon.ToInt()
 	}
 	sort.Sort(Int64Slice(sortMe))
 	return sortMe[len(sortMe)-1]

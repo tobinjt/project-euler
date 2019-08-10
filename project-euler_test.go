@@ -133,9 +133,15 @@ func TestNgons(t *testing.T) {
 	assert.Equal(t, "gon.String()", "sum: 11: first: 1 1,6,4; 3,4,9; 2,9,6",
 		gon.String())
 	assert.Equal(t, "gon.Copy()", gon, gon.Copy())
-	actualInt, err := gon.ToInt()
-	assert.ErrIsNil(t, "gon.ToInt()", err)
-	assert.Equal(t, "gon.ToInt()", int64(164349296), actualInt)
+	assert.Equal(t, "gon.ToInt()", int64(164349296), gon.ToInt())
+
+	o := stringToIntParser
+	defer assert.Panics(t, "ToInt() should panic", "string parsing failed")
+	defer func() { stringToIntParser = o }()
+	stringToIntParser = func(s string, base int, bitSize int) (i int64, err error) {
+		return 0, errors.New("string parsing failed")
+	}
+	_ = gon.ToInt()
 }
 
 func TestPermutable(t *testing.T) {
