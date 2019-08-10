@@ -19,4 +19,4 @@ fi
 errcheck -blank
 
 # Coverage runs tests, so there's no need to run them separately.
-PRESUBMIT_MODE=1 gocover
+gocover
