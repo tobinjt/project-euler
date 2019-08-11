@@ -176,6 +176,15 @@ Loop:
 * multiple of that product (thereafter called P).  I can calculate R(n) for all
 * n=i*P for increasing i until I find the answer, which will be a lot fewer
 * numbers to check than brute force.
+*
+* Calculating Phi(a big number) is going to be expensive because I need all the
+* primes <= a big number.  Instead of calculating from scratch maybe I need to
+* use the fact that Phi(n*m) = Phi(n)*Phi(m) when n and m are relatively prime?
+* However the numbers aren't going to be relatively prime for the most part, so
+* I don't know if that will help?
+* That helps for calculating the Phi(upper bound prime), but doesn't help for
+* calculating Phi(upper bound prime * m), so it still has to be done the
+* expensive way.
  */
 
 // Phi returns the number of positive integers < n that are relatively prime
@@ -193,23 +202,33 @@ func Phi(n int, primes []int) int {
 	return -1
 }
 
-func projectEuler243actual(n int, d int, m int) int64 {
-	target := float64(n) / float64(d)
-	for {
-		phiTable := MakePhiLookupTable(d * m)
-		for i, phi := range phiTable {
-			if i < 3 {
-				continue
-			}
-			ratio := float64(phi) / float64(i-1)
-			if ratio < target {
-				return int64(i)
-			}
+func projectEuler243actual(target float64) int64 {
+	primes := SieveToPrimes(SieveOfEratosthenes(100))
+	n, d, upperProduct, upperPrime := 1, 1, 0, 0
+	for _, prime := range primes {
+		n *= Phi(prime, primes)
+		d *= prime
+		if float64(n)/float64(d-1) < target {
+			break
 		}
-		m *= 2
+		upperPrime, upperProduct = prime, d
 	}
+
+	// 5 was determined by experimentation; upperPrime+1 would be safer but
+	// massively increases the run time.
+	primes = SieveToPrimes(SieveOfEratosthenes((upperProduct * 5)))
+	answer := -1
+	for m := 2; m < upperPrime; m++ {
+		d = upperProduct * m
+		n = Phi(d, primes)
+		if float64(n)/float64(d-1) < target {
+			answer = d
+			break
+		}
+	}
+	return int64(answer)
 }
 
 func projectEuler243test() int64 {
-	return projectEuler243actual(4, 10, 1)
+	return projectEuler243actual(4.0 / 10.0)
 }

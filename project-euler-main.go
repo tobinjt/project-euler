@@ -21,6 +21,11 @@ import (
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 var memprofile = flag.String("memprofile", "", "write memory profile to this file")
 
+// A function for ad-hoc code during development.
+func test() int64 {
+	return int64(0)
+}
+
 func main() {
 	flag.Parse()
 	if *cpuprofile != "" {
@@ -55,11 +60,6 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-}
-
-// A function for ad-hoc code during development.
-func test() int64 {
-	return int64(0)
 }
 
 // A dummy function to be called during testing of realMain.
@@ -221,7 +221,7 @@ func projectEuler112() int64 {
 }
 
 func projectEuler243() int64 {
-	return projectEuler243actual(15499, 94744, 14)
+	return projectEuler243actual(15499.0 / 94744.0)
 }
 
 func projectEuler357() int64 {
