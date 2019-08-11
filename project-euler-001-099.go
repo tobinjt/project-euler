@@ -246,8 +246,6 @@ func (gon *NGon) Copy() *NGon {
 	return newgon
 }
 
-var stringToIntParser = strconv.ParseInt
-
 // ToInt produces the integer representation of an NGon.
 func (gon *NGon) ToInt() int64 {
 	number := ""
@@ -259,7 +257,12 @@ func (gon *NGon) ToInt() int64 {
 			gon.outers[j].inner.value,
 			gon.outers[j].inner.inner.value)
 	}
-	num, err := stringToIntParser(number, 10, 64)
+	return ParseIntOrDie(number, 10)
+}
+
+// ParseIntOrDie panics if the sting cannot be parsed.
+func ParseIntOrDie(s string, base int) int64 {
+	num, err := strconv.ParseInt(s, base, 64)
 	if err != nil {
 		panic(fmt.Sprintf("%v", err))
 	}
@@ -2451,18 +2454,12 @@ func projectEuler92test() int64 {
 * Find the last ten digits of this prime number.
  */
 
-var stringToUintParser = strconv.ParseUint
-
 func projectEuler97actual(exp, mul int64) int64 {
 	prime := big.NewInt(1).Exp(big.NewInt(2), big.NewInt(exp), nil)
 	prime = prime.Mul(prime, big.NewInt(mul)).Add(prime, big.NewInt(1))
 	str := fmt.Sprintf("%v", prime)
 	l := len(str)
-	res, err := stringToUintParser(str[l-10:l], 10, 64)
-	if err != nil {
-		panic(fmt.Sprintf("ParseUint failed: %v", err))
-	}
-	return int64(res)
+	return ParseIntOrDie(str[l-10:l], 10)
 }
 
 func projectEuler97test() int64 {

@@ -16,15 +16,13 @@ import (
 	"github.com/tobinjt/assert"
 )
 
-// Shut up about unused import.
-var _ = fmt.Println
-
 func TestProjectEuler(t *testing.T) {
 	table := []struct {
 		result   int64
 		function func() int64
 		name     string
 	}{
+		{0, test, "test"},
 		{7273, projectEuler67, "projectEuler67"},
 		{6531031914842725, projectEuler68, "projectEuler68"},
 		{510510, projectEuler69, "projectEuler69"},
@@ -134,14 +132,12 @@ func TestNgons(t *testing.T) {
 		gon.String())
 	assert.Equal(t, "gon.Copy()", gon, gon.Copy())
 	assert.Equal(t, "gon.ToInt()", int64(164349296), gon.ToInt())
+}
 
-	o := stringToIntParser
-	defer assert.Panics(t, "ToInt() should panic", "string parsing failed")
-	defer func() { stringToIntParser = o }()
-	stringToIntParser = func(s string, base int, bitSize int) (i int64, err error) {
-		return 0, errors.New("string parsing failed")
-	}
-	_ = gon.ToInt()
+func TestParseIntOrDie(t *testing.T) {
+	assert.Equal(t, "ParseIntOrDie", int64(1234), ParseIntOrDie("1234", 10))
+	defer assert.Panics(t, "ParseIntOrDie() should panic", "invalid syntax")
+	ParseIntOrDie("asdf", 10)
 }
 
 func TestPermutable(t *testing.T) {
@@ -741,16 +737,6 @@ func TestPhi(t *testing.T) {
 	for i, p := range phis {
 		assert.Equal(t, fmt.Sprintf("Phi(%v)", i), p, Phi(i, primes))
 	}
-}
-
-func TestProjectEuler97actualPanic(t *testing.T) {
-	o := stringToUintParser
-	defer func() { stringToUintParser = o }()
-	defer assert.Panics(t, "projectEuler97actual should panic", "Checking error handling")
-	stringToUintParser = func(s string, base int, bitSize int) (uint64, error) {
-		return 0, errors.New("Checking error handling")
-	}
-	projectEuler97actual(50, 7)
 }
 
 // NOTE BEWARE ACHTUNG!
