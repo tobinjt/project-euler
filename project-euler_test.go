@@ -134,6 +134,11 @@ func TestNgons(t *testing.T) {
 	assert.Equal(t, "gon.ToInt()", int64(164349296), gon.ToInt())
 }
 
+func TestCastToTwoDPointPanics(t *testing.T) {
+	defer assert.Panics(t, "CastToTwoDPoint() should panic", "Casting to TwoDPoint failed")
+	CastToTwoDPoint("asdf")
+}
+
 func TestParseIntOrDie(t *testing.T) {
 	assert.Equal(t, "ParseIntOrDie", int64(1234), ParseIntOrDie("1234", 10))
 	defer assert.Panics(t, "ParseIntOrDie() should panic", "invalid syntax")

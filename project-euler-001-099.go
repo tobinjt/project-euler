@@ -1477,6 +1477,15 @@ type TwoDPoint struct {
 	cost, heuristic uint64
 }
 
+// CastToTwoDPoint casts an AStarNode to a TwoDPoint or panics if casting fails.
+func CastToTwoDPoint(node AStarNode) TwoDPoint {
+	n, ok := node.(TwoDPoint)
+	if !ok {
+		panic(fmt.Sprintf("Casting to TwoDPoint failed: %v", node))
+	}
+	return n
+}
+
 // TwoDPointHeap implements the Heap interface for []TwoDPoint.
 // https://golang.org/pkg/container/heap/
 type TwoDPointHeap []TwoDPoint
@@ -1568,7 +1577,7 @@ func (a *TwoDAStar82) AddStartNodes() {
 
 // IsEndNode determines if a node is an end node.
 func (a TwoDAStar82) IsEndNode(node AStarNode) bool {
-	n := node.(TwoDPoint)
+	n := CastToTwoDPoint(node)
 	return n.j == len(a.costs[0])-1
 }
 
@@ -1590,7 +1599,7 @@ func (a *TwoDAStar82) ExtendPath(n TwoDPoint, i, j int) {
 
 // AddChildNodes adds the child nodes of node to the heap.
 func (a *TwoDAStar82) AddChildNodes(node AStarNode) {
-	n := node.(TwoDPoint)
+	n := CastToTwoDPoint(node)
 	if a.bestCosts[n.i][n.j] != 0 && a.bestCosts[n.i][n.j] <= n.cost {
 		// We've already seen a better path to this node, discard the current path.
 		return
@@ -1623,7 +1632,7 @@ func AStarSearch(a AStarSearchable) AStarNode {
 }
 
 func projectEuler82actual(matrix *TwoDAStar82) int64 {
-	node := AStarSearch(matrix).(TwoDPoint)
+	node := CastToTwoDPoint(AStarSearch(matrix))
 	return int64(node.cost)
 }
 
@@ -1707,7 +1716,7 @@ func (a *TwoDAStar83) AddStartNodes() {
 
 // IsEndNode determines if a node is an end node.
 func (a TwoDAStar83) IsEndNode(node AStarNode) bool {
-	n := node.(TwoDPoint)
+	n := CastToTwoDPoint(node)
 	return n.i == len(a.costs)-1 && n.j == len(a.costs[0])-1
 }
 
@@ -1729,7 +1738,7 @@ func (a *TwoDAStar83) ExtendPath(n TwoDPoint, i, j int) {
 
 // AddChildNodes adds the child nodes of node to the heap.
 func (a *TwoDAStar83) AddChildNodes(node AStarNode) {
-	n := node.(TwoDPoint)
+	n := CastToTwoDPoint(node)
 	if a.bestCosts[n.i][n.j] != 0 && a.bestCosts[n.i][n.j] <= n.cost {
 		// We've already seen a better path to this node, discard the current path.
 		return
@@ -1754,7 +1763,7 @@ func (a *TwoDAStar83) AddChildNodes(node AStarNode) {
 }
 
 func projectEuler83actual(matrix *TwoDAStar83) int64 {
-	node := AStarSearch(matrix).(TwoDPoint)
+	node := CastToTwoDPoint(AStarSearch(matrix))
 	return int64(node.cost)
 }
 
