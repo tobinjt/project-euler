@@ -86,3 +86,20 @@ func projectEuler112actual() int64 {
 func projectEuler112test() int64 {
 	return projectEuler112actual()
 }
+
+/*
+* See https://projecteuler.net/problem=144 - there's an image that really helps
+* with understanding.
+ */
+
+func projectEuler144actual() int64 {
+	return 0
+}
+
+func projectEuler144test() int64 {
+	return projectEuler144actual()
+}
+
+func projectEuler144() int64 {
+	return projectEuler144actual()
+}

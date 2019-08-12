@@ -97,6 +97,7 @@ func realMain(args []string) (int64, error) {
 		"99":         projectEuler99,
 		"102":        projectEuler102,
 		"112":        projectEuler112,
+		"144":        projectEuler144,
 		"205":        projectEuler205,
 		"206":        projectEuler206,
 		"243":        projectEuler243,
