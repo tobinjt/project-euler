@@ -90,6 +90,41 @@ func projectEuler112test() int64 {
 /*
 * See https://projecteuler.net/problem=144 - there's an image that really helps
 * with understanding.
+*
+* Initial thoughts:
+* - 1 Calculate the slope of the line from the start point and the impact point.
+*     m = y1-y2/x1-x2.
+* - 2 Calculate the slope of the tangent line from the intersection point.
+*     m = −4x/y.
+* - 3 Calculate the slope of the normal to the tangent line
+*     pm = -1/m.
+* - 4 Calculate the slope of the outgoing line given the slope of the incoming
+*     line and the slope of the normal.  m1 = slope of incoming line; m2 = slope
+*     of normal; m3 = slope of outgoing line - calculate this.
+*     - tan x = (m2-m1)/(1+m1m2) = (m3-m2)/(1+m3m2)
+*     - (m2-m1)(1+m3m2) = (m3-m2)(1+m1m2)
+*     - m2 - m1 + m2m3m2 + m1m3m2 = m3 - m2 + m3m1m2 + m2m1m2
+*     - Subtract m1m3m2 from both sides
+*     - m2 - m1 + m2m3m2 = m3 - m2 + m2m1m2
+*     - Move m3 terms to one side, everything else to the other.
+*     - m2m3m2 - m3 = - m2 + m1 - m2 + m2m1m2
+*     - m3(m2m2 - 1) = m2m1m2 + m1 - 2m2
+*     - m3 = (m2m1m2 + m1 - 2m2)/(m2m2 - 1)
+* - 5 The outgoing line now becomes the incoming line.  I need to express it as
+*     y = mx + c, so I calculate c = y - mx.
+* - 6 Calculate where the outgoing line intersects with the ellipse.
+*     - Ellipse: 4xx + yy = 100
+*     - Line: y = mx + c
+*     - 4xx + (mx + c)(mx + c) = 100
+*     - 4xx + mxmx + mxc + mxc + cc = 100
+*     - 4xx + mmxx + 2mxc + cc = 100
+*     - (4 + mm)xx + (2mc)x + (cc - 100) = 0
+*     - Use https://en.wikipedia.org/wiki/Quadratic_formula
+*     - One x will be the current intersection, the other x will be the new
+*	intersection.
+*     - Solve for y.
+* - 7 Check if the intersection is within the gap at the top; break if it is,
+*     GOTO 2 otherwise.
  */
 
 func projectEuler144actual() int64 {
