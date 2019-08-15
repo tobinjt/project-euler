@@ -2,6 +2,7 @@ package main
 
 import (
 	"io"
+	"math"
 	"strings"
 )
 
@@ -146,6 +147,14 @@ func slopeOfReflectedLine(incomingSlope, tangentSlope float64) float64 {
 	d := 1 + (2 * incomingSlope * normalSlope)
 	d -= normalSlope * normalSlope
 	return n / d
+}
+
+// https://en.wikipedia.org/wiki/Quadratic_formula
+func quadraticFormula(a, b, c float64) (float64, float64) {
+	root := math.Sqrt((b * b) - (4 * a * c))
+	a1 := ((-1 * b) - root) / (2 * a)
+	a2 := ((-1 * b) + root) / (2 * a)
+	return a1, a2
 }
 
 func projectEuler144actual() int64 {

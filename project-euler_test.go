@@ -774,6 +774,16 @@ func TestSlopeOfReflectedLine(t *testing.T) {
 	assert.Equal(t, "slopeOfReflectedLine", bSlope, calculatedBSlope)
 }
 
+func TestQuadraticFormula(t *testing.T) {
+	// x = 7
+	// 3*7*7 + 5*7 = 182
+	// 3x2 + 5x - 182 = 0
+	// x = -8.666666666666666 found by testing and verified with bc.
+	a1, a2 := quadraticFormula(3, 5, -182)
+	assert.FloatsAreClose(t, "quadraticFormula", -8.666666666666666, a1, 10)
+	assert.FloatsAreClose(t, "quadraticFormula", 7.0, a2, 10)
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.
