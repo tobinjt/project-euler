@@ -157,6 +157,19 @@ func quadraticFormula(a, b, c float64) (float64, float64) {
 	return a1, a2
 }
 
+// Calculate both points where the line given by y = mx + c and the ellipse
+// given by 4xx + yy = 0 intersect.
+// Implements step 6 above.
+func intersectionOfLineAndEllipse(m, c float64) (x1, y1, x2, y2 float64) {
+	a := 4 + (m * m)
+	b := 2 * m * c
+	d := (c * c) - 100
+	x1, x2 = quadraticFormula(a, b, d)
+	y1 = (m * x1) + c
+	y2 = (m * x2) + c
+	return
+}
+
 func projectEuler144actual() int64 {
 	return 0
 }

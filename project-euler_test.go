@@ -784,6 +784,14 @@ func TestQuadraticFormula(t *testing.T) {
 	assert.FloatsAreClose(t, "quadraticFormula", 7.0, a2, 10)
 }
 
-// NOTE BEWARE ACHTUNG!
-// The first character after 'Test' in the function name must be uppercase or
-// 'go test' will silently ignore it.  Gah.
+func TestIntersectionOfLineAndEllipse(t *testing.T) {
+	m := slopeOfLine(0.0, 10.1, 1.4, -9.6)
+	c := 10.1 - (0.0 * m)
+	// The first point is the intersection at the top of the ellipse, and we
+	// don't have coordinates to compare against for that, so ignore it.
+	// Testing shows it to be (0.0071, 9.9999) which are pretty close to
+	// (0.0, 10.1), so I'm reasonably confident it's correct.
+	_, _, x2, y2 := intersectionOfLineAndEllipse(m, c)
+	assert.FloatsAreClose(t, "intersectionOfLineAndEllipse x2", x2, 1.4, 1)
+	assert.FloatsAreClose(t, "intersectionOfLineAndEllipse y2", y2, -9.6, 1)
+}
