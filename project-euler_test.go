@@ -745,6 +745,35 @@ func TestPhi(t *testing.T) {
 	}
 }
 
+func TestSlopeOfLine(t *testing.T) {
+	assert.Equal(t, "slopeOfLine", 1.0, slopeOfLine(2, 2, 0, 0))
+	assert.Equal(t, "slopeOfLine", 1.0, slopeOfLine(0, 0, 2, 2))
+	assert.FloatsAreClose(t, "slopeOfLine", -0.6292134831, slopeOfLine(7.5, 3.2, -1.4, 8.8), 8)
+}
+
+/*
+* ASCII art time!
+* The line T (made up of \) runs from (-3, 3) to (3, -3) so it's at a 45 degree
+* angle.
+* A is (2, 4), B is (4, 2), O is (0, 0)
+* A to O reflecting off T should result in O to B.
+*      | A
+*   \  |
+*    \ |   B
+*     \|
+* -----|-----
+*      |\
+*      | \
+*      |  \
+ */
+func TestSlopeOfReflectedLine(t *testing.T) {
+	aSlope := slopeOfLine(2, 4, 0, 0)
+	bSlope := slopeOfLine(4, 2, 0, 0)
+	tSlope := slopeOfLine(-3, 3, 3, -3)
+	calculatedBSlope := slopeOfReflectedLine(aSlope, tSlope)
+	assert.Equal(t, "slopeOfReflectedLine", bSlope, calculatedBSlope)
+}
+
 // NOTE BEWARE ACHTUNG!
 // The first character after 'Test' in the function name must be uppercase or
 // 'go test' will silently ignore it.  Gah.

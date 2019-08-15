@@ -100,16 +100,22 @@ func projectEuler112test() int64 {
 *     pm = -1/m.
 * - 4 Calculate the slope of the outgoing line given the slope of the incoming
 *     line and the slope of the normal.  m1 = slope of incoming line; m2 = slope
-*     of normal; m3 = slope of outgoing line - calculate this.
-*     - tan x = (m2-m1)/(1+m1m2) = (m3-m2)/(1+m3m2)
-*     - (m2-m1)(1+m3m2) = (m3-m2)(1+m1m2)
-*     - m2 - m1 + m2m3m2 + m1m3m2 = m3 - m2 + m3m1m2 + m2m1m2
-*     - Subtract m1m3m2 from both sides
-*     - m2 - m1 + m2m3m2 = m3 - m2 + m2m1m2
-*     - Move m3 terms to one side, everything else to the other.
-*     - m2m3m2 - m3 = - m2 + m1 - m2 + m2m1m2
-*     - m3(m2m2 - 1) = m2m1m2 + m1 - 2m2
-*     - m3 = (m2m1m2 + m1 - 2m2)/(m2m2 - 1)
+*     of normal; m3 = slope of outgoing line (this is what I'm calculating).
+*     - tan x = (m2-m1)/(1+m1m2) = (m3-m2)/(1+m2m3)
+*     - (m2-m1)/(1+m1m2) = (m3-m2)/(1+m2m3)
+*     - (m2-m1)(1+m2m3) = (m3-m2)(1+m1m2)
+*     - m2 - m1 + m2m2m3 - m1m2m3 = m3 - m2 + m3m1m2 - m2m1m2
+*     - Reorder m2m1 to m1m2 and so on for easier comparisons.
+*     - m2 - m1 + m2m2m3 - m1m2m3 = m3 - m2 + m1m2m3 - m1m2m2
+*     - Add (m2 + m1m2m3) to both sides.
+*     - 2m2 - m1 + m2m2m3 = m3 + 2m1m2m3 - m1m2m2
+*     - Move all terms containing m3 to one side, all other terms to the other.
+*     - 2m2 - m1 + m1m2m2 = m3 + 2m1m2m3 - m2m2m3
+*     - Isolate m3 from all terms on the right.
+*     - 2m2 - m1 + m1m2m2 = m3(1 + 2m1m2 - m2m2)
+*     - Divide both sides by (1 + 2m1m2 - m2m2) so the right side is just m3.
+*     - (2m2 - m1 + m1m2m2)/(1 + 2m1m2 - m2m2) = m3
+*     - Now I have a formula to calculate m3 from m1 and m2.
 * - 5 The outgoing line now becomes the incoming line.  I need to express it as
 *     y = mx + c, so I calculate c = y - mx.
 * - 6 Calculate where the outgoing line intersects with the ellipse.
@@ -127,14 +133,25 @@ func projectEuler112test() int64 {
 *     GOTO 2 otherwise.
  */
 
+func slopeOfLine(x1, y1, x2, y2 float64) float64 {
+	return (y1 - y2) / (x1 - x2)
+}
+
+// Implements steps 3 and 4 of the plan above.
+func slopeOfReflectedLine(incomingSlope, tangentSlope float64) float64 {
+	normalSlope := float64(-1) / tangentSlope
+	// (2m2 - m1 + m1m2m2)/(1 + 2m1m2 - m2m2) = m3
+	n := (2 * normalSlope) - incomingSlope
+	n += incomingSlope * normalSlope * normalSlope
+	d := 1 + (2 * incomingSlope * normalSlope)
+	d -= normalSlope * normalSlope
+	return n / d
+}
+
 func projectEuler144actual() int64 {
 	return 0
 }
 
 func projectEuler144test() int64 {
-	return projectEuler144actual()
-}
-
-func projectEuler144() int64 {
 	return projectEuler144actual()
 }
