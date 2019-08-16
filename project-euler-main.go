@@ -221,10 +221,6 @@ func projectEuler112() int64 {
 	return projectEuler112actual()
 }
 
-func projectEuler144() int64 {
-	return projectEuler144actual()
-}
-
 func projectEuler243() int64 {
 	return projectEuler243actual(15499.0 / 94744.0)
 }

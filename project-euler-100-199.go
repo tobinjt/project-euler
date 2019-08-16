@@ -182,10 +182,37 @@ func floatsAreClose(a, b float64, precision int) bool {
 	return difference < threshold
 }
 
-func projectEuler144actual() int64 {
-	return 0
-}
+func projectEuler144() int64 {
+	intersectionX, intersectionY := 1.4, -9.6
+	incomingSlope := slopeOfLine(intersectionX, intersectionY, 0.0, 10.1)
+	counter := 1
+	for {
 
-func projectEuler144test() int64 {
-	return projectEuler144actual()
+		// Step 2.
+		tangentSlope := (-4 * intersectionX) / intersectionY
+		// Step 3 and 4.
+		outgoingSlope := slopeOfReflectedLine(incomingSlope, tangentSlope)
+		// Step 5.
+		c := intersectionY - (outgoingSlope * intersectionX)
+		// Step 6.
+		x1, y1, x2, y2 := intersectionOfLineAndEllipse(outgoingSlope, c)
+		// Step 7.
+		if (y1 > 0 && x1 >= -0.01 && x1 <= 0.01) || (y2 > 0 && x2 >= -0.01 && x2 <= 0.01) {
+			// We've hit the exit point.
+			break
+		}
+		// Bouncing off the inside again.
+		counter++
+		if floatsAreClose(x1, intersectionX, 4) && floatsAreClose(y1, intersectionY, 4) {
+			// (x1, y1) is the current point, use (x2, y2) instead.
+			incomingSlope = slopeOfLine(intersectionX, intersectionY, x2, y2)
+			intersectionX = x2
+			intersectionY = y2
+		} else {
+			incomingSlope = slopeOfLine(intersectionX, intersectionY, x1, y1)
+			intersectionX = x1
+			intersectionY = y1
+		}
+	}
+	return int64(counter)
 }
