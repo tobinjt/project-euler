@@ -795,3 +795,8 @@ func TestIntersectionOfLineAndEllipse(t *testing.T) {
 	assert.FloatsAreClose(t, "intersectionOfLineAndEllipse x2", x2, 1.4, 1)
 	assert.FloatsAreClose(t, "intersectionOfLineAndEllipse y2", y2, -9.6, 1)
 }
+
+func TestFloatsAreClose(t *testing.T) {
+	assert.Equal(t, "floatsAreClose true", true, floatsAreClose(2.123, 2.124, 2))
+	assert.Equal(t, "floatsAreClose false", false, floatsAreClose(2.123, 2.125, 3))
+}

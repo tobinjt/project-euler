@@ -170,6 +170,18 @@ func intersectionOfLineAndEllipse(m, c float64) (x1, y1, x2, y2 float64) {
 	return
 }
 
+// floatsAreClose checks that the first precision digits after the decimal point
+// of a and b are equal.  E.g. floatsAreClose(t, "", 0.1234567, 0.1234569, 6)
+// will return true
+// BEWARE: floating point precision is inaccurate enough that
+// floatsAreClose(2.123, 2.124, 3) will return true because 0.1**3 ==
+// 0.0010000000000000002 and 2.124-2.123 == 0.0009999999999998899.
+func floatsAreClose(a, b float64, precision int) bool {
+	threshold := math.Pow(0.1, float64(precision))
+	difference := math.Abs(a - b)
+	return difference < threshold
+}
+
 func projectEuler144actual() int64 {
 	return 0
 }
