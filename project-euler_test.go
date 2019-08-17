@@ -5,6 +5,7 @@ import (
 	"container/heap"
 	"errors"
 	"fmt"
+	"math"
 	"math/big"
 	"os"
 	"sort"
@@ -800,4 +801,18 @@ func TestIntersectionOfLineAndEllipse(t *testing.T) {
 func TestFloatsAreClose(t *testing.T) {
 	assert.Equal(t, "floatsAreClose true", true, floatsAreClose(2.123, 2.124, 2))
 	assert.Equal(t, "floatsAreClose false", false, floatsAreClose(2.123, 2.125, 3))
+}
+
+func TestCircleYCoordinates(t *testing.T) {
+	// Circle passes through (0, 0), (0, n), (n, 0), and (n, n).
+	// Centre is (n/2, n/2).
+	// Radius is sqrt(n/2*n/2 + n/2*n/2) = sqrt(n*n/2)
+	n := 4.0
+	r := math.Sqrt(n * n / 2)
+	y1, y2 := circleYCoordinates(0, r, n/2, n/2)
+	assert.FloatsAreClose(t, "circleYCoordinates x=0 y1", 0, y1, 5)
+	assert.FloatsAreClose(t, "circleYCoordinates x=0 y2", n, y2, 5)
+	y1, y2 = circleYCoordinates(n/2, r, n/2, n/2)
+	assert.FloatsAreClose(t, "circleYCoordinates x=n/2 y1", (n/2)-r, y1, 5)
+	assert.FloatsAreClose(t, "circleYCoordinates x=n/2 y2", (n/2)+r, y2, 5)
 }

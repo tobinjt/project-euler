@@ -168,6 +168,23 @@ Loop:
 * - I should figure out how to plot N=10,000 and look for patterns.
  */
 
+// Find both Y values for (x, Y).  (cx, cy) is the centre and r is the radius of
+// the circle.
+func circleYCoordinates(x, r, cx, cy float64) (float64, float64) {
+	// Formula for a circle: (x - cx)(x - cx) + (y - cy)(y - cy) = (r)(r).
+	// (x - cx)(x - cx) + (y - cy)(y - cy) = (r)(r)
+	// (y - cy)(y - cy) + (x - cx)(x - cx) - (r)(r) = 0
+	// (y)(y) - (cy)(y) - (cy)(y) + (cy)(cy) = (r)(r) - (x - cx)(x - cx)
+	// (y)(y) - 2(cy)(y) + (cy)(cy) + (x - cx)(x - cx) - (r)(r) = 0
+	// Calculate all the terms we know to get yy - by + c = 0, and solve
+	// using Quadratic formula.
+	b := -2 * cy
+	c := cy * cy
+	c += (x - cx) * (x - cx)
+	c -= r * r
+	return quadraticFormula(1, b, c)
+}
+
 func projectEuler233actual() int64 {
 	return 0
 }
