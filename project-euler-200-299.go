@@ -142,7 +142,30 @@ Loop:
 *
 * It can be shown that f(10000) = 36.
 *
-* What is the sum of all positive integers N ≤ 1011 such that f(N) = 420 ?
+* What is the sum of all positive integers N ≤ 10^11 such that f(N) = 420 ?
+ */
+
+/*
+* Thoughts:
+* - I can stop working on N as soon as I have more than 420 points.
+* - I want to avoid math.Sqrt because of the expense.
+* - Circles are symmetric, so I can check 1/4 or maybe 1/8 of it and multiply
+*   the result by 4 or 8; need to be careful about doing 1/8 because all the
+*   example numbers are multiples of 4 but not 8.
+* - Formula for a circle: (x - c)(x - c) + (y - c)(y - c) = (r)(r), where:
+*   - (x, y) is the point on the circle.
+*   - c is the centre point (N/2, N/2).
+*   - r is the radius: sqrt(2(N/2)(N/2)) = sqrt(NN/2) - Pythagoras theorem.
+* - If I'm working from x=0 to x=N, I know that I'm interested in y=1, y=2, ...;
+*   rather than calculate y can I calculate something smarter?
+* - Consider the portion from x=0 to x=N/2; it covers y=0 to y=(about 0.415N/2).
+*   Should I iterate over y rather than over x?  Does that result in more
+*   expensive calculations that negate the benefit of fewer iterations?
+* - Can I do something smarter than plain iteration?  Like binary search or
+*   something?
+* - Will I get the same results if the circle centres are (0, 0) rather than
+*   (N/2, N/2)?
+* - I should figure out how to plot N=10,000 and look for patterns.
  */
 
 func projectEuler233actual() int64 {
