@@ -107,6 +107,9 @@ func projectEuler205() int64 {
 }
 
 /*
+* Find the unique positive integer whose square has the form
+* 1_2_3_4_5_6_7_8_9_0, where each “_” is a single digit.
+*
 * The answer lies between 1121314151617181910 and 1929394959697989990, so we
 * have upper and lower bounds for the integers to square.
 *
@@ -131,6 +134,23 @@ Loop:
 		}
 		return i
 	}
+}
+
+/*
+* Let f(N) be the number of points with integer coordinates that are on a circle
+* passing through (0,0), (N,0),(0,N), and (N,N).
+*
+* It can be shown that f(10000) = 36.
+*
+* What is the sum of all positive integers N ≤ 1011 such that f(N) = 420 ?
+ */
+
+func projectEuler233actual() int64 {
+	return 0
+}
+
+func projectEuler233test() int64 {
+	return projectEuler233actual()
 }
 
 /*
