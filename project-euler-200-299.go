@@ -57,11 +57,6 @@ func sumIntSlice(s []int) int {
 	return sum
 }
 
-// IntPair represents a key, value pair where both are ints.
-type IntPair struct {
-	key, value int
-}
-
 func projectEuler205() int64 {
 	// Deliberately start off at 0 so that the first loop iteration brings
 	// it to the first valid combination.
@@ -164,7 +159,7 @@ Loop:
 * - Can I do something smarter than plain iteration?  Like binary search or
 *   something?
 * - Will I get the same results if the circle centres are (0, 0) rather than
-*   (N/2, N/2)?
+*   (N/2, N/2)?  Yes, see TestCompareOriginAndOffsetIntegerCoordinates().
 * - I should figure out how to plot N=10,000 and look for patterns.
  */
 
@@ -183,6 +178,27 @@ func circleYCoordinates(x, r, cx, cy float64) (float64, float64) {
 	c += (x - cx) * (x - cx)
 	c -= r * r
 	return quadraticFormula(1, b, c)
+}
+
+type intPoint struct {
+	x, y int
+}
+
+func allIntegerCircleCoordinates(cx, cy, n int) map[intPoint]bool {
+	coords := make(map[intPoint]bool)
+	halfN := n / 2
+	r := math.Sqrt(float64(2 * halfN * halfN))
+	for x := 0; x <= n; x++ {
+		y1, y2 := circleYCoordinates(float64(x), r, float64(cx), float64(cy))
+		if floatsAreClose(y1, math.Round(y1), 10) {
+			iy1, iy2 := int(y1), int(y2)
+			coords[intPoint{x, iy1}] = true
+			coords[intPoint{x, iy2}] = true
+			coords[intPoint{iy1, x}] = true
+			coords[intPoint{iy2, x}] = true
+		}
+	}
+	return coords
 }
 
 func projectEuler233actual() int64 {

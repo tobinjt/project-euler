@@ -816,3 +816,14 @@ func TestCircleYCoordinates(t *testing.T) {
 	assert.FloatsAreClose(t, "circleYCoordinates x=n/2 y1", (n/2)-r, y1, 5)
 	assert.FloatsAreClose(t, "circleYCoordinates x=n/2 y2", (n/2)+r, y2, 5)
 }
+
+func TestCompareOriginAndOffsetIntegerCoordinates(t *testing.T) {
+	n := 10000
+	offsetCoordinates := allIntegerCircleCoordinates(n/2, n/2, n)
+	originCoordinates := allIntegerCircleCoordinates(0, 0, n)
+	for p := range originCoordinates {
+		op := intPoint{p.x + n/2, p.y + n/2}
+		val, ok := offsetCoordinates[op]
+		assert.Equal(t, fmt.Sprintf("mismatched coordinates %+v vs %+v", p, op), true, val && ok)
+	}
+}
