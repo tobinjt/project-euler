@@ -188,7 +188,7 @@ func allIntegerCircleCoordinates(cx, cy, n int) map[intPoint]bool {
 	coords := make(map[intPoint]bool)
 	halfN := n / 2
 	r := math.Sqrt(float64(2 * halfN * halfN))
-	for x := 0; x <= n; x++ {
+	for x := cx - halfN; x <= cx+halfN; x++ {
 		y1, y2 := circleYCoordinates(float64(x), r, float64(cx), float64(cy))
 		if floatsAreClose(y1, math.Round(y1), 10) {
 			iy1, iy2 := int(y1), int(y2)
