@@ -834,3 +834,51 @@ func TestCompareOriginAndOffsetIntegerCoordinates(t *testing.T) {
 	assert.Equal(t, "should be 36 offsetCoordinates", 36, len(offsetCoordinates))
 	assert.Equal(t, "should be 36 originCoordinates", 36, len(originCoordinates))
 }
+
+func TestOriginCircleYCoordinates(t *testing.T) {
+	r := math.Sqrt(10000 * 10000 / 2.0)
+	// These are all the integer coordinates for an n=10000 circle centred
+	// on the origin.
+	cases := []intPoint{
+		{1000, 7000},
+		{-1528, 6904},
+		{-7000, -1000},
+		{1000, -7000},
+		{2920, -6440},
+		{3400, 6200},
+		{-6200, 3400},
+		{5000, 5000},
+		{-3400, -6200},
+		{-1000, -7000},
+		{-1000, 7000},
+		{1528, 6904},
+		{-5000, 5000},
+		{-3400, 6200},
+		{7000, -1000},
+		{-6440, 2920},
+		{-6440, -2920},
+		{6904, -1528},
+		{6904, 1528},
+		{1528, -6904},
+		{-5000, -5000},
+		{-2920, -6440},
+		{-7000, 1000},
+		{2920, 6440},
+		{6200, 3400},
+		{-6200, -3400},
+		{-6904, -1528},
+		{7000, 1000},
+		{5000, -5000},
+		{6200, -3400},
+		{-6904, 1528},
+		{6440, 2920},
+		{3400, -6200},
+		{-2920, 6440},
+		{6440, -2920},
+		{-1528, -6904},
+	}
+	for _, c := range cases {
+		y1, y2 := originCircleYCoordinates(float64(c.x), r)
+		assert.Equal(t, fmt.Sprintf("originCircleYCoordinates %v", c.x), true, (float64(c.y) == y1) || (float64(c.y) == y2))
+	}
+}

@@ -158,9 +158,13 @@ Loop:
 *   expensive calculations that negate the benefit of fewer iterations?
 * - Can I do something smarter than plain iteration?  Like binary search or
 *   something?
+* - I should figure out how to plot N=10,000 and look for patterns.  Done,
+*   there's a clear pattern, need to look at more examples to figure out if
+*   there's anything usable.
+*   https://docs.google.com/spreadsheets/d/1Lb9OyM3AXTi4wTTPm3awIfwQDAZ6Ejv06L5PnIJmlVM/edit#gid=0
 * - Will I get the same results if the circle centres are (0, 0) rather than
 *   (N/2, N/2)?  Yes, see TestCompareOriginAndOffsetIntegerCoordinates().
-* - I should figure out how to plot N=10,000 and look for patterns.
+*   Formula for a circle centred on the origin is simpler: xx + yy = rr.
  */
 
 // Find both Y values for (x, Y).  (cx, cy) is the centre and r is the radius of
@@ -178,6 +182,15 @@ func circleYCoordinates(x, r, cx, cy float64) (float64, float64) {
 	c += (x - cx) * (x - cx)
 	c -= r * r
 	return quadraticFormula(1, b, c)
+}
+
+// Find both Y coordinates for (x, Y) for a circle centred on the origin.
+func originCircleYCoordinates(x, r float64) (float64, float64) {
+	// xx + yy = rr
+	// yy = rr - xx
+	// y = sqrt(rr - xx)
+	y := math.Sqrt((r * r) - (x * x))
+	return -1 * y, y
 }
 
 type intPoint struct {
