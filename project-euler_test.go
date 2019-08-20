@@ -818,25 +818,25 @@ func TestCircleYCoordinates(t *testing.T) {
 }
 
 func TestCompareOriginAndOffsetIntegerCoordinates(t *testing.T) {
+	assert.ResetFailedAssertionCounter()
 	n := 10000
-	offsetCoordinates := allIntegerCircleCoordinates(n/2, n/2, n)
 	originCoordinates := allIntegerCircleCoordinates(0, 0, n)
-	for p := range originCoordinates {
-		op := intPoint{p.x + n/2, p.y + n/2}
-		val, ok := offsetCoordinates[op]
-		assert.Equal(t, fmt.Sprintf("mismatched coordinates origin %+v vs offset %+v", p, op), true, val && ok)
-	}
-	for p := range offsetCoordinates {
-		op := intPoint{p.x - n/2, p.y - n/2}
-		val, ok := originCoordinates[op]
-		assert.Equal(t, fmt.Sprintf("mismatched coordinates offset %+v vs origin %+v", p, op), true, val && ok)
-	}
+	offsetCoordinates := allIntegerCircleCoordinates(n/2, n/2, n)
+	assert.Equal(t, "originCoordinates length", len(n10000OriginIntegerCoordinates), len(originCoordinates))
+	assert.Equal(t, "offsetCoordinates length", len(n10000OriginIntegerCoordinates), len(offsetCoordinates))
+
 	for _, p := range n10000OriginIntegerCoordinates {
 		_, ok := originCoordinates[p]
-		assert.Equal(t, fmt.Sprintf("n10000OriginIntegerCoordinates[%+v] is missing from originCoordinates", p), true, ok)
+		assert.Equal(t, fmt.Sprintf("origin missing %+v", p), true, ok)
+		op := intPoint{p.x + n/2, p.y + n/2}
+		_, ok = offsetCoordinates[op]
+		assert.Equal(t, fmt.Sprintf("offset missing %+v/%+v", p, op), true, ok)
 	}
-	assert.Equal(t, "should be 36 offsetCoordinates", 36, len(offsetCoordinates))
-	assert.Equal(t, "should be 36 originCoordinates", 36, len(originCoordinates))
+	if assert.FailedAssertionCounter() > 0 {
+		t.Errorf("offsetCoordinates: %v\n", offsetCoordinates)
+		t.Errorf("originCoordinates: %v\n", originCoordinates)
+		t.Errorf("n10000OriginIntegerCoordinates: %v\n", n10000OriginIntegerCoordinates)
+	}
 }
 
 // These are all the integer coordinates for an n=10000 circle centred on the
