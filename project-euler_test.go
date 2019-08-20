@@ -831,6 +831,10 @@ func TestCompareOriginAndOffsetIntegerCoordinates(t *testing.T) {
 		val, ok := originCoordinates[op]
 		assert.Equal(t, fmt.Sprintf("mismatched coordinates offset %+v vs origin %+v", p, op), true, val && ok)
 	}
+	for _, p := range n10000OriginIntegerCoordinates {
+		_, ok := originCoordinates[p]
+		assert.Equal(t, fmt.Sprintf("n10000OriginIntegerCoordinates[%+v] is missing from originCoordinates", p), true, ok)
+	}
 	assert.Equal(t, "should be 36 offsetCoordinates", 36, len(offsetCoordinates))
 	assert.Equal(t, "should be 36 originCoordinates", 36, len(originCoordinates))
 }
