@@ -202,7 +202,12 @@ func allIntegerCircleCoordinates(cx, cy, n int) map[intPoint]bool {
 	halfN := n / 2
 	r := math.Sqrt(float64(2 * halfN * halfN))
 	for x := cx - halfN; x <= cx+halfN; x++ {
-		y1, y2 := circleYCoordinates(float64(x), r, float64(cx), float64(cy))
+		var y1, y2 float64
+		if cx == 0 && cy == 0 {
+			y1, y2 = originCircleYCoordinates(float64(x), r)
+		} else {
+			y1, y2 = circleYCoordinates(float64(x), r, float64(cx), float64(cy))
+		}
 		if floatsAreClose(y1, math.Round(y1), 10) {
 			iy1, iy2 := int(y1), int(y2)
 			coords[intPoint{x, iy1}] = true
