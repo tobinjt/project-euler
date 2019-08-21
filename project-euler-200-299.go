@@ -201,7 +201,7 @@ func allIntegerCircleCoordinates(cx, cy, n int) map[intPoint]bool {
 	coords := make(map[intPoint]bool)
 	halfN := n / 2
 	r := math.Sqrt(float64(2 * halfN * halfN))
-	for x := cx - halfN; x <= cx+halfN; x++ {
+	for x := cx - halfN; x <= cx; x++ {
 		var y1, y2 float64
 		if cx == 0 && cy == 0 {
 			y1, y2 = originCircleYCoordinates(float64(x), r)
@@ -214,6 +214,12 @@ func allIntegerCircleCoordinates(cx, cy, n int) map[intPoint]bool {
 			coords[intPoint{x, iy2}] = true
 			coords[intPoint{iy1, x}] = true
 			coords[intPoint{iy2, x}] = true
+			// Reflect the points across the centre.
+			rx := cx + (cx - x)
+			coords[intPoint{rx, iy1}] = true
+			coords[intPoint{rx, iy2}] = true
+			coords[intPoint{iy1, rx}] = true
+			coords[intPoint{iy2, rx}] = true
 		}
 	}
 	return coords
