@@ -198,10 +198,23 @@ type intPoint struct {
 }
 
 func allIntegerCircleCoordinates(cx, cy, n int) map[intPoint]bool {
+	// Rather than calculating points from the left side all the way to the
+	// right side, we calculate calculate points for the first quarter of
+	// the circle and reflect them around to the other quarters - see
+	// descriptions below where each of the points are added.
+	// The full width is r+r; r is 1.414halfN (because it's sqrt(2 * halfN *
+	// halfN) so the full width is 2.828halfN.
+	// We calculate points for r - halfN = 1.414halfN - halfN = 0.414halfN.
+	// 0.414halfN is a lot less than 2.828halfN - 0.146 or roughly 1/7 of
+	// the work.
 	coords := make(map[intPoint]bool)
 	halfN := n / 2
 	r := math.Sqrt(float64(2 * halfN * halfN))
-	for x := cx - int(r); x <= cx; x++ {
+	// Start at the left-most point.
+	startX := cx - int(r)
+	// End after processing the first 1/8 of the circle's circumference.
+	endX := startX + (int(r) - halfN)
+	for x := startX; x <= endX; x++ {
 		var y1, y2 float64
 		if cx == 0 && cy == 0 {
 			y1, y2 = originCircleYCoordinates(float64(x), r)
@@ -209,15 +222,36 @@ func allIntegerCircleCoordinates(cx, cy, n int) map[intPoint]bool {
 			y1, y2 = circleYCoordinates(float64(x), r, float64(cx), float64(cy))
 		}
 		if floatsAreClose(y1, math.Round(y1), 10) {
+			// Mentally divide the circle into 8, then moving from
+			// left to right the sections are:
+			//  35
+			// 1  7
+			// 2  8
+			//  46
 			iy1, iy2 := int(y1), int(y2)
+			// These are the points we just found; they are in
+			// sections 1 and 2.
+			// E.g (-7000, -1000) and (-7000, 1000).
 			coords[intPoint{x, iy1}] = true
 			coords[intPoint{x, iy2}] = true
+			// Flip the points into sections 3 and 4 by reversing
+			// the X and Y coordinates - effectively mirroring
+			// across a 45 degree line through the centre.
+			// E.g. (-1000, -7000) and (1000, -7000).
 			coords[intPoint{iy1, x}] = true
 			coords[intPoint{iy2, x}] = true
-			// Reflect the points across the centre.
+			// Reflect the X value across the vertical Y line
+			// through the centre; the Y values are unchanged.
 			rx := cx + (cx - x)
+			// The points from sections 1 and 2 are flipped to
+			// sections 7 and 8.
+			// E.g. (7000, -1000) and (7000, 1000).
 			coords[intPoint{rx, iy1}] = true
 			coords[intPoint{rx, iy2}] = true
+			// Flip the points into sections 3 and 4 by reversing
+			// the X and Y coordinates - effectively mirroring
+			// across a 45 degree line through the centre.
+			// E.g. (1000, -7000) and (1000, 7000).
 			coords[intPoint{iy1, rx}] = true
 			coords[intPoint{iy2, rx}] = true
 		}
